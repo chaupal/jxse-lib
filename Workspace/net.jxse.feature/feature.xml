@@ -2,7 +2,7 @@
 <feature
       id="net.jxse.feature"
       label="JXSE Library Feature"
-      version="1.0.0.v20140407"
+      version="1.0.0.v20140424"
       provider-name="Chaupal">
 
    <description url="https://github.com/chaupal">
@@ -71,7 +71,6 @@ END OF TERMS AND CONDITIONS
    </license>
 
    <requires>
-      <import plugin="javax.servlet"/>
       <import plugin="org.eclipse.osgi"/>
    </requires>
 
@@ -116,6 +115,27 @@ END OF TERMS AND CONDITIONS
          install-size="0"
          version="0.0.0"
          fragment="true"
+         unpack="false"/>
+
+   <plugin
+         id="org.mortbay.jetty.compatibility"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.servlet"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="javax.servlet.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
          unpack="false"/>
 
 </feature>
