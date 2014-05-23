@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Spongycastle
-Bundle-SymbolicName: org.spongycastle
+Bundle-SymbolicName: org.spongycastle;singleton:=true
 Bundle-Version: 1.0.0.v20140407
 Bundle-Vendor: Condast
 Fragment-Host: system.bundle

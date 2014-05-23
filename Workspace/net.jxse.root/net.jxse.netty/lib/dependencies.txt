@@ -1,0 +1,2 @@
+Mandatory runtime dependencies:
+netty/netty-3.1.5.GA.jar - required by the TCP transport

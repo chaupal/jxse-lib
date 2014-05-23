@@ -1,0 +1,3 @@
+Mandatory runtime dependencies:
+jetty/javax.servlet.jar - required by Jetty
+jetty/org.mortbay.jetty.jar - required by the HTTP transport

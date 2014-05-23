@@ -1,0 +1,24 @@
+Manifest-Version: 1.0
+Built-By: Kees
+Tool: Bnd-0.0.357
+Bundle-Name: JXSE
+Created-By: Apache Maven Bundle Plugin
+Bundle-Vendor: The Chaupal P2P Organisation
+Build-Jdk: 1.7.0_03
+Bundle-Version: 2.8.0.SNAPSHOT
+Eclipse-BuddyPolicy: registered
+Bnd-LastModified: 1397206014007
+Bundle-ManifestVersion: 2
+Bundle-License: http://chaupal.github.io/jxta-license.txt
+Bundle-Description: JXTA technology is a set of open protocols that al
+ low any connected device on the        network ranging from cell phon
+ es and wireless PDAs to PCs and servers to communicate and        col
+ laborate in a P2P manner. JXTA peers create a virtual network where a
+ ny peer can interact        with other peers and resources directly e
+ ven when some of the peers and resources are behind        firewalls 
+ and NATs or are on different network transports. JXSE is the Java imp
+ lementation        of the JXTA protocols.
+Bundle-SymbolicName: io.github.chaupal
+Bundle-DocURL: http://nexus.sonatype.org/oss-repository-hosting.html/j
+ xse
+

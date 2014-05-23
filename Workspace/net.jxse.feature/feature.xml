@@ -2,7 +2,7 @@
 <feature
       id="net.jxse.feature"
       label="JXSE Library Feature"
-      version="1.0.0.v20140424"
+      version="1.0.0.v20140522"
       provider-name="Chaupal">
 
    <description url="https://github.com/chaupal">
@@ -69,6 +69,10 @@ TERMS AND CONDITIONS FOR USE, REPRODUCTION, AND DISTRIBUTION
 
 END OF TERMS AND CONDITIONS
    </license>
+
+   <url>
+      <update label="JXSE Feature Group" url="http://89.31.96.252/download.condast.org/jp2p-releases/net.jxse.update/site.xml"/>
+   </url>
 
    <requires>
       <import plugin="org.eclipse.osgi"/>
