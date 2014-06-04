@@ -2,7 +2,7 @@
 <feature
       id="net.jxse.feature"
       label="JXSE Library Feature"
-      version="1.0.0.v20140522"
+      version="1.0.0.v20140529"
       provider-name="Chaupal">
 
    <description url="https://github.com/chaupal">
@@ -86,13 +86,6 @@ END OF TERMS AND CONDITIONS
          unpack="false"/>
 
    <plugin
-         id="net.jxse"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.h2"
          download-size="0"
          install-size="0"
@@ -130,6 +123,20 @@ END OF TERMS AND CONDITIONS
 
    <plugin
          id="javax.servlet.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.jxse"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.mortbay.jetty.compatibility"
          download-size="0"
          install-size="0"
          version="0.0.0"

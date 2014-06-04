@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Spongycastle
 Bundle-SymbolicName: org.spongycastle;singleton:=true
-Bundle-Version: 1.0.0.v20140407
+Bundle-Version: 1.47.0.2
 Bundle-Vendor: Condast
 Fragment-Host: system.bundle
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -11,7 +11,7 @@ Bundle-ClassPath: libs/sc-light-jdk15on-1.47.0.2.jar,
  libs/scprov-jdk15on-1.47.0.2.jar,
  .
 Export-Package: org.spongycastle,
- org.spongycastle.asn1,
+ org.spongycastle.asn1;version="1.47.0.2",
  org.spongycastle.asn1.bc,
  org.spongycastle.asn1.cmp,
  org.spongycastle.asn1.cms,
@@ -43,7 +43,7 @@ Export-Package: org.spongycastle,
  org.spongycastle.asn1.util,
  org.spongycastle.asn1.x500,
  org.spongycastle.asn1.x500.style,
- org.spongycastle.asn1.x509,
+ org.spongycastle.asn1.x509;version="1.47.0.2",
  org.spongycastle.asn1.x509.qualified,
  org.spongycastle.asn1.x509.sigi,
  org.spongycastle.asn1.x9,
@@ -101,12 +101,12 @@ Export-Package: org.spongycastle,
  org.spongycastle.jcajce.provider.symmetric,
  org.spongycastle.jcajce.provider.symmetric.util,
  org.spongycastle.jcajce.provider.util,
- org.spongycastle.jce,
+ org.spongycastle.jce;version="1.47.0.2",
  org.spongycastle.jce.examples,
  org.spongycastle.jce.exception,
  org.spongycastle.jce.interfaces,
  org.spongycastle.jce.netscape,
- org.spongycastle.jce.provider,
+ org.spongycastle.jce.provider;version="1.47.0.2",
  org.spongycastle.jce.spec,
  org.spongycastle.math.ec,
  org.spongycastle.math.ntru.euclid,
@@ -129,7 +129,7 @@ Export-Package: org.spongycastle,
  org.spongycastle.util.io.pem,
  org.spongycastle.util.test,
  org.spongycastle.voms,
- org.spongycastle.x509,
+ org.spongycastle.x509;version="1.47.0.2",
  org.spongycastle.x509.examples,
  org.spongycastle.x509.extension,
  org.spongycastle.x509.util

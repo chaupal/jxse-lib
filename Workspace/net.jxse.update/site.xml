@@ -3,7 +3,7 @@
    <description name="JXSE 2.8x Core Bundles" url="http://89.31.96.252/download.condast.org/updatesite/jp2p/release/1.0.0/20140423/org.jxse.update/site.xml">
       The core bundles to get JXSE 2.8x working in OSGI
    </description>
-   <feature url="features/net.jxse.feature_1.0.0.v20140522.jar" id="net.jxse.feature" version="1.0.0.v20140522">
+   <feature url="features/net.jxse.feature_1.0.0.v20140529.jar" id="net.jxse.feature" version="1.0.0.v20140529">
       <category name="org.jxse"/>
    </feature>
    <category-def name="org.jxse" label="JXSE Core">
