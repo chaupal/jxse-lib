@@ -2,7 +2,7 @@
 <feature
       id="net.jxse.feature"
       label="JXSE Library Feature"
-      version="1.0.0.v20140529"
+      version="1.0.0.v20141013"
       provider-name="Chaupal">
 
    <description url="https://github.com/chaupal">
@@ -76,6 +76,15 @@ END OF TERMS AND CONDITIONS
 
    <requires>
       <import plugin="org.eclipse.osgi"/>
+      <import plugin="org.slf4j.api"/>
+      <import plugin="org.slf4j.log4j"/>
+      <import plugin="org.eclipse.jetty.http"/>
+      <import plugin="org.eclipse.jetty.server"/>
+      <import plugin="org.eclipse.jetty.servlet"/>
+      <import plugin="org.eclipse.jetty.util"/>
+      <import plugin="org.hamcrest.core"/>
+      <import plugin="net.jxse.mock"/>
+      <import plugin="org.junit"/>
    </requires>
 
    <plugin
@@ -129,14 +138,14 @@ END OF TERMS AND CONDITIONS
          unpack="false"/>
 
    <plugin
-         id="net.jxse"
+         id="org.mortbay.jetty.compatibility"
          download-size="0"
          install-size="0"
          version="0.0.0"
          unpack="false"/>
 
    <plugin
-         id="org.mortbay.jetty.compatibility"
+         id="jxse"
          download-size="0"
          install-size="0"
          version="0.0.0"
