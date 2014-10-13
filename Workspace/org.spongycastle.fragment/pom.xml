@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <relativePath>../org.spongycastle/pom.xml</relativePath>
+    <relativePath>../net.jxse.tycho.master/pom.xml</relativePath>
     <groupId>net.jxse</groupId>
     <artifactId>parent</artifactId>
     <version>1.0.0-SNAPSHOT</version>
