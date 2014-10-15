@@ -1,0 +1,11 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Test
+Bundle-SymbolicName: org.jxse.test
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.jxse.test.Activator
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
+ net.jxta.exception,
+ org.osgi.framework;version="1.3.0"
+Bundle-ActivationPolicy: lazy
