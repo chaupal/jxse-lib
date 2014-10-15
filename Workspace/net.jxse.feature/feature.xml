@@ -2,7 +2,7 @@
 <feature
       id="net.jxse.feature"
       label="JXSE OSGI Library Feature"
-      version="1.0.3.v20141012"
+      version="1.0.3.v20141015"
       provider-name="Chaupal">
 
    <description url="https://github.com/chaupal">
@@ -141,6 +141,13 @@ END OF TERMS AND CONDITIONS
 
    <plugin
          id="net.jxse.practical.jxta.source"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="jxse.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
