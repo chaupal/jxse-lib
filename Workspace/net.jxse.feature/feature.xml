@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <feature
       id="net.jxse.feature"
-      label="JXSE Library Feature"
-      version="1.0.0.v20141014"
+      label="JXSE OSGI Library Feature"
+      version="1.0.3.v20141012"
       provider-name="Chaupal">
 
    <description url="https://github.com/chaupal">
@@ -71,7 +71,7 @@ END OF TERMS AND CONDITIONS
    </license>
 
    <url>
-      <update label="JXSE Feature Group" url="http://89.31.96.252/download.condast.org/jp2p-releases/net.jxse.update/site.xml"/>
+      <update label="JXSE Feature Group" url="https://chaupal.github.io/releases/jxse-osgi/2.8.0/milestone/20141013/site.xml"/>
    </url>
 
    <requires>
@@ -121,6 +121,26 @@ END OF TERMS AND CONDITIONS
 
    <plugin
          id="derby"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="org.slf4j.api"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.jxse.practical.jxta"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"/>
+
+   <plugin
+         id="net.jxse.practical.jxta.source"
          download-size="0"
          install-size="0"
          version="0.0.0"
