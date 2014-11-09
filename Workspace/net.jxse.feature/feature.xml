@@ -2,8 +2,8 @@
 <feature
       id="net.jxse.feature"
       label="JXSE OSGI Library Feature"
-      version="1.0.3.v20141015"
-      provider-name="Chaupal">
+      version="1.0.3.v20141024"
+      provider-name="Chaupal.org">
 
    <description url="https://github.com/chaupal">
       This feauture contains references to all the OSGI bundles that are needed to succesfully run JXSE 2.8 in an OSGI environment

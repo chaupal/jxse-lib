@@ -1,2 +1,0 @@
-Optional runtime dependencies:
-felix/felix.jar - used by the current in-progress refactor of JXSE to fit within the OSGi framework
