@@ -53,15 +53,15 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.content.ContentServiceImpl;
 import net.jxta.impl.peergroup.CompatibilityUtils;
-import net.jxta.impl.peergroup.StdPeerGroup;
-import net.jxta.impl.peergroup.StdPeerGroupParamAdv;
+import net.jxta.impl.platform.StdPeerGroup;
+import net.jxta.impl.platform.StdPeerGroupParamAdv;
 import net.jxta.membership.MembershipService;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.IModuleDefinitions;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.peergroup.core.Module;
 import net.jxta.platform.JxtaApplication;
-import net.jxta.platform.Module;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.ModuleImplAdvertisement;
 

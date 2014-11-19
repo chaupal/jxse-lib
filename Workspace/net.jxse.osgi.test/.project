@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>net.jxse.osgi</name>
+	<name>net.jxse.osgi.test</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -27,14 +27,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>resources</name>
+			<name>docs</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/jxse/src/main/resources</location>
+			<location>F:/GitHub/Chaupal/Chaupal-JXSE/Workspace/jxse</location>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/jxse/src/main/java</location>
+			<location>F:/GitHub/Chaupal/Chaupal-JXSE/Workspace/jxse/src/test/java</location>
 		</link>
 	</linkedResources>
 </projectDescription>

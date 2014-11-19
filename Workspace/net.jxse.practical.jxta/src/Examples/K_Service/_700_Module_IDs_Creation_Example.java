@@ -42,7 +42,7 @@ package Examples.K_Service;
 
 import net.jxta.id.IDFactory;
 import net.jxta.impl.id.UUID.ModuleClassID;
-import net.jxta.platform.ModuleSpecID;
+import net.jxta.peergroup.core.ModuleSpecID;
 
 public class _700_Module_IDs_Creation_Example {
     

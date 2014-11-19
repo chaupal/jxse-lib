@@ -46,13 +46,12 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.jxta.exception.PeerGroupException;
-import net.jxta.impl.peergroup.GenericPeerGroup;
+import net.jxta.module.ModuleManager;
 import net.jxta.peergroup.IModuleDefinitions;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.IJxtaLoader;
+import net.jxta.peergroup.core.IJxtaLoader;
+import net.jxta.peergroup.core.Module;
 import net.jxta.platform.JxtaApplication;
-import net.jxta.platform.JxtaLoader;
-import net.jxta.platform.Module;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.rendezvous.RendezVousService;
@@ -71,7 +70,7 @@ public class JXTA_Bootstrapping {
             Logger.getLogger("net.jxta").setLevel(Level.SEVERE);
              
             // Retrieving the JXTA loader
-            IJxtaLoader TheLoader = GenericPeerGroup.getJxtaLoader();
+            IJxtaLoader TheLoader = ModuleManager.getRefLoader();
             
             System.out.println("\nBefore starting the JXTA network:");
              

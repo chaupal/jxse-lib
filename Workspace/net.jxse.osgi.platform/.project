@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>net.jxse.osgi</name>
+	<name>net.jxse.osgi.platform</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -29,12 +29,17 @@
 		<link>
 			<name>resources</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/jxse/src/main/resources</location>
+			<location>F:/GitHub/Chaupal/jxse-osgi/Workspace/jxse/src/main/resources</location>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
 			<location>F:/GitHub/Chaupal/jxse/src/main/java</location>
+		</link>
+		<link>
+			<name>META-INF/services</name>
+			<type>2</type>
+			<location>F:/GitHub/Chaupal/jxse/src/main/resources/META-INF/services</location>
 		</link>
 	</linkedResources>
 </projectDescription>

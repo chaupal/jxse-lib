@@ -53,8 +53,8 @@ import net.jxta.id.IDFactory;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.peergroup.core.Module;
 import net.jxta.platform.JxtaApplication;
-import net.jxta.platform.Module;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 
