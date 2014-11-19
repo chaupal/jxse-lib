@@ -228,10 +228,10 @@ public class Tools {
      *  @param copyAttributes whether the elements' attributes should be copied
      *         or not
      **/
-    public static void copyElements(StructuredDocument intoDoc, Element intoElement, Element from, boolean recursive, boolean copyAttributes) {
+    public static void copyElements(StructuredDocument intoDoc, Element intoElement, Element<?> from, boolean recursive, boolean copyAttributes) {
 
         // Copying current level element
-        Element newElement = intoDoc.createElement(from.getKey(), from.getValue());
+        Element<?> newElement = intoDoc.createElement(from.getKey(), from.getValue());
         intoElement.appendChild(newElement);
 
         // Copy attributes (eventually)
@@ -239,7 +239,7 @@ public class Tools {
 
             if ((from instanceof Attributable) && (newElement instanceof Attributable)) {
 
-                Enumeration eachAttrib = ((Attributable) from).getAttributes();
+                Enumeration<Attribute> eachAttrib = ((Attributable) from).getAttributes();
 
                 while (eachAttrib.hasMoreElements()) {
                     Attribute anAttrib = (Attribute) eachAttrib.nextElement();
@@ -253,10 +253,10 @@ public class Tools {
         // Looping through the child elements (eventually)
         if ( recursive ) {
 
-            for (Enumeration eachChild = from.getChildren(); eachChild.hasMoreElements();) {
+            for (Enumeration<?> eachChild = from.getChildren(); eachChild.hasMoreElements();) {
 
                 // recurse to add the children.
-                copyElements(intoDoc, newElement, (Element) eachChild.nextElement(), recursive, copyAttributes);
+                copyElements(intoDoc, newElement, (Element<?>) eachChild.nextElement(), recursive, copyAttributes);
 
             }
 

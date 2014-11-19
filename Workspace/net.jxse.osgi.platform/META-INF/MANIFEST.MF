@@ -32,11 +32,11 @@ Import-Package: net.jxta.access,
  net.jxta.peergroup.core,
  net.jxta.pipe,
  net.jxta.platform,
- net.jxta.platform.core,
  net.jxta.protocol,
  net.jxta.rendezvous,
  net.jxta.resolver,
- net.jxta.service
+ net.jxta.service,
+ org.osgi.framework;version="1.8.0"
 Export-Package: net.jxse.configuration;
   uses:="net.jxta.platform,
    net.jxta.peer,
