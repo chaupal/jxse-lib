@@ -1,0 +1,15 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: H2 Bundle for JXSE
+Bundle-SymbolicName: org.jxse.h2
+Bundle-Version: 2.8.0.v20141124
+Bundle-Vendor: Chaupal.org
+Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Import-Package: net.jxta.document,
+ net.jxta.impl.cm,
+ net.jxta.impl.util,
+ net.jxta.impl.util.threads,
+ net.jxta.logging,
+ net.jxta.protocol,
+ org.h2.jdbcx;version="1.3.170"
+Export-Package: net.jxta.impl.cm.sql
