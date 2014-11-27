@@ -5,7 +5,8 @@ Bundle-SymbolicName: net.jxse.osgi
 Bundle-Version: 1.0.0.v20141109
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Export-Package: net.jxta,
+Export-Package: net.jxse,
+ net.jxta,
  net.jxta.access,
  net.jxta.annotation,
  net.jxta.codat,

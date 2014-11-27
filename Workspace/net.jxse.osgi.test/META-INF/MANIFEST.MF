@@ -39,6 +39,7 @@ Import-Package: junit.framework;version="4.11.0",
  net.jxta.impl.membership.none,
  net.jxta.impl.membership.pse,
  net.jxta.impl.peergroup,
+ net.jxta.impl.platform,
  net.jxta.impl.protocol,
  net.jxta.impl.rendezvous,
  net.jxta.impl.util,
@@ -71,6 +72,7 @@ Import-Package: junit.framework;version="4.11.0",
  org.jmock,
  org.jmock.integration.junit4,
  org.jmock.lib,
+ org.jmock.lib.concurrent,
  org.jmock.lib.legacy,
  org.jmock.syntax,
  org.junit;version="4.11.0",
@@ -78,3 +80,5 @@ Import-Package: junit.framework;version="4.11.0",
  org.junit.runner;version="4.11.0",
  org.junit.runners.model;version="4.11.0"
 Bundle-ClassPath: .
+Export-Package: net.jxse.systemtests.colocated
+Require-Bundle: net.jxse.osgi

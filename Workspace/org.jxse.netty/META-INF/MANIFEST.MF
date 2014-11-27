@@ -27,3 +27,4 @@ Import-Package: net.jxta.document,
  org.jboss.netty.handler.codec.oneone;version="3.2.5",
  org.jboss.netty.handler.timeout;version="3.2.5",
  org.jboss.netty.util;version="3.2.5"
+Export-Package: net.jxta.impl.endpoint.netty

@@ -29,12 +29,12 @@
 		<link>
 			<name>resources</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/jxse/src/main/resources</location>
+			<location>F:/GitHub/Jxse/jxse/src/main/resources</location>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/jxse/src/main/java</location>
+			<location>F:/GitHub/Jxse/jxse/src/main/java</location>
 		</link>
 	</linkedResources>
 </projectDescription>

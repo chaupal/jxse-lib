@@ -29,12 +29,12 @@
 		<link>
 			<name>docs</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/Chaupal-JXSE/Workspace/jxse</location>
+			<location>F:/GitHub/Jxse/jxse</location>
 		</link>
 		<link>
 			<name>src</name>
 			<type>2</type>
-			<location>F:/GitHub/Chaupal/Chaupal-JXSE/Workspace/jxse/src/test/java</location>
+			<location>F:/GitHub/Jxse/jxse/src/test/java</location>
 		</link>
 	</linkedResources>
 </projectDescription>
