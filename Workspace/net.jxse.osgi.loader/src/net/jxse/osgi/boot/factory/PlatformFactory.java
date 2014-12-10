@@ -1,21 +1,21 @@
-package net.jxse.osgi.loader.factory;
+package net.jxse.osgi.boot.factory;
 
 import java.net.URI;
 
 import net.jxta.document.Advertisement;
-import net.jxta.impl.platform.ShadowPeerGroup;
+import net.jxta.exception.PeerGroupException;
+import net.jxta.impl.platform.Platform;
 import net.jxta.impl.protocol.PlatformConfig;
 import net.jxta.module.IJxtaModuleFactory;
 import net.jxta.peergroup.core.ModuleClassID;
 import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class ShadowPeerGroupFactory implements IJxtaModuleFactory<ShadowPeerGroup> {
+public class PlatformFactory implements IJxtaModuleFactory<Platform> {
 
-	public static final String S_DESCRIPTION = "Default Network PeerGroup Reference Implementation";
-	public static final String S_IDENTIFIER = "net.jxta.impl.platform.ShadowPeerGroup";
-	public static final String S_MODULE_SPEC = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010206";
-	
+	public static final String S_DESCRIPTION = "Standard World PeerGroup Reference Implementation";
+	public static final String S_IDENTIFIER = "net.jxta.impl.platform.Platform";
+	public static final String S_MODULE_SPEC = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010106";
 	@Override
 	public String getIdentifier() {
 		return S_IDENTIFIER;
@@ -27,8 +27,13 @@ public class ShadowPeerGroupFactory implements IJxtaModuleFactory<ShadowPeerGrou
 	}
 
 	@Override
-	public ShadowPeerGroup createModule() {
-		return new ShadowPeerGroup();
+	public Platform createModule() {
+		try {
+			return new Platform();
+		} catch (PeerGroupException e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 
 	@Override
@@ -43,7 +48,7 @@ public class ShadowPeerGroupFactory implements IJxtaModuleFactory<ShadowPeerGrou
 
 	@Override
 	public ModuleImplAdvertisement getModuleImplAdvertisement() {
-		return ShadowPeerGroup.getDefaultModuleImplAdvertisement();
+		return Platform.getDefaultModuleImplAdvertisement();
 	}
 
 	@Override

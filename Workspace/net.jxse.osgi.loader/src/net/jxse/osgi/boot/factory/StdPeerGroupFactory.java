@@ -1,4 +1,4 @@
-package net.jxse.osgi.loader.factory;
+package net.jxse.osgi.boot.factory;
 
 import java.net.URI;
 
