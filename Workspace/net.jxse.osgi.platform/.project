@@ -27,14 +27,14 @@
 	</natures>
 	<linkedResources>
 		<link>
+			<name>jxse</name>
+			<type>2</type>
+			<location>F:/GitHub/Jxse/jxse/src/main/java</location>
+		</link>
+		<link>
 			<name>resources</name>
 			<type>2</type>
 			<location>F:/GitHub/Jxse/jxse/src/main/resources</location>
-		</link>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<location>F:/GitHub/Jxse/jxse/src/main/java</location>
 		</link>
 		<link>
 			<name>META-INF/services</name>

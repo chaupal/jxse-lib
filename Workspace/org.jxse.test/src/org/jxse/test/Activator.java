@@ -1,5 +1,8 @@
 package org.jxse.test;
 
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
@@ -8,6 +11,8 @@ import Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stop
 public class Activator implements BundleActivator {
 
 	private static BundleContext context;
+	
+	private static ExecutorService service = Executors.newSingleThreadExecutor();
 	
 	static BundleContext getContext() {
 		return context;
@@ -19,14 +24,13 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		try{
-			 _100_Starting_And_Stopping_JXTA_Example.main(null);
-		}
-		catch( Exception ex ){
-			ex.printStackTrace();
-		}
 	}
 
+	public static void runExample(){
+		RunExample example = new RunExample();
+		service.execute(example);
+	}
+	
 	/*
 	 * (non-Javadoc)
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
@@ -35,4 +39,16 @@ public class Activator implements BundleActivator {
 		Activator.context = null;
 	}
 
+	private static class RunExample implements Runnable{
+		
+		@Override
+		public void run() {
+			try{
+				 _100_Starting_And_Stopping_JXTA_Example.main(null);
+			}
+			catch( Exception ex ){
+				ex.printStackTrace();
+			}
+		};
+	}
 }

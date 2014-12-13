@@ -11,3 +11,5 @@ Import-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
  net.jxta.platform,
  org.osgi.framework;version="1.3.0"
 Service-Component: OSGI-INF/jxta.xml
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: org.jxse.test.Activator

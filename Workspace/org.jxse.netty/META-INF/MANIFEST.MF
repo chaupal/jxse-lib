@@ -14,6 +14,7 @@ Import-Package: net.jxta.document,
  net.jxta.impl.protocol,
  net.jxta.impl.util.threads,
  net.jxta.logging,
+ net.jxta.module,
  net.jxta.peer,
  net.jxta.peergroup,
  net.jxta.peergroup.core,
@@ -23,8 +24,10 @@ Import-Package: net.jxta.document,
  org.jboss.netty.channel;version="3.2.5",
  org.jboss.netty.channel.group;version="3.2.5",
  org.jboss.netty.channel.socket;version="3.2.5",
+ org.jboss.netty.channel.socket.httptunnel;version="0.92.0",
  org.jboss.netty.channel.socket.nio;version="3.2.5",
  org.jboss.netty.handler.codec.oneone;version="3.2.5",
  org.jboss.netty.handler.timeout;version="3.2.5",
  org.jboss.netty.util;version="3.2.5"
 Export-Package: net.jxta.impl.endpoint.netty
+Service-Component: OSGI-INF/module.xml, OSGI-INF/httpmodule.xml

@@ -6,7 +6,6 @@ import net.jxta.document.Advertisement;
 import net.jxta.impl.platform.ShadowPeerGroup;
 import net.jxta.impl.protocol.PlatformConfig;
 import net.jxta.module.IJxtaModuleFactory;
-import net.jxta.peergroup.core.ModuleClassID;
 import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
@@ -32,11 +31,6 @@ public class ShadowPeerGroupFactory implements IJxtaModuleFactory<ShadowPeerGrou
 	}
 
 	@Override
-	public ModuleClassID getModuleClassID() {
-		return null;
-	}
-
-	@Override
 	public ModuleSpecID getModuleSpecID() {
 		return ModuleSpecID.create(URI.create( S_MODULE_SPEC ));
 	}
@@ -55,6 +49,18 @@ public class ShadowPeerGroupFactory implements IJxtaModuleFactory<ShadowPeerGrou
 	public Advertisement getAdvertisement(PlatformConfig config) {
 		// TODO Auto-generated method stub
 		return null;
+	}
+
+	@Override
+	public boolean init(String provider) {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public boolean isInitialised() {
+		// TODO Auto-generated method stub
+		return false;
 	}
 
 }

@@ -32,7 +32,7 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>jetty</name>
+			<name>jxse</name>
 			<type>2</type>
 			<location>F:/GitHub/Chaupal/jxse-osgi/Workspace/jxse/src/main/java</location>
 		</link>

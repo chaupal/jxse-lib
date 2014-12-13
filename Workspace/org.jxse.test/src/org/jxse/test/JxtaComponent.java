@@ -16,6 +16,7 @@ public class JxtaComponent {
 
 	public void setModuleManager( IModuleManager<?,?> manager ){
 		moduleManager = manager;
+		Activator.runExample();
 	}
 
 	public void unsetModuleManager( IModuleManager<?,?> manager ){
