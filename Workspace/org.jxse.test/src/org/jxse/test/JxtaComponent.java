@@ -4,7 +4,7 @@ import net.jxta.module.IModuleManager;
 
 public class JxtaComponent {
 
-	private static IModuleManager<?,?> moduleManager;
+	private static IModuleManager<?> moduleManager;
 	
 	public void activate(){
 		
@@ -14,16 +14,16 @@ public class JxtaComponent {
 		
 	}
 
-	public void setModuleManager( IModuleManager<?,?> manager ){
+	public void setModuleManager( IModuleManager<?> manager ){
 		moduleManager = manager;
 		Activator.runExample();
 	}
 
-	public void unsetModuleManager( IModuleManager<?,?> manager ){
+	public void unsetModuleManager( IModuleManager<?> manager ){
 		moduleManager = null;
 	}
 	
-	private static IModuleManager<?,?> getManager(){
+	public static IModuleManager<?> getManager(){
 		return moduleManager;
 	}
 }

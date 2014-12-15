@@ -1,66 +1,38 @@
 package net.jxse.osgi.boot.factory;
 
-import java.net.URI;
-
-import net.jxta.document.Advertisement;
 import net.jxta.impl.platform.StdPeerGroup;
-import net.jxta.impl.protocol.PlatformConfig;
-import net.jxta.module.IJxtaModuleFactory;
-import net.jxta.peergroup.core.ModuleSpecID;
+import net.jxta.module.AbstractModuleFactory;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class StdPeerGroupFactory implements IJxtaModuleFactory<StdPeerGroup> {
+public class StdPeerGroupFactory extends AbstractModuleFactory<StdPeerGroup> {
 
 	public static final String S_DESCRIPTION = "General Purpose Peer Group Implementation";
-	public static final String S_IDENTIFIER = "net.jxta.impl.platform.StdPeerGroup";
+	public static final String S_IDENTIFIER  = "net.jxta.impl.platform.StdPeerGroup";
 	public static final String S_MODULE_SPEC = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010306";
 	
-	@Override
-	public String getIdentifier() {
-		return S_IDENTIFIER;
+	public StdPeerGroupFactory() {
+		super( S_IDENTIFIER, S_DESCRIPTION );
 	}
 
 	@Override
-	public String getDescription() {
-		return S_DESCRIPTION;
+	public Class<StdPeerGroup> createModule() {
+		return StdPeerGroup.class;
 	}
 
-	@Override
-	public StdPeerGroup createModule() {
-		return new StdPeerGroup();
-	}
-
-	@Override
-	public ModuleSpecID getModuleSpecID() {
-		return ModuleSpecID.create(URI.create( S_MODULE_SPEC ));
-	}
-
+	/**
+	 * We use this construction for impl advs, because of startup issues
+	 * @return
+	 */
 	@Override
 	public ModuleImplAdvertisement getModuleImplAdvertisement() {
-		return StdPeerGroup.getDefaultModuleImplAdvertisement();
-	}
-
-	@Override
-	public String getRepresentedClassName() {
-		return S_IDENTIFIER;
-	}
-
-	@Override
-	public Advertisement getAdvertisement(PlatformConfig config) {
-		// TODO Auto-generated method stub
-		return null;
+		if( super.getModuleImplAdvertisement() == null )
+			super.setModuleImplAdvertisement( StdPeerGroup.getDefaultModuleImplAdvertisement() );
+		return super.getModuleImplAdvertisement();
 	}
 
 	@Override
 	public boolean init(String provider) {
-		// TODO Auto-generated method stub
-		return false;
+		super.setModuleSpecID( S_MODULE_SPEC );
+		return super.init(provider);
 	}
-
-	@Override
-	public boolean isInitialised() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
 }

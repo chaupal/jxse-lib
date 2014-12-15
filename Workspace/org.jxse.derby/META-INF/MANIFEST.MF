@@ -10,6 +10,8 @@ Import-Package: net.jxta.document,
  net.jxta.impl.util,
  net.jxta.impl.util.threads,
  net.jxta.logging,
+ net.jxta.module,
+ net.jxta.peergroup.core,
  net.jxta.protocol,
  org.apache.derby.jdbc
 Export-Package: net.jxta.impl.cm.sql

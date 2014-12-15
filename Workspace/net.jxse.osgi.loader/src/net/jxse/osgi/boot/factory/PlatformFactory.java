@@ -1,71 +1,42 @@
 package net.jxse.osgi.boot.factory;
 
-import java.net.URI;
-
-import net.jxta.document.Advertisement;
-import net.jxta.exception.PeerGroupException;
 import net.jxta.impl.platform.Platform;
-import net.jxta.impl.protocol.PlatformConfig;
-import net.jxta.module.IJxtaModuleFactory;
-import net.jxta.peergroup.core.ModuleSpecID;
+import net.jxta.impl.platform.ShadowPeerGroup;
+import net.jxta.impl.platform.StdPeerGroup;
+import net.jxta.module.AbstractModuleFactory;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class PlatformFactory implements IJxtaModuleFactory<Platform> {
+public class PlatformFactory extends AbstractModuleFactory<Platform> {
 
 	public static final String S_DESCRIPTION = "Standard World PeerGroup Reference Implementation";
 	public static final String S_IDENTIFIER = "net.jxta.impl.platform.Platform";
 	public static final String S_MODULE_SPEC = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010106";
-	@Override
-	public String getIdentifier() {
-		return S_IDENTIFIER;
-	}
 
-	@Override
-	public String getDescription() {
-		return S_DESCRIPTION;
-	}
-
-	@Override
-	public Platform createModule() {
-		try {
-			return new Platform();
-		} catch (PeerGroupException e) {
-			e.printStackTrace();
-		}
-		return null;
-	}
-
-	@Override
-	public ModuleSpecID getModuleSpecID() {
-		return ModuleSpecID.create(URI.create( S_MODULE_SPEC ));
-	}
-
-	@Override
-	public ModuleImplAdvertisement getModuleImplAdvertisement() {
-		return Platform.getDefaultModuleImplAdvertisement();
-	}
-
-	@Override
-	public String getRepresentedClassName() {
-		return S_IDENTIFIER;
-	}
-
-	@Override
-	public Advertisement getAdvertisement(PlatformConfig config) {
-		// TODO Auto-generated method stub
-		return null;
+	public PlatformFactory() {
+		super( S_IDENTIFIER, S_DESCRIPTION );
 	}
 
 	@Override
 	public boolean init(String provider) {
-		// TODO Auto-generated method stub
-		return false;
+		super.setModuleSpecID( S_MODULE_SPEC );
+		super.addDependency( ShadowPeerGroup.getDefaultModuleImplAdvertisement() );
+		return super.init(provider);
 	}
 
+	/**
+	 * We use this construction for impl advs, because of startup issues
+	 * @return
+	 */
 	@Override
-	public boolean isInitialised() {
-		// TODO Auto-generated method stub
-		return false;
+	public ModuleImplAdvertisement getModuleImplAdvertisement() {
+		if( super.getModuleImplAdvertisement() == null )
+			super.setModuleImplAdvertisement( Platform.getDefaultModuleImplAdvertisement() );
+		return super.getModuleImplAdvertisement();
 	}
 
+	
+	@Override
+	public Class<Platform> createModule() {
+		return Platform.class;
+	}
 }

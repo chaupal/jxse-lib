@@ -14,20 +14,25 @@ import net.jxta.peergroup.core.Module;
 import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-
-public class Component implements IModuleManager<Module, IModuleFactory<Module>>{
+public class Component implements IModuleManager<Module>{
 
 	private static String S_WRN_NOT_REGISTERED = "The factory is not registered in the module manager: ";
 	
-	private IJxtaModuleManager manager;
+	private IJxtaModuleManager<? extends Module> manager;
 	
 	private static Logger logger = Logger.getLogger( Component.class.getName() );
 
 	public Component(){
 		manager = JxtaLoaderModuleManager.getRoot();
-		manager.registerFactory( new PlatformFactory());
-		manager.registerFactory( new ShadowPeerGroupFactory());
-		manager.registerFactory( new StdPeerGroupFactory());		
+		IJxtaModuleFactory<? extends Module> factory = new StdPeerGroupFactory();
+		factory.init(null);
+		manager.registerFactory( factory);
+		factory = new ShadowPeerGroupFactory();
+		factory.init(null);
+		manager.registerFactory( factory);
+		factory = new PlatformFactory(); 
+		factory.init(null);
+		manager.registerFactory( factory);		
 	}
 	
 	public void activate(){
@@ -38,25 +43,15 @@ public class Component implements IModuleManager<Module, IModuleFactory<Module>>
 		manager = null;		
 	}
 	
-	public void register( IModuleFactory<?> factory){
+	public void registerFactory( IModuleFactory<? extends Module> factory){
 		if( !( factory instanceof IJxtaModuleFactory)){
 			logger.warning( S_WRN_NOT_REGISTERED + factory.getIdentifier());
 		}else{
-			manager.registerFactory(factory);
+			manager.registerFactory( factory);
 		}
 	}
 
-	public void unregister( IModuleFactory<?> factory){
-		manager.unregisterFactory(factory);
-	}
-
-	@Override
-	public void registerFactory(IModuleFactory<Module> factory) {
-		manager.registerFactory(factory);
-	}
-
-	@Override
-	public void unregisterFactory(IModuleFactory<Module> factory) {
+	public void unregisterFactory( IModuleFactory<? extends Module> factory){
 		manager.unregisterFactory(factory);
 	}
 
@@ -74,5 +69,4 @@ public class Component implements IModuleManager<Module, IModuleFactory<Module>>
 	public Module[] getModules(ModuleSpecID id) {
 		return getModules(id);
 	}
-
 }

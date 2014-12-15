@@ -10,6 +10,8 @@ Import-Package: net.jxta.document,
  net.jxta.impl.util,
  net.jxta.impl.util.threads,
  net.jxta.logging,
+ net.jxta.module,
+ net.jxta.peergroup.core,
  net.jxta.protocol,
  org.h2.jdbcx;version="1.3.170"
 Export-Package: net.jxta.impl.cm.sql

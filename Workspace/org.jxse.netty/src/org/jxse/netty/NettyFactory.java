@@ -20,7 +20,7 @@ public class NettyFactory extends AbstractModuleFactory<NettyTransport> {
 	}
 
 	@Override
-	public NettyTransport createModule() {
-		return new NettyTransport();
+	public Class<NettyTransport> createModule() {
+		return NettyTransport.class;
 	}
 }

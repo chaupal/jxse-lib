@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="net/jxse/**.*|net/jxta/impl/cm/sql/DerbyAdvertisementCache.java" including="net/jxta/impl/cm/sql/*" kind="src" path="src"/>
+	<classpathentry excluding="net/jxse/**.*|net/jxta/impl/cm/sql/DerbyAdvertisementCache.java" including="net/jxta/impl/cm/sql/*" kind="src" path="jxse"/>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
