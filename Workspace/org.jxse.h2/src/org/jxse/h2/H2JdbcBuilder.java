@@ -1,28 +1,28 @@
 package org.jxse.h2;
 
-import net.jxta.module.AbstractModuleFactory;
+import net.jxta.module.AbstractModuleBuilder;
 import net.jxta.peergroup.core.Module;
 
-public class H2JdbcFactory extends AbstractModuleFactory<Module> {
+public class H2JdbcBuilder extends AbstractModuleBuilder<Module> {
 
 	private static final String S_HTTP_JETTY_IDENTIFIER = "net.jxta.impl.servlethttp.jetty.reference";
 	private static final String S_HTTP_JETTY_DESCRIPTION = " Reference Implementation of the HTTP Message Transport";
 	private static final String S_HTTP_JETTY_MODULE_SPEC_ID = "urn:jxta:uuid-deadbeefdeafbabafeedbabe0000000A0106";
 	private static final String S_HTTP_JETTY_IMPL_CLASS ="net.jxta.impl.endpoint.servlethttp.ServletHttpTransportImpl"; 
 
-	public H2JdbcFactory() {
+	public H2JdbcBuilder() {
 		super( S_HTTP_JETTY_IDENTIFIER, S_HTTP_JETTY_DESCRIPTION);
 	}
 
 	@Override
-	public boolean init(String provider) {
+	public boolean init() {
 		super.setModuleSpecID( S_HTTP_JETTY_MODULE_SPEC_ID );
 		super.setRepresentedClassName(S_HTTP_JETTY_IMPL_CLASS);
-		return super.init(provider);
+		return super.init();
 	}
 
 	@Override
-	public Class<Module> createModule() {
+	public Module onBuildModule() {
 		return null;
 	}
 }

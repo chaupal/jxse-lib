@@ -1,9 +1,9 @@
 package org.jxse.derby;
 
-import net.jxta.module.AbstractModuleFactory;
+import net.jxta.module.AbstractModuleBuilder;
 import net.jxta.peergroup.core.Module;
 
-public class DerbyJdbcFactory extends AbstractModuleFactory<Module> {
+public class DerbyJdbcFactory extends AbstractModuleBuilder<Module> {
 
 	private static final String S_HTTP_JETTY_IDENTIFIER = "net.jxta.impl.servlethttp.jetty.reference";
 	private static final String S_HTTP_JETTY_DESCRIPTION = " Reference Implementation of the HTTP Message Transport";
@@ -15,14 +15,14 @@ public class DerbyJdbcFactory extends AbstractModuleFactory<Module> {
 	}
 
 	@Override
-	public boolean init(String provider) {
+	public boolean init() {
 		super.setModuleSpecID( S_HTTP_JETTY_MODULE_SPEC_ID );
 		super.setRepresentedClassName(S_HTTP_JETTY_IMPL_CLASS);
-		return super.init(provider);
+		return super.init();
 	}
 
 	@Override
-	public Class<Module> createModule() {
+	public Module onBuildModule() {
 		return null;
 	}
 }

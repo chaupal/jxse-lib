@@ -2,22 +2,22 @@ package net.jxse.osgi.boot.factory;
 
 import net.jxta.impl.platform.ShadowPeerGroup;
 import net.jxta.impl.platform.StdPeerGroup;
-import net.jxta.module.AbstractModuleFactory;
+import net.jxta.module.AbstractModuleBuilder;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class ShadowPeerGroupFactory extends AbstractModuleFactory<ShadowPeerGroup> {
+public class ShadowPeerGroupBuilder extends AbstractModuleBuilder<ShadowPeerGroup> {
 
 	public static final String S_DESCRIPTION = "Default Network PeerGroup Reference Implementation";
 	public static final String S_IDENTIFIER = "net.jxta.impl.platform.ShadowPeerGroup";
 	public static final String S_MODULE_SPEC = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010206";
 	
-	public ShadowPeerGroupFactory() {
+	public ShadowPeerGroupBuilder() {
 		super( S_IDENTIFIER, S_DESCRIPTION );
 	}
 
 	@Override
-	public Class<ShadowPeerGroup> createModule() {
-		return ShadowPeerGroup.class;
+	public ShadowPeerGroup onBuildModule() {
+		return new ShadowPeerGroup();
 	}
 
 	/**
@@ -32,9 +32,9 @@ public class ShadowPeerGroupFactory extends AbstractModuleFactory<ShadowPeerGrou
 	}
 
 	@Override
-	public boolean init(String provider) {
+	public boolean init() {
 		super.setModuleSpecID( S_MODULE_SPEC );
-		super.addDependency( StdPeerGroup.getDefaultModuleImplAdvertisement() );
-		return super.init(provider);
+		//super.addDependency( StdPeerGroup.getDefaultModuleImplAdvertisement() );
+		return super.init();
 	}
 }

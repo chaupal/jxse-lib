@@ -7,6 +7,8 @@ Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: net.jxta.document,
  net.jxta.exception,
+ net.jxta.id,
+ net.jxta.impl.peergroup,
  net.jxta.impl.platform,
  net.jxta.impl.protocol,
  net.jxta.module,

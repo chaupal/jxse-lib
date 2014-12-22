@@ -1,26 +1,24 @@
 package net.jxse.osgi.boot.factory;
 
 import net.jxta.impl.platform.Platform;
-import net.jxta.impl.platform.ShadowPeerGroup;
-import net.jxta.impl.platform.StdPeerGroup;
-import net.jxta.module.AbstractModuleFactory;
+import net.jxta.module.AbstractModuleBuilder;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class PlatformFactory extends AbstractModuleFactory<Platform> {
+public class PlatformBuilder extends AbstractModuleBuilder<Platform> {
 
 	public static final String S_DESCRIPTION = "Standard World PeerGroup Reference Implementation";
 	public static final String S_IDENTIFIER = "net.jxta.impl.platform.Platform";
 	public static final String S_MODULE_SPEC = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010106";
 
-	public PlatformFactory() {
+	public PlatformBuilder() {
 		super( S_IDENTIFIER, S_DESCRIPTION );
 	}
 
 	@Override
-	public boolean init(String provider) {
+	public boolean init() {
 		super.setModuleSpecID( S_MODULE_SPEC );
-		super.addDependency( ShadowPeerGroup.getDefaultModuleImplAdvertisement() );
-		return super.init(provider);
+		//super.addDependency( ShadowPeerGroup.getDefaultModuleImplAdvertisement() );
+		return super.init();
 	}
 
 	/**
@@ -36,7 +34,14 @@ public class PlatformFactory extends AbstractModuleFactory<Platform> {
 
 	
 	@Override
-	public Class<Platform> createModule() {
-		return Platform.class;
+	public Platform onBuildModule() {
+		Platform platform = null;
+		try {
+			Class<Platform> clss = Platform.class;
+			platform = clss.newInstance();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return platform;
 	}
 }

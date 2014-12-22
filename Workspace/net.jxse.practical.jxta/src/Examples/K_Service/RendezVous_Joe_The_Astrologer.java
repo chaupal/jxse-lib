@@ -98,7 +98,7 @@ public class RendezVous_Joe_The_Astrologer {
             
             // Loading the astrology service
             Tools.PopInformationMessage(Name, "Loading the astrology service");
-            Module MyAstrologyModule = NetPeerGroup.loadModule(_710_Astrology_Service_Example.MyModuleClassID, _710_Astrology_Service_Example.GetModuleImplementationAdvertisement());
+            Module MyAstrologyModule = null;//NetPeerGroup.loadModule(_710_Astrology_Service_Example.MyModuleClassID, _710_Astrology_Service_Example.GetModuleImplementationAdvertisement());
             
             // Starting the astrology service
             Tools.PopInformationMessage(Name, "Starting the astrology service");
