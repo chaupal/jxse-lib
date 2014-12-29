@@ -1,11 +1,10 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Test
-Bundle-SymbolicName: org.jxse.test
+Bundle-SymbolicName: org.jxse.test;singleton:=true
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
- net.jxse.osgi.boot,
  net.jxta.exception,
  net.jxta.module,
  net.jxta.platform,

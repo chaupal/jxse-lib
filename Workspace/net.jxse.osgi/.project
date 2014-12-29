@@ -27,14 +27,14 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>resources</name>
+			<name>jxse</name>
 			<type>2</type>
-			<location>F:/GitHub/Jxse/jxse/src/main/resources</location>
+			<location>P:/GitHub/Chaupal/jxse/src/main/java</location>
 		</link>
 		<link>
-			<name>src</name>
+			<name>resources</name>
 			<type>2</type>
-			<location>F:/GitHub/Jxse/jxse/src/main/java</location>
+			<location>P:/GitHub/Chaupal/jxse/src/main/resources</location>
 		</link>
 	</linkedResources>
 </projectDescription>

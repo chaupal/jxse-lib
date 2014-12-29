@@ -29,17 +29,17 @@
 		<link>
 			<name>jxse</name>
 			<type>2</type>
-			<location>F:/GitHub/Jxse/jxse/src/main/java</location>
+			<location>P:/GitHub/Chaupal/jxse/src/main/java</location>
 		</link>
 		<link>
 			<name>resources</name>
 			<type>2</type>
-			<location>F:/GitHub/Jxse/jxse/src/main/resources</location>
+			<location>P:/GitHub/Chaupal/jxse/src/main/resources</location>
 		</link>
 		<link>
 			<name>META-INF/services</name>
 			<type>2</type>
-			<location>F:/GitHub/Jxse/jxse/src/main/resources/META-INF/services</location>
+			<location>P:/GitHub/Chaupal/jxse/src/main/resources/META-INF/services</location>
 		</link>
 	</linkedResources>
 </projectDescription>

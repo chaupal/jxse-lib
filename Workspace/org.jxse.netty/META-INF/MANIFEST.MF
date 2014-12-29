@@ -11,6 +11,7 @@ Import-Package: net.jxta.document,
  net.jxta.id,
  net.jxta.impl.endpoint,
  net.jxta.impl.endpoint.msgframing,
+ net.jxta.impl.modulemanager,
  net.jxta.impl.protocol,
  net.jxta.impl.util.threads,
  net.jxta.logging,
@@ -30,4 +31,4 @@ Import-Package: net.jxta.document,
  org.jboss.netty.handler.timeout;version="3.2.5",
  org.jboss.netty.util;version="3.2.5"
 Export-Package: net.jxta.impl.endpoint.netty
-Service-Component: OSGI-INF/module.xml, OSGI-INF/httpmodule.xml
+Service-Component: OSGI-INF/module.xml
