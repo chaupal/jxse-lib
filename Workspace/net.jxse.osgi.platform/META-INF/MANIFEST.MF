@@ -20,6 +20,7 @@ Import-Package: net.jxta.access,
  net.jxta.impl.endpoint,
  net.jxta.impl.endpoint.mcast,
  net.jxta.impl.membership.pse,
+ net.jxta.impl.modulemanager,
  net.jxta.impl.peergroup,
  net.jxta.impl.protocol,
  net.jxta.impl.util,
@@ -37,6 +38,7 @@ Import-Package: net.jxta.access,
  net.jxta.resolver,
  net.jxta.service,
  org.osgi.framework;version="1.8.0"
+Service-Component: OSGI-INF/component.xml
 Export-Package: net.jxse.configuration;
   uses:="net.jxta.platform,
    net.jxta.peer,

@@ -2,8 +2,9 @@
 <classpath>
 	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/JavaSE-1.7"/>
 	<classpathentry kind="con" path="org.eclipse.pde.core.requiredPlugins"/>
-	<classpathentry including="net/jxse/configuration/|net/jxta/impl/loader/|net/jxta/impl/platform/|net/jxta/platform/" kind="src" path="jxse"/>
+	<classpathentry including="net/jxse/configuration/|net/jxta/impl/loader/|net/jxta/impl/platform/|net/jxta/platform/" kind="src" path="java"/>
 	<classpathentry excluding="net/jxse/OSGi/|net/jxse/impl/OSGi/|net/jxta/access/|net/jxta/codat/|net/jxta/content/|net/jxta/credential/|net/jxta/discovery/|net/jxta/document/|net/jxta/endpoint/|net/jxta/exception/|net/jxta/id/|net/jxta/id/jxta/|net/jxta/impl/access/|net/jxta/impl/access/always/|net/jxta/impl/access/pse/|net/jxta/impl/access/simpleACL/|net/jxta/impl/content/|net/jxta/impl/content/defprovider/|net/jxta/impl/content/srdisocket/|net/jxta/impl/discovery/|net/jxta/impl/endpoint/|net/jxta/impl/endpoint/cbjx/|net/jxta/impl/endpoint/mcast/|net/jxta/impl/endpoint/relay/|net/jxta/impl/endpoint/router/|net/jxta/impl/endpoint/servlethttp/|net/jxta/impl/endpoint/tcp/|net/jxta/impl/endpoint/tls/|net/jxta/impl/id/|net/jxta/impl/id/CBID/|net/jxta/impl/id/UUID/|net/jxta/impl/id/binaryID/|net/jxta/impl/id/unknown/|net/jxta/impl/membership/|net/jxta/impl/membership/none/|net/jxta/impl/membership/passwd/|net/jxta/impl/membership/pse/|net/jxta/impl/peer/|net/jxta/impl/pipe/|net/jxta/impl/protocol/|net/jxta/impl/rendezvous/|net/jxta/impl/resolver/|net/jxta/impl/util/|net/jxta/impl/util/backport/java/util/|net/jxta/impl/util/threads/|net/jxta/logging/|net/jxta/membership/|net/jxta/meter/|net/jxta/peer/|net/jxta/pipe/|net/jxta/protocol/|net/jxta/rendezvous/|net/jxta/resolver/|net/jxta/service/|net/jxta/socket/|net/jxta/util/" kind="src" path="resources"/>
 	<classpathentry kind="src" path="META-INF/services"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

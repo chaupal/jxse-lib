@@ -1,7 +1,6 @@
-package net.jxse.osgi.boot;
+package net.jxse.osgi.platform;
 import java.util.logging.Logger;
 
-import net.jxse.osgi.platform.Component;
 import net.jxta.impl.modulemanager.ModuleException;
 import net.jxta.module.IModuleBuilder;
 import net.jxta.module.IModuleManager;
