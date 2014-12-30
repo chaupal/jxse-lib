@@ -34,7 +34,21 @@
 		<link>
 			<name>java</name>
 			<type>2</type>
-			<location>P:/GitHub/Chaupal/jxse/src/main/java</location>
+			<locationURI>JXSE_LOC/src/main/java</locationURI>
 		</link>
 	</linkedResources>
+	<variableList>
+		<variable>
+			<name>CHAUPAL_LOC</name>
+			<value>$%7BGITHUB_LOC%7D/Chaupal</value>
+		</variable>
+		<variable>
+			<name>GITHUB_LOC</name>
+			<value>file:/P:/GitHub</value>
+		</variable>
+		<variable>
+			<name>JXSE_LOC</name>
+			<value>$%7BCHAUPAL_LOC%7D/jxse</value>
+		</variable>
+	</variableList>
 </projectDescription>
