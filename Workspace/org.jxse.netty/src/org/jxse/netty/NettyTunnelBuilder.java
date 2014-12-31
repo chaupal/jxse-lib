@@ -44,7 +44,7 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_NETTY_IDENTIFIER );
 			super.setDescription( S_HTTP_NETTY_DESCRIPTION );
@@ -70,7 +70,7 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_NETTY_IDENTIFIER );
 			super.setDescription( S_HTTP_NETTY_DESCRIPTION );

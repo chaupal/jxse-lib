@@ -62,7 +62,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_IDENTIFIER);
 			super.setRefClass( S_IDENTIFIER );
 			super.setDescription( S_DESCRIPTION );
@@ -95,7 +95,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_IDENTIFIER);
 			super.setRefClass( S_IDENTIFIER );
 			super.setDescription( S_DESCRIPTION );
@@ -122,7 +122,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_IDENTIFIER);
 			super.setRefClass( S_IDENTIFIER );
 			super.setDescription( S_DESCRIPTION );

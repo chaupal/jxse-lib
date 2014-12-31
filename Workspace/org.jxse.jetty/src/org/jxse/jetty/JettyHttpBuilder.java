@@ -36,7 +36,7 @@ public class JettyHttpBuilder extends AbstractModuleBuilder<ServletHttpTransport
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_HTTP_JETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_JETTY_IMPL_CLASS);
 			super.setDescription( S_HTTP_JETTY_DESCRIPTION );

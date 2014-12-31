@@ -1,6 +1,7 @@
 package net.jxse.osgi.platform;
 import java.util.logging.Logger;
 
+import net.jxse.osgi.pltform.builder.PlatformBuilder;
 import net.jxta.impl.modulemanager.ModuleException;
 import net.jxta.module.IModuleBuilder;
 import net.jxta.module.IModuleManager;
@@ -19,15 +20,8 @@ public class Component implements IModuleManager<Module>{
 
 	public Component(){
 		manager = JxtaLoaderModuleManager.getRoot();
-		//IJxtaModuleBuilder factory = new StdPeerGroupBuilder();
-		//factory.init();
-		//manager.registerBuilder( factory);
-		//factory = new ShadowPeerGroupBuilder();
-		//factory.init();
-		//manager.registerBuilder( factory);
-		//factory = new PlatformBuilder(); 
-		//factory.init();
-		//manager.registerBuilder( factory);		
+		IModuleBuilder<Module> builder = new PlatformBuilder();
+		manager.registerBuilder( builder);		
 	}
 	
 	public void activate(){

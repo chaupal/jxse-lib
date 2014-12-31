@@ -35,7 +35,7 @@ public class H2JdbcBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		protected void init() {
+		public void init() {
 			super.setIdentifier(S_JDBC_H2_IDENTIFIER);
 			super.setRefClass( S_JDBC_H2_IDENTIFIER );
 			super.setDescription( S_JDBC_H2_DESCRIPTION );
