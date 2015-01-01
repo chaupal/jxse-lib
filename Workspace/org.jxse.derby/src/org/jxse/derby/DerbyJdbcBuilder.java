@@ -35,12 +35,13 @@ public class DerbyJdbcBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
+		public boolean onInitialised() {
 			super.setIdentifier(S_JDBC_DERBY_IDENTIFIER);
 			super.setRefClass( S_JDBC_DERBY_IDENTIFIER );
 			super.setDescription( S_JDBC_DERBY_DESCRIPTION );
 			super.setVersion( S_JDBC_DERBY_VERSION );
 			super.setSpecID( S_JDBC_DERBY_MODULE_SPEC_ID );
+			return true;
 		}				
 	}
 }

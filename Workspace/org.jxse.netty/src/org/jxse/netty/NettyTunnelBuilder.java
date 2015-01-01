@@ -44,12 +44,13 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
-			super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
+		public boolean onInitialised(){ 
+		super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_NETTY_IDENTIFIER );
 			super.setDescription( S_HTTP_NETTY_DESCRIPTION );
 			super.setVersion( S_HTTP_NETTY_VERSION );
 			super.setSpecID( S_HTTP_NETTY_MODULE_SPEC_ID );
+			return true;
 		}				
 	}
 
@@ -70,12 +71,13 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
+		public boolean onInitialised()  {
 			super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_NETTY_IDENTIFIER );
 			super.setDescription( S_HTTP_NETTY_DESCRIPTION );
 			super.setVersion( S_HTTP_NETTY_VERSION );
 			super.setSpecID( S_HTTP_NETTY_MODULE_SPEC_ID );
+			return true;
 		}				
 	}
 }

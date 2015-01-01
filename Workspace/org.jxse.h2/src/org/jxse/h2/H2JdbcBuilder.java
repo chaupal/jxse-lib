@@ -35,12 +35,13 @@ public class H2JdbcBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
+		public boolean onInitialised() {
 			super.setIdentifier(S_JDBC_H2_IDENTIFIER);
 			super.setRefClass( S_JDBC_H2_IDENTIFIER );
 			super.setDescription( S_JDBC_H2_DESCRIPTION );
 			super.setVersion( S_JDBC_H2_VERSION );
 			super.setSpecID( S_JDBC_H2_MODULE_SPEC_ID );
+			return true;
 		}				
 	}
 

@@ -62,13 +62,14 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
+		public boolean onInitialised() {
 			super.setIdentifier(S_IDENTIFIER);
 			super.setRefClass( S_IDENTIFIER );
 			super.setDescription( S_DESCRIPTION );
 			super.setVersion( S_VERSION );
 			super.setSpecID( S_MODULE_SPEC_ID );
 			super.setImplAdv( Platform.getDefaultModuleImplAdvertisement() );
+			return true;
 		}
 
 		@Override
@@ -95,13 +96,14 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
+		public boolean onInitialised() {
 			super.setIdentifier(S_IDENTIFIER);
 			super.setRefClass( S_IDENTIFIER );
 			super.setDescription( S_DESCRIPTION );
 			super.setVersion( S_VERSION );
 			super.setSpecID( S_MODULE_SPEC_ID );
 			super.setImplAdv( ShadowPeerGroup.getDefaultModuleImplAdvertisement() );
+			return true;
 		}
 	}
 
@@ -122,13 +124,14 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public void init() {
+		public boolean onInitialised() {
 			super.setIdentifier(S_IDENTIFIER);
 			super.setRefClass( S_IDENTIFIER );
 			super.setDescription( S_DESCRIPTION );
 			super.setVersion( S_VERSION );
 			super.setSpecID( S_MODULE_SPEC_ID );
 			super.setImplAdv( StdPeerGroup.getDefaultModuleImplAdvertisement() );
+			return true;
 		}
 	}
 }
