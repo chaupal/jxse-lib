@@ -1,5 +1,4 @@
 package net.jxse.osgi.platform;
-import java.util.logging.Logger;
 
 import net.jxse.osgi.pltform.builder.PlatformBuilder;
 import net.jxta.impl.modulemanager.ModuleException;
@@ -16,11 +15,9 @@ public class Component implements IModuleManager<Module>{
 	
 	private JxtaLoaderModuleManager<Module> manager;
 	
-	private static Logger logger = Logger.getLogger( Component.class.getName() );
-
 	public Component(){
 		manager = JxtaLoaderModuleManager.getRoot();
-		IModuleBuilder<Module> builder = new PlatformBuilder();
+		IModuleBuilder<Module> builder = new PlatformBuilder( manager.getLoader());
 		manager.registerBuilder( builder);		
 	}
 	

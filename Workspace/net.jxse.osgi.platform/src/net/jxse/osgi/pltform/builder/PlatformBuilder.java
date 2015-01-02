@@ -1,5 +1,7 @@
 package net.jxse.osgi.pltform.builder;
 
+import java.net.URL;
+
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
 import net.jxta.impl.modulemanager.ModuleException;
@@ -7,16 +9,28 @@ import net.jxta.impl.platform.Platform;
 import net.jxta.impl.platform.ShadowPeerGroup;
 import net.jxta.impl.platform.StdPeerGroup;
 import net.jxta.module.IModuleDescriptor;
+import net.jxta.peergroup.core.IJxtaLoader;
 import net.jxta.peergroup.core.Module;
-import net.jxta.protocol.ModuleImplAdvertisement;
 
 public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 
-	public PlatformBuilder() {
+	private IJxtaLoader loader;
+	
+	public PlatformBuilder( IJxtaLoader loader) {
+		this.loader = loader;
+		try {
+			Platform.class.forName( Platform.class.getName(), true, loader.getClassLoader());
+		} catch (ClassNotFoundException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		//URL url = Platform.class.getResource( name );
+		//this.loader.addURL(url);
 		super.addDescriptor( new PlatformDescriptor() );
 		super.addDescriptor( new ShadowPeerGroupDescriptor() );
 		super.addDescriptor( new StandardPeerGroupDescriptor() );
 	}
+	
 	
 	@Override
 	public Module buildModule(IModuleDescriptor descriptor)
@@ -71,12 +85,6 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> {
 			super.setImplAdv( Platform.getDefaultModuleImplAdvertisement() );
 			return true;
 		}
-
-		@Override
-		public ModuleImplAdvertisement getModuleImplAdvertisement() {
-				//if( super.getModuleImplAdvertisement() == null )
-				return super.getModuleImplAdvertisement();
-		}				
 	}
 
 	/**
