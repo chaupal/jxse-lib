@@ -1,14 +1,18 @@
 package org.jxse.netty;
 
+import java.net.URL;
+
 import net.jxta.impl.endpoint.netty.NettyTransport;
 import net.jxta.impl.endpoint.netty.http.NettyHttpTunnelTransport;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
-import net.jxta.impl.modulemanager.ModuleException;
+import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
+import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
+import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
+public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements IJxtaModuleBuilder<Module> {
 
 	public NettyTunnelBuilder() {
 		super.addDescriptor( new NettyHttpDescriptor());
@@ -16,8 +20,12 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 	}
 
 	@Override
-	public Module buildModule(IModuleDescriptor descriptor)
-			throws ModuleException {
+	protected boolean onInitBuilder(IModuleDescriptor descriptor) {
+		return true;
+	}
+
+	@Override
+	public Module onBuildModule(IModuleDescriptor descriptor){
 		if( !super.canBuild(descriptor))
 			return null;
 		if( descriptor instanceof NettyHttpDescriptor )
@@ -44,13 +52,23 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public boolean onInitialised(){ 
-		super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
+		public void prepare() {
+			super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_NETTY_IDENTIFIER );
 			super.setDescription( S_HTTP_NETTY_DESCRIPTION );
 			super.setVersion( S_HTTP_NETTY_VERSION );
 			super.setSpecID( S_HTTP_NETTY_MODULE_SPEC_ID );
+		}
+		
+		@Override
+		public boolean onInitialised(){ 
 			return true;
+		}
+
+		@Override
+		public URL getResourceURL() {
+			// TODO Auto-generated method stub
+			return null;
 		}				
 	}
 
@@ -71,13 +89,38 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public boolean onInitialised()  {
+		public void prepare() {
 			super.setIdentifier(S_HTTP_NETTY_IDENTIFIER);
 			super.setRefClass( S_HTTP_NETTY_IDENTIFIER );
 			super.setDescription( S_HTTP_NETTY_DESCRIPTION );
 			super.setVersion( S_HTTP_NETTY_VERSION );
 			super.setSpecID( S_HTTP_NETTY_MODULE_SPEC_ID );
+		}
+		
+		@Override
+		public boolean onInitialised()  {
 			return true;
+		}
+
+		@Override
+		public URL getResourceURL() {
+			// TODO Auto-generated method stub
+			return null;
 		}				
+
+	
+	}
+
+	@Override
+	public IJxtaModuleDescriptor getDescriptor(ModuleImplAdvertisement adv) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Class<? extends Module> getRepresentedClass(
+			IModuleDescriptor descriptor) {
+		// TODO Auto-generated method stub
+		return null;
 	}
 }

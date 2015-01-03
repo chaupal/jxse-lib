@@ -1,8 +1,9 @@
 package org.jxse.h2;
 
+import java.net.URL;
+
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
-import net.jxta.impl.modulemanager.ModuleException;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
 
@@ -13,8 +14,12 @@ public class H2JdbcBuilder extends AbstractModuleBuilder<Module> {
 	}
 
 	@Override
-	public Module buildModule(IModuleDescriptor descriptor)
-			throws ModuleException {
+	protected boolean onInitBuilder(IModuleDescriptor descriptor) {
+		return false;
+	}
+
+	@Override
+	public Module onBuildModule(IModuleDescriptor descriptor){
 		return null;
 	}
 
@@ -35,14 +40,24 @@ public class H2JdbcBuilder extends AbstractModuleBuilder<Module> {
 		}
 
 		@Override
-		public boolean onInitialised() {
+		protected void prepare(){
 			super.setIdentifier(S_JDBC_H2_IDENTIFIER);
 			super.setRefClass( S_JDBC_H2_IDENTIFIER );
 			super.setDescription( S_JDBC_H2_DESCRIPTION );
 			super.setVersion( S_JDBC_H2_VERSION );
 			super.setSpecID( S_JDBC_H2_MODULE_SPEC_ID );
+		}
+		
+		public boolean onInitialised() {
 			return true;
+		}
+
+		@Override
+		public URL getResourceURL() {
+			// TODO Auto-generated method stub
+			return null;
 		}				
+
 	}
 
 }

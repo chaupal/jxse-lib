@@ -1,8 +1,9 @@
 package org.jxse.derby;
 
+import java.net.URL;
+
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
-import net.jxta.impl.modulemanager.ModuleException;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
 
@@ -13,8 +14,12 @@ public class DerbyJdbcBuilder extends AbstractModuleBuilder<Module> {
 	}
 
 	@Override
-	public Module buildModule(IModuleDescriptor descriptor)
-			throws ModuleException {
+	protected boolean onInitBuilder(IModuleDescriptor descriptor) {
+		return false;
+	}
+
+	@Override
+	public Module onBuildModule(IModuleDescriptor descriptor){
 		return null;
 	}
 
@@ -34,14 +39,23 @@ public class DerbyJdbcBuilder extends AbstractModuleBuilder<Module> {
 			super();
 		}
 
-		@Override
-		public boolean onInitialised() {
+		protected void prepare(){
 			super.setIdentifier(S_JDBC_DERBY_IDENTIFIER);
 			super.setRefClass( S_JDBC_DERBY_IDENTIFIER );
 			super.setDescription( S_JDBC_DERBY_DESCRIPTION );
 			super.setVersion( S_JDBC_DERBY_VERSION );
 			super.setSpecID( S_JDBC_DERBY_MODULE_SPEC_ID );
+		}
+		
+		@Override
+		public boolean onInitialised() {
 			return true;
+		}
+
+		@Override
+		public URL getResourceURL() {
+			// TODO Auto-generated method stub
+			return null;
 		}				
 	}
 }

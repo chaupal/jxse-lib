@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="net.jxse.test.jxta">
-   <implementation class="org.jxse.test.JxtaComponent"/>
-   <reference bind="setModuleManager" cardinality="0..n" interface="net.jxta.module.IModuleManager" name="IModuleManager" policy="dynamic" unbind="unsetModuleManager"/>t"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="true" name="org.jxse.test">
+   <implementation class="org.jxse.test.Component"/>
+   <reference bind="registerBuilder" cardinality="0..n" interface="net.jxta.module.IModuleBuilder" name="norg.jxse.test.ModuleBuilder" policy="dynamic" unbind="unregisterBuilder"/>
 </scr:component>

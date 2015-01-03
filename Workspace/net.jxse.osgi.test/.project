@@ -31,10 +31,5 @@
 			<type>2</type>
 			<location>P:/GitHub/Chaupal/jxse</location>
 		</link>
-		<link>
-			<name>src</name>
-			<type>2</type>
-			<location>P:/GitHub/Chaupal/jxse/src/test/java</location>
-		</link>
 	</linkedResources>
 </projectDescription>

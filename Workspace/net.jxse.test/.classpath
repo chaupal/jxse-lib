@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry excluding="net/jxse/impl/osgi/|net/jxse/osgi/|net/jxta/impl/endpoint/netty/WelcomeMessageMatcher.java|net/jxta/impl/endpoint/servlethttp/CharacteriseHttpMessageReceiverTest.java|net/jxta/logging/LoggingTest.java" kind="src" path="java"/>
 	<classpathentry kind="src" path="resources"/>
+	<classpathentry kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmock-2.5.1/jmock-junit3-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmock-2.5.1/jmock-legacy-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmock-2.5.1/jmock-2.5.1.jar"/>

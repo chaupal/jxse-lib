@@ -78,16 +78,16 @@ public class _500_Customized_Advertisement_Example extends Advertisement {
 
     }
 
-    public _500_Customized_Advertisement_Example(Element Root) {
+    public _500_Customized_Advertisement_Example(Element<?> Root) {
         
         // Retrieving the elements
-        TextElement MyTextElement = (TextElement) Root;
+        TextElement<?> MyTextElement = (TextElement<?>) Root;
 
-        Enumeration TheElements = MyTextElement.getChildren();
+        Enumeration<?> TheElements = MyTextElement.getChildren();
         
         while (TheElements.hasMoreElements()) {
             
-            TextElement TheElement = (TextElement) TheElements.nextElement();
+            TextElement<?> TheElement = (TextElement<?>) TheElements.nextElement();
             
             ProcessElement(TheElement);
             
@@ -95,7 +95,7 @@ public class _500_Customized_Advertisement_Example extends Advertisement {
 
     }
     
-    public void ProcessElement(TextElement TheElement) {
+    public void ProcessElement(TextElement<?> TheElement) {
         
         String TheElementName = TheElement.getName();
         String TheTextValue = TheElement.getTextValue();
@@ -146,7 +146,7 @@ public class _500_Customized_Advertisement_Example extends Advertisement {
                 TheMimeMediaType, AdvertisementType);
         
         // Adding elements
-        Element MyTempElement;
+        Element<?> MyTempElement;
         
         MyTempElement = TheResult.createElement(NameTag, TheName);
         TheResult.appendChild(MyTempElement);
@@ -223,7 +223,7 @@ public class _500_Customized_Advertisement_Example extends Advertisement {
             return new _500_Customized_Advertisement_Example();
         }
 
-        public Advertisement newInstance(net.jxta.document.Element root) {
+        public Advertisement newInstance(net.jxta.document.Element<?> root) {
             return new _500_Customized_Advertisement_Example(root);
         }
         

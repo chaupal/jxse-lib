@@ -32,26 +32,13 @@ Import-Package: net.jxta.access,
  net.jxta.peergroup,
  net.jxta.peergroup.core,
  net.jxta.pipe,
- net.jxta.platform,
  net.jxta.protocol,
  net.jxta.rendezvous,
  net.jxta.resolver,
  net.jxta.service,
+ org.eclipse.core.runtime;version="3.4.0",
  org.osgi.framework;version="1.8.0"
-Service-Component: OSGI-INF/component.xml
-Export-Package: net.jxse.configuration;
-  uses:="net.jxta.platform,
-   net.jxta.peer,
-   net.jxta.peergroup,
-   net.jxta.configuration",
- net.jxta.impl.platform;
-  uses:="net.jxta.id,
-   net.jxta.protocol,
-   net.jxta.exception,
-   net.jxta.impl.util.threads,
-   net.jxta.platform.core,
-   net.jxta.impl.cm,
-   net.jxta.impl.peergroup,
-   net.jxta.peergroup,
-   net.jxta.impl.protocol",
+Service-Component: OSGI-INF/module.xml
+Export-Package: net.jxse.configuration,
+ net.jxta.impl.platform,
  net.jxta.platform

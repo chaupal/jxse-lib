@@ -1,4 +1,4 @@
-package net.jxse.test;
+package net.jxse.osgi.test;
 
 import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
@@ -17,6 +17,8 @@ public class Activator implements BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
+		//net.jxta.LoggingTest test = new LoggingTest();
+		//test.callerIsInClientCode();
 	}
 
 	/*
