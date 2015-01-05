@@ -1,6 +1,10 @@
 package org.jxse.jetty;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
+
+import org.osgi.framework.Bundle;
 
 import net.jxta.impl.endpoint.servlethttp.ServletHttpTransportImpl;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
@@ -8,9 +12,13 @@ import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
+import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
 public class JettyHttpBuilder extends AbstractModuleBuilder<ServletHttpTransportImpl> implements IJxtaModuleBuilder<ServletHttpTransportImpl>{
+
+	private static final String S_BUNDLE_ID = "net.jxse.osgi.platform";
+	private static final String S_URL_BASE = "/bin/net/jxta/impl/platform/";
 
 	public JettyHttpBuilder() {
 		super.addDescriptor( new JettyHttpDescriptor());
@@ -57,18 +65,39 @@ public class JettyHttpBuilder extends AbstractModuleBuilder<ServletHttpTransport
 			return true;
 		}
 
-		@Override
-		public URL getResourceURL() {
-			// TODO Auto-generated method stub
-			return null;
+		/**
+		 * Get the resource URL
+		 * @return
+		 */
+		public URL getResourceURL(){
+			Bundle bundle = org.eclipse.core.runtime.Platform.getBundle( S_BUNDLE_ID );
+			String str = S_URL_BASE + "ShadowPeerGroup.class";// + Platform.class.getPackage().getName() + "/";
+			URL url = bundle.getEntry( str);
+			return url;
 		}
-		
 		
 	}
 
-	@Override
-	public IJxtaModuleDescriptor getDescriptor(ModuleImplAdvertisement adv) {
-		// TODO Auto-generated method stub
+	public IJxtaModuleDescriptor[] getDescriptors(ModuleSpecID specID) {
+		Collection<IJxtaModuleDescriptor> results = new ArrayList<IJxtaModuleDescriptor>();
+		for( IModuleDescriptor descriptor: super.getSupportedDescriptors() ){
+			if( !( descriptor instanceof IJxtaModuleDescriptor ))
+				continue;
+			IJxtaModuleDescriptor jdesc = (IJxtaModuleDescriptor) descriptor;
+			if( specID.equals( jdesc.getModuleSpecID() ))
+				results.add( jdesc );
+		}
+		return results.toArray( new IJxtaModuleDescriptor[ results.size()]);
+	}
+
+	public IJxtaModuleDescriptor getDescriptor(ModuleImplAdvertisement implAdv) {
+		for( IModuleDescriptor descriptor: super.getSupportedDescriptors() ){
+			if( !( descriptor instanceof IJxtaModuleDescriptor ))
+				continue;
+			IJxtaModuleDescriptor jdesc = (IJxtaModuleDescriptor) descriptor;
+			if( implAdv.equals( jdesc.getModuleImplAdvertisement() ))
+				return jdesc;
+		}
 		return null;
 	}
 

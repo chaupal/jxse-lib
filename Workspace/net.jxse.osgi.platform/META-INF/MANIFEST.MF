@@ -36,9 +36,11 @@ Import-Package: net.jxta.access,
  net.jxta.rendezvous,
  net.jxta.resolver,
  net.jxta.service,
+ net.jxta.util.cardinality,
  org.eclipse.core.runtime;version="3.4.0",
  org.osgi.framework;version="1.8.0"
 Service-Component: OSGI-INF/module.xml
 Export-Package: net.jxse.configuration,
+ net.jxse.osgi.platform,
  net.jxta.impl.platform,
  net.jxta.platform

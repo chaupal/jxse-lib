@@ -1,25 +1,26 @@
 package net.jxse.osgi.platform;
 
 import java.net.URL;
-
-import org.osgi.framework.Bundle;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
 import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
+import net.jxta.impl.modulemanager.ImplAdvertisementComparable;
 import net.jxta.impl.platform.Platform;
 import net.jxta.impl.platform.ShadowPeerGroup;
 import net.jxta.impl.platform.StdPeerGroup;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
+import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
+import net.jxta.util.cardinality.Cardinality;
+import net.jxta.util.cardinality.Cardinality.Denominator;
 
 public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJxtaModuleBuilder<Module>{
 
-	private static final String S_BUNDLE_ID = "net.jxse.osgi.platform";
-	private static final String S_URL_BASE = "/bin/net/jxta/impl/platform/";
-	
 	public PlatformBuilder() {
 		super.addDescriptor( new PlatformDescriptor() );
 		super.addDescriptor( new ShadowPeerGroupDescriptor() );
@@ -39,10 +40,23 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 			if( !( descriptor instanceof IJxtaModuleDescriptor ))
 				continue;
 			IJxtaModuleDescriptor jd = (IJxtaModuleDescriptor) descriptor;
-			if( adv.equals( jd.getModuleImplAdvertisement()))
+			ImplAdvertisementComparable comp = new ImplAdvertisementComparable( adv );
+			if( comp.compareTo( jd.getModuleImplAdvertisement()) == 0)
 				return jd;
 		}
 		return null;
+	}
+
+	public IJxtaModuleDescriptor[] getDescriptors(ModuleSpecID specID) {
+		Collection<IJxtaModuleDescriptor> results = new ArrayList<IJxtaModuleDescriptor>();
+		for( IModuleDescriptor descriptor: super.getSupportedDescriptors() ){
+			if( !( descriptor instanceof IJxtaModuleDescriptor ))
+				continue;
+			IJxtaModuleDescriptor jdesc = (IJxtaModuleDescriptor) descriptor;
+			if( specID.equals( jdesc.getModuleSpecID() ))
+				results.add( jdesc );
+		}
+		return results.toArray( new IJxtaModuleDescriptor[ results.size()]);
 	}
 
 	public Class<? extends Module> getRepresentedClass( IModuleDescriptor descriptor ){
@@ -66,7 +80,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		if( descriptor instanceof ShadowPeerGroupDescriptor ){
 			ShadowPeerGroupDescriptor pd = (ShadowPeerGroupDescriptor) descriptor;
 			pd.prepare();
-			return buildPlatform();
+			return new ShadowPeerGroup();
 		}
 		if( descriptor instanceof StandardPeerGroupDescriptor ){
 			StandardPeerGroupDescriptor pd = (StandardPeerGroupDescriptor) descriptor;
@@ -100,7 +114,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		private static final String S_VERSION ="2.8.0"; 
 
 		PlatformDescriptor() {
-			super();
+			super( Cardinality.create( Denominator.ONE ));
 		}
 
 		/**
@@ -108,10 +122,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		 * @return
 		 */
 		public URL getResourceURL(){
-			Bundle bundle = org.eclipse.core.runtime.Platform.getBundle( S_BUNDLE_ID );
-			String str = S_URL_BASE + "Platform.class";// + Platform.class.getPackage().getName() + "/";
-			URL url = bundle.getEntry( str);
-			return url;
+			return getResource( PlatformBuilder.class, Platform.class.getName());
 		}
 
 		protected void prepare(){
@@ -142,7 +153,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		private static final String S_VERSION ="2.8.0"; 
 
 		ShadowPeerGroupDescriptor() {
-			super();
+			super( Cardinality.create( Denominator.ONE ));
 		}
 
 		/**
@@ -150,10 +161,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		 * @return
 		 */
 		public URL getResourceURL(){
-			Bundle bundle = org.eclipse.core.runtime.Platform.getBundle( S_BUNDLE_ID );
-			String str = S_URL_BASE + "ShadowPeerGroup.class";// + Platform.class.getPackage().getName() + "/";
-			URL url = bundle.getEntry( str);
-			return url;
+			return getResource( ShadowPeerGroup.class, Platform.class.getName());
 		}
 
 		protected void prepare(){
@@ -170,7 +178,6 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 			super.setImplAdv( ShadowPeerGroup.getDefaultModuleImplAdvertisement() );
 			return true;
 		}
-
 	}
 
 	/**
@@ -186,7 +193,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		private static final String S_VERSION ="2.8.0"; 
 
 		StandardPeerGroupDescriptor() {
-			super();
+			super( Cardinality.create( Denominator.ONE ));
 		}
 
 		/**
@@ -194,10 +201,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		 * @return
 		 */
 		public URL getResourceURL(){
-			Bundle bundle = org.eclipse.core.runtime.Platform.getBundle( S_BUNDLE_ID );
-			String str = S_URL_BASE + "StdPeerGroup.class";// + Platform.class.getPackage().getName() + "/";
-			URL url = bundle.getEntry( str);
-			return url;
+			return getResource( ShadowPeerGroup.class, StdPeerGroup.class.getName());
 		}
 
 		protected void prepare(){

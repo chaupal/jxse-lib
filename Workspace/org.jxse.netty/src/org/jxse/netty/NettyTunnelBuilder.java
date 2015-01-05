@@ -1,6 +1,8 @@
 package org.jxse.netty;
 
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Collection;
 
 import net.jxta.impl.endpoint.netty.NettyTransport;
 import net.jxta.impl.endpoint.netty.http.NettyHttpTunnelTransport;
@@ -10,6 +12,7 @@ import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
+import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
 public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements IJxtaModuleBuilder<Module> {
@@ -32,6 +35,36 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements
 			return new NettyHttpTunnelTransport();
 		if( descriptor instanceof NettyTcpDescriptor )
 			return new NettyTransport();
+		return null;
+	}
+
+	public IJxtaModuleDescriptor[] getDescriptors(ModuleSpecID specID) {
+		Collection<IJxtaModuleDescriptor> results = new ArrayList<IJxtaModuleDescriptor>();
+		for( IModuleDescriptor descriptor: super.getSupportedDescriptors() ){
+			if( !( descriptor instanceof IJxtaModuleDescriptor ))
+				continue;
+			IJxtaModuleDescriptor jdesc = (IJxtaModuleDescriptor) descriptor;
+			if( specID.equals( jdesc.getModuleSpecID() ))
+				results.add( jdesc );
+		}
+		return results.toArray( new IJxtaModuleDescriptor[ results.size()]);
+	}
+
+	public IJxtaModuleDescriptor getDescriptor(ModuleImplAdvertisement implAdv) {
+		for( IModuleDescriptor descriptor: super.getSupportedDescriptors() ){
+			if( !( descriptor instanceof IJxtaModuleDescriptor ))
+				continue;
+			IJxtaModuleDescriptor jdesc = (IJxtaModuleDescriptor) descriptor;
+			if( implAdv.equals( jdesc.getModuleImplAdvertisement() ))
+				return jdesc;
+		}
+		return null;
+	}
+
+	@Override
+	public Class<? extends Module> getRepresentedClass(
+			IModuleDescriptor descriptor) {
+		// TODO Auto-generated method stub
 		return null;
 	}
 
@@ -106,21 +139,6 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements
 		public URL getResourceURL() {
 			// TODO Auto-generated method stub
 			return null;
-		}				
-
-	
-	}
-
-	@Override
-	public IJxtaModuleDescriptor getDescriptor(ModuleImplAdvertisement adv) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Class<? extends Module> getRepresentedClass(
-			IModuleDescriptor descriptor) {
-		// TODO Auto-generated method stub
-		return null;
+		}					
 	}
 }
