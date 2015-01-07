@@ -1,7 +1,5 @@
 package org.jxse.h2;
 
-import java.net.URL;
-
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
 import net.jxta.module.IModuleDescriptor;
@@ -51,13 +49,5 @@ public class H2JdbcBuilder extends AbstractModuleBuilder<Module> {
 		public boolean onInitialised() {
 			return true;
 		}
-
-		@Override
-		public URL getResourceURL() {
-			// TODO Auto-generated method stub
-			return null;
-		}				
-
 	}
-
 }

@@ -7,15 +7,15 @@ import java.util.Collection;
 import org.osgi.framework.Bundle;
 
 import net.jxta.impl.endpoint.servlethttp.ServletHttpTransportImpl;
-import net.jxta.impl.modulemanager.AbstractModuleBuilder;
+import net.jxta.impl.modulemanager.AbstractJxtaModuleBuilder;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
-import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
+import net.jxta.module.IJxtaModuleBuilder;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class JettyHttpBuilder extends AbstractModuleBuilder<ServletHttpTransportImpl> implements IJxtaModuleBuilder<ServletHttpTransportImpl>{
+public class JettyHttpBuilder extends AbstractJxtaModuleBuilder<ServletHttpTransportImpl> implements IJxtaModuleBuilder<ServletHttpTransportImpl>{
 
 	private static final String S_BUNDLE_ID = "net.jxse.osgi.platform";
 	private static final String S_URL_BASE = "/bin/net/jxta/impl/platform/";

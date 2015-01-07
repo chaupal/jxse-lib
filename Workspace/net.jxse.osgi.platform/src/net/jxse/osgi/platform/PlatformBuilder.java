@@ -1,12 +1,11 @@
 package net.jxse.osgi.platform;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
-import net.jxta.impl.modulemanager.AbstractModuleBuilder;
-import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
+import net.jxta.impl.modulemanager.AbstractJxtaModuleBuilder;
+import net.jxta.module.IJxtaModuleBuilder;
 import net.jxta.impl.modulemanager.ImplAdvertisementComparable;
 import net.jxta.impl.platform.Platform;
 import net.jxta.impl.platform.ShadowPeerGroup;
@@ -16,10 +15,9 @@ import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
 import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
-import net.jxta.util.cardinality.Cardinality;
 import net.jxta.util.cardinality.Cardinality.Denominator;
 
-public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJxtaModuleBuilder<Module>{
+public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implements IJxtaModuleBuilder<Module>{
 
 	public PlatformBuilder() {
 		super.addDescriptor( new PlatformDescriptor() );
@@ -114,15 +112,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		private static final String S_VERSION ="2.8.0"; 
 
 		PlatformDescriptor() {
-			super( Cardinality.create( Denominator.ONE ));
-		}
-
-		/**
-		 * Get the resource URL
-		 * @return
-		 */
-		public URL getResourceURL(){
-			return getResource( PlatformBuilder.class, Platform.class.getName());
+			super( Denominator.ONE );
 		}
 
 		protected void prepare(){
@@ -153,15 +143,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		private static final String S_VERSION ="2.8.0"; 
 
 		ShadowPeerGroupDescriptor() {
-			super( Cardinality.create( Denominator.ONE ));
-		}
-
-		/**
-		 * Get the resource URL
-		 * @return
-		 */
-		public URL getResourceURL(){
-			return getResource( ShadowPeerGroup.class, Platform.class.getName());
+			super( Denominator.ONE );
 		}
 
 		protected void prepare(){
@@ -193,15 +175,7 @@ public class PlatformBuilder extends AbstractModuleBuilder<Module> implements IJ
 		private static final String S_VERSION ="2.8.0"; 
 
 		StandardPeerGroupDescriptor() {
-			super( Cardinality.create( Denominator.ONE ));
-		}
-
-		/**
-		 * Get the resource URL
-		 * @return
-		 */
-		public URL getResourceURL(){
-			return getResource( ShadowPeerGroup.class, StdPeerGroup.class.getName());
+			super( Denominator.ONE );
 		}
 
 		protected void prepare(){

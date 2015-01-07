@@ -170,3 +170,5 @@ Export-Package: net.jxse,
  org.jmock.lib.concurrent.internal,
  org.jmock.lib.legacy,
  org.jmock.syntax
+Bundle-ActivationPolicy: lazy
+Bundle-Activator: net.jxse.test.Activator

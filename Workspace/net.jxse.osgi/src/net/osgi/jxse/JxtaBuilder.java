@@ -6,10 +6,9 @@ import java.util.Collection;
 import java.util.logging.Logger;
 
 import net.jxta.impl.loader.RefJxtaLoader;
-import net.jxta.impl.modulemanager.AbstractImplAdvModuleDescriptor;
-import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
+import net.jxta.impl.modulemanager.ImplAdvModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractModuleBuilder;
-import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
+import net.jxta.module.IJxtaModuleBuilder;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
@@ -38,6 +37,17 @@ public class JxtaBuilder extends AbstractModuleBuilder<Module> implements IJxtaM
 				logger.warning( S_WRN_DESCRIPTER_NOT_REGISTERED + implAdv.getCode());
 			}
 		}
+	}
+
+	/**
+	 * Convenience method, to initialise the builder on a given impl adv
+	 * @param implAdv
+	 */
+	public void initialise( ModuleImplAdvertisement implAdv ){
+		IModuleDescriptor descriptor = this.getDescriptor(implAdv);
+		if( descriptor == null )
+			return;
+		this.initialise(descriptor);
 	}
 
 	@Override
@@ -88,16 +98,10 @@ public class JxtaBuilder extends AbstractModuleBuilder<Module> implements IJxtaM
 	 * @author Kees
 	 *
 	 */
-	private static class ImplAdvDescriptor extends AbstractImplAdvModuleDescriptor{
-
-		private static final String VERSION = "2.8.0";
+	private static class ImplAdvDescriptor extends ImplAdvModuleDescriptor{
 		
 		protected ImplAdvDescriptor(ModuleImplAdvertisement implAdv ) {
-			super(implAdv, VERSION, getResource( implAdv ));
+			super(implAdv);
 		}
-
-		protected static URL getResource( ModuleImplAdvertisement implAdv ) {
-			return AbstractJxtaModuleDescriptor.getResource( JxtaBuilder.class, implAdv.getCode());
-		}		
 	}
 }

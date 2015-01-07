@@ -1,32 +1,27 @@
 package org.jxse.netty;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
 import net.jxta.impl.endpoint.netty.NettyTransport;
 import net.jxta.impl.endpoint.netty.http.NettyHttpTunnelTransport;
+import net.jxta.impl.modulemanager.AbstractJxtaModuleBuilder;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
-import net.jxta.impl.modulemanager.AbstractModuleBuilder;
-import net.jxta.impl.modulemanager.IJxtaModuleBuilder;
+import net.jxta.module.IJxtaModuleBuilder;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
 import net.jxta.peergroup.core.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements IJxtaModuleBuilder<Module> {
+public class NettyTunnelBuilder extends AbstractJxtaModuleBuilder<Module> implements IJxtaModuleBuilder<Module> {
 
 	public NettyTunnelBuilder() {
 		super.addDescriptor( new NettyHttpDescriptor());
 		super.addDescriptor( new NettyTcpDescriptor());
 	}
 
-	@Override
-	protected boolean onInitBuilder(IModuleDescriptor descriptor) {
-		return true;
-	}
-
+	
 	@Override
 	public Module onBuildModule(IModuleDescriptor descriptor){
 		if( !super.canBuild(descriptor))
@@ -97,12 +92,6 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements
 		public boolean onInitialised(){ 
 			return true;
 		}
-
-		@Override
-		public URL getResourceURL() {
-			// TODO Auto-generated method stub
-			return null;
-		}				
 	}
 
 	/**
@@ -134,11 +123,5 @@ public class NettyTunnelBuilder extends AbstractModuleBuilder<Module> implements
 		public boolean onInitialised()  {
 			return true;
 		}
-
-		@Override
-		public URL getResourceURL() {
-			// TODO Auto-generated method stub
-			return null;
-		}					
 	}
 }
