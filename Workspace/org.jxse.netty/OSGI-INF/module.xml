@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" enabled="true" name="net.jp2p.endpoint.netty">
-   <implementation class="org.jxse.netty.NettyTunnelBuilder"/>
+   <implementation class="net.jxse.netty.NettyTunnelBuilder"/>
    <service servicefactory="true">
       <provide interface="net.jxta.module.IModuleBuilder"/>
    </service>

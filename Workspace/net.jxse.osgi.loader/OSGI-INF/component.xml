@@ -1,8 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" immediate="false" name="net.jxse.osgi.boot">
-   <implementation class="net.jxse.osgi.boot.Component"/>
-   <reference bind="registerBuilder" cardinality="0..n" interface="net.jxta.module.IModuleBuilder" name="net.jxse.osgi.boot.ModuleBuilder" policy="dynamic" unbind="unregisterBuilder"/>
-   <service servicefactory="true">
-      <provide interface="net.jxta.module.IModuleManager"/>
-   </service>
-</scr:component>

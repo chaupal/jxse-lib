@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Netty Bundle for JXSE
-Bundle-SymbolicName: org.jxse.netty
+Bundle-SymbolicName: net.jxse.netty
 Bundle-Version: 2.8.0.v20141124
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
@@ -20,15 +20,18 @@ Import-Package: net.jxta.document,
  net.jxta.peergroup,
  net.jxta.peergroup.core,
  net.jxta.protocol,
- org.jboss.netty.bootstrap;version="3.2.5",
- org.jboss.netty.buffer;version="3.2.5",
- org.jboss.netty.channel;version="3.2.5",
- org.jboss.netty.channel.group;version="3.2.5",
- org.jboss.netty.channel.socket;version="3.2.5",
+ org.jboss.netty.bootstrap;version="[3.2.5,3.10.0)",
+ org.jboss.netty.buffer;version="[3.2.5,3.10.0)",
+ org.jboss.netty.channel;version="[3.2.5,3.10.0)",
+ org.jboss.netty.channel.group;version="[3.2.5,3.10.0)",
+ org.jboss.netty.channel.socket;version="[3.2.5,3.10.0)",
  org.jboss.netty.channel.socket.httptunnel;version="0.92.0",
- org.jboss.netty.channel.socket.nio;version="3.2.5",
- org.jboss.netty.handler.codec.oneone;version="3.2.5",
- org.jboss.netty.handler.timeout;version="3.2.5",
- org.jboss.netty.util;version="3.2.5"
+ org.jboss.netty.channel.socket.nio;version="[3.2.5,3.10.0)",
+ org.jboss.netty.handler.codec.oneone;version="[3.2.5,3.10.0)",
+ org.jboss.netty.handler.timeout;version="[3.2.5,3.10.0)",
+ org.jboss.netty.util;version="[3.2.5,3.10.0)"
 Export-Package: net.jxta.impl.endpoint.netty
 Service-Component: OSGI-INF/module.xml
+Bundle-ClassPath: lib/httptunnel-0.92.jar,
+ .,
+ lib/netty-3.6.2.Final.jar

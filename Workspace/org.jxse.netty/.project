@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <projectDescription>
-	<name>org.jxse.netty</name>
+	<name>net.jxse.netty</name>
 	<comment></comment>
 	<projects>
 	</projects>
@@ -34,7 +34,12 @@
 		<link>
 			<name>java</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/main/java</locationURI>
+			<location>F:/GitHub/Chaupal/jxse/src/main/java</location>
+		</link>
+		<link>
+			<name>netty</name>
+			<type>2</type>
+			<location>F:/GitHub/Chaupal/jxse/lib/netty</location>
 		</link>
 	</linkedResources>
 	<variableList>
@@ -44,7 +49,7 @@
 		</variable>
 		<variable>
 			<name>GITHUB_LOC</name>
-			<value>file:/P:/GitHub</value>
+			<value>file:/F:/GitHub</value>
 		</variable>
 		<variable>
 			<name>JXSE_LOC</name>

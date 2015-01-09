@@ -32,20 +32,20 @@
 	</natures>
 	<linkedResources>
 		<link>
-			<name>jxse</name>
+			<name>java</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/main/java</locationURI>
+			<location>F:/GitHub/Chaupal/jxse/src/main/java</location>
 		</link>
 		<link>
 			<name>resources</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/main/resources</locationURI>
+			<location>F:/GitHub/Chaupal/jxse/src/main/resources</location>
 		</link>
 	</linkedResources>
 	<variableList>
 		<variable>
 			<name>CHAUPAL_LOC</name>
-			<value>file:/P:/GitHub/Chaupal</value>
+			<value>file:/F:/GitHub/Chaupal</value>
 		</variable>
 		<variable>
 			<name>JXSE_LOC</name>

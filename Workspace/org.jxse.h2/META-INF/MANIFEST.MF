@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: H2 Bundle for JXSE
-Bundle-SymbolicName: org.jxse.h2
+Bundle-SymbolicName: net.jxse.h2
 Bundle-Version: 2.8.0.v20141124
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

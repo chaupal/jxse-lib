@@ -11,6 +11,76 @@
       <url>http://chaupal.github.io/</url>
   </organization>
 
+    <description>JXTA technology is a set of open protocols that allow any connected device on the
+        network ranging from cell phones and wireless PDAs to PCs and servers to communicate and
+        collaborate in a P2P manner. JXTA peers create a virtual network where any peer can interact
+        with other peers and resources directly even when some of the peers and resources are behind
+        firewalls and NATs or are on different network transports. JXSE is the Java implementation
+        of the JXTA protocols.
+    </description>
+
+    <issueManagement>
+        <system>Project Issues</system>
+        <url>https://jxta-jxse.dev.java.net/issues/query.cgi</url>
+    </issueManagement>
+
+    <licenses>
+        <license>
+            <name>Apache 2.0 Software License</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0</url>
+            <distribution>repo</distribution>
+        </license>
+    </licenses>
+
+    <mailingLists>
+        <mailingList>
+            <name>announce</name>
+            <subscribe>announce@platform.jxta.org</subscribe>
+            <unsubscribe>announce-unsubscribe@platform.jxta.org</unsubscribe>
+            <archive>https://java.net/nonav/projects/jxta/lists/announce/archive</archive>
+        </mailingList>
+        <mailingList>
+            <name>dev</name>
+            <subscribe>dev@platform.jxta.org</subscribe>
+            <unsubscribe>dev-unsubscribe@platform.jxta.org</unsubscribe>
+            <archive>https://java.net/nonav/projects/jxta/lists/dev/archive</archive>
+        </mailingList>
+        <mailingList>
+            <name>discuss</name>
+            <subscribe>discuss@platform.jxta.org</subscribe>
+            <unsubscribe>discuss-unsubscribe@platform.jxta.org</unsubscribe>
+            <archive>https://java.net/nonav/projects/jxta/lists/discuss/archive</archive>
+        </mailingList>
+    </mailingLists>
+    <developers>
+    </developers>
+
+    <properties>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jetty.version>8.1.16.v20140903</jetty.version>
+    </properties>
+
+    <repositories>
+      <repository>
+        <id>eclipse-luna</id>
+        <url>http://download.eclipse.org/releases/luna/</url>
+        <layout>p2</layout>
+      </repository>
+            <repository>
+            <!-- Repository needed to include the jboss netty library -->
+            <id>repository.jboss.org</id>
+            <url>http://repository.jboss.org/nexus/content/groups/public/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
+        </repository>
+        <repository>
+            <!-- Repository needed to include the jboss netty library -->
+            <id>repository.httptunnel</id>
+            <url>http://bitbucket.org/iainmcgin/netty-httptunnel/raw/tip/repo</url>
+        </repository>
+    </repositories> 
+  
     <dependencies>
         <dependency>
             <groupId>com.madgag</groupId>

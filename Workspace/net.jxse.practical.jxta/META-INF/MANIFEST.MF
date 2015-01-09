@@ -32,7 +32,10 @@ Import-Package: net.jxse.configuration,
  net.jxta.rendezvous,
  net.jxta.service,
  net.jxta.socket,
- net.jxta.util
+ net.jxta.util,
+ net.osgi.jxse,
+ org.eclipse.core.runtime;version="3.4.0",
+ org.osgi.framework;version="1.8.0"
 Bundle-ClassPath: .
 Export-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
  Examples.B_Exploring_Connectivity_Issues,
@@ -47,4 +50,5 @@ Export-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
  Examples.J_JXTA_Multicast_Socket,
  Examples.K_Service,
  Examples.L_Peer_Information,
- Examples.Z_Tools_And_Others
+ Examples.Z_Tools_And_Others,
+ net.jxse.practical.jxta

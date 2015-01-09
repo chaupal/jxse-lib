@@ -1,7 +1,7 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Jetty Bundle for JXSE
-Bundle-SymbolicName: org.jxse.jetty
+Bundle-SymbolicName: net.jxse.jetty
 Bundle-Version: 2.8.0.v20141124
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7

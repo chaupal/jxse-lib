@@ -34,17 +34,17 @@
 		<link>
 			<name>java</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/main/java</locationURI>
+			<location>F:/GitHub/Chaupal/jxse/src/main/java</location>
 		</link>
 		<link>
 			<name>resources</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/main/resources</locationURI>
+			<location>F:/GitHub/Chaupal/jxse/src/main/resources</location>
 		</link>
 		<link>
-			<name>META-INF/services</name>
+			<name>services</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/main/resources/META-INF/services</locationURI>
+			<location>F:/GitHub/Chaupal/jxse/src/main/resources/META-INF/services</location>
 		</link>
 	</linkedResources>
 	<variableList>
@@ -54,7 +54,7 @@
 		</variable>
 		<variable>
 			<name>GITHUB_LOC</name>
-			<value>file:/P:/GitHub</value>
+			<value>file:/F:/GitHub</value>
 		</variable>
 		<variable>
 			<name>JXSE_LOC</name>

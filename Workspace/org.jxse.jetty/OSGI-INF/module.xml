@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="org.jxse.jetty">
-   <implementation class="org.jxse.jetty.JettyHttpBuilder"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="net.jxse.jetty">
+   <implementation class="net.jxse.jetty.JettyHttpBuilder"/>
    <service servicefactory="true">
       <provide interface="net.jxta.module.IModuleBuilder"/>
    </service>
