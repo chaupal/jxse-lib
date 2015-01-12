@@ -46,9 +46,9 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import net.jxta.exception.PeerGroupException;
+import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.peergroup.IModuleDefinitions;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.peergroup.core.JxtaLoaderModuleManager;
 import net.jxta.peergroup.core.Module;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkManager;
@@ -74,16 +74,16 @@ public class JXTA_Bootstrapping {
             System.out.println("\nBefore starting the JXTA network:");
              
             // Trying to retrieve the RendezVous Java class
-            try {
+            //try {
             
                 Class<?> TheRDVClass = null;//manager.findClass(IModuleDefinitions.refRendezvousSpecID);
                 System.out.println(TheRDVClass.toString());
                 
-            } catch (ClassNotFoundException Ex) {
+            //} catch (ClassNotFoundException Ex) {
                 
-                System.out.println("Module class not found");
+            //    System.out.println("Module class not found");
                 
-            }
+            //}
             
             // Trying to retrieve the default rendezvous implementation advertisement
             ModuleImplAdvertisement TheModuleImplAdv = manager.findModuleImplAdvertisement(IModuleDefinitions.refRendezvousSpecID);
@@ -106,16 +106,16 @@ public class JXTA_Bootstrapping {
             System.out.println("\nAfter starting the JXTA network:");
 
             // Trying to retrieve the RendezVous Java class
-            try {
+            //try {
             
-                Class<?> TheRDVClass = manager.findClass(IModuleDefinitions.refRendezvousSpecID);
+                //Class<?> TheRDVClass = null;//TODO CP Fix this manager.findClass(IModuleDefinitions.refRendezvousSpecID);
                 System.out.println(TheRDVClass.toString());
                 
-            } catch (ClassNotFoundException Ex) {
+            //} catch (ClassNotFoundException Ex) {
                 
-                System.out.println("Module class not found");
+             //   System.out.println("Module class not found");
                 
-            }
+            //}
             
             // Trying to retrieve the default rendezvous implementation advertisement
             TheModuleImplAdv = manager.findModuleImplAdvertisement(IModuleDefinitions.refRendezvousSpecID);

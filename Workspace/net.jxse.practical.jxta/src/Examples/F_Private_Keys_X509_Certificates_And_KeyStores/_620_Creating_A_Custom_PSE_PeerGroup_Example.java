@@ -175,6 +175,7 @@ public class _620_Creating_A_Custom_PSE_PeerGroup_Example {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
 
             // Setting the keystore
             MyNetworkConfigurator.setKeyStoreLocation(MyKeyStoreFile.toURI());

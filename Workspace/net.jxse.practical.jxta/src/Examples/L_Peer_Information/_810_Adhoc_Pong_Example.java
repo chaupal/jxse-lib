@@ -77,7 +77,8 @@ public class _810_Adhoc_Pong_Example {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal( Name );
+          
             // Setting more configuration
             MyNetworkConfigurator.setUseMulticast(true);
 

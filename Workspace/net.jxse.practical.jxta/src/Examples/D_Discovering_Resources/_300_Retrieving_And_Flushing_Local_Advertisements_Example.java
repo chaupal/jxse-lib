@@ -84,6 +84,7 @@ public class _300_Retrieving_And_Flushing_Local_Advertisements_Example {
             
             // Retrieving network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Checking if RendezVous_Jack should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();

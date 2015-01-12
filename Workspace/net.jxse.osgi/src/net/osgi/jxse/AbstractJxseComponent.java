@@ -6,8 +6,8 @@ import java.util.concurrent.Executors;
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 
+import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.module.IModuleBuilder;
-import net.jxta.peergroup.core.JxtaLoaderModuleManager;
 import net.jxta.peergroup.core.Module;
 
 /**

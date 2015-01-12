@@ -76,6 +76,7 @@ public class RendezVous_Jack {
             
             // Retrieving the configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal(Name);
             
             // Setting configuration
             MyNetworkConfigurator.setTcpPort(TcpPort);

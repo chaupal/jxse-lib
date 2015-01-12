@@ -73,7 +73,8 @@ public class _210_Creating_A_New_Peer_Example {
            NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(
                     NetworkManager.ConfigMode.EDGE, Name,
                     ConfigurationFile.toURI());
-            
+            MyNetworkManager.getConfigurator().setPrincipal( Name );
+
             // Creating a new peer
             PeerID MyPeerID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID,
                     PeerName.getBytes());

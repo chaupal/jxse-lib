@@ -95,7 +95,8 @@ public class Edge_Jill_The_Customer implements PipeMsgListener {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal( Name );
+           
             // Checking if RendezVous Joe should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();
             String TheSeed = "tcp://" + InetAddress.getLocalHost().getHostAddress() + ":" + RendezVous_Joe_The_Astrologer.TcpPort;

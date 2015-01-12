@@ -77,6 +77,7 @@ public class Edge_Anna {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal(Name);
             
             // Checking if RendezVous_Jack should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();
@@ -93,7 +94,7 @@ public class Edge_Anna {
             // Setting the Peer ID
             Tools.PopInformationMessage(Name, "Setting the peer ID to :\n\n" + PID.toString());
             MyNetworkConfigurator.setPeerID(PID);
-
+            
             // Starting the JXTA network
             Tools.PopInformationMessage(Name, "Start the JXTA network and to wait for a rendezvous\nconnection with "
                     + RendezVous_Jack.Name + " for maximum 2 minutes");

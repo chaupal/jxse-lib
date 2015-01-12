@@ -104,7 +104,8 @@ public class RendezVous_Lidong_The_JXTA_Socket_Server {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal( Name );
+           
             // Setting more configuration
             MyNetworkConfigurator.setTcpPort(TcpPort);
             MyNetworkConfigurator.setTcpEnabled(true);

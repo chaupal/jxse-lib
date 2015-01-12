@@ -46,6 +46,7 @@ public class Relay_Robert {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal(Name_RELAY);
 
             // Setting Configuration
             MyNetworkConfigurator.setUseMulticast(false);

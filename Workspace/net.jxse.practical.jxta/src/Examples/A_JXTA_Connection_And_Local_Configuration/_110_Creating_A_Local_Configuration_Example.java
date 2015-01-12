@@ -76,7 +76,7 @@ public class _110_Creating_A_Local_Configuration_Example {
             Tools.PopInformationMessage(Name, "Setting the peer name");
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setName("My peer name");
-
+            MyNetworkConfigurator.setPrincipal("MyName");
             // Saving persistence
             Tools.PopInformationMessage(Name, "Saving the local configuration in:\n\n"
                     + ConfigurationFile.getCanonicalPath());

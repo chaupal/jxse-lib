@@ -98,6 +98,7 @@ public class RendezVous_Hans_A_Multicast_Participant {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Setting more configuration
             MyNetworkConfigurator.setTcpPort(TcpPort);

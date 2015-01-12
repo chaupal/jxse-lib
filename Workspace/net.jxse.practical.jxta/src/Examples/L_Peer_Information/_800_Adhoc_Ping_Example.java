@@ -77,6 +77,7 @@ public class _800_Adhoc_Ping_Example {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Setting Configuration
             MyNetworkConfigurator.setUseMulticast(true);

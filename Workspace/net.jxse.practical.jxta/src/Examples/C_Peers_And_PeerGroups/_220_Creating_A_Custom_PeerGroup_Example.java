@@ -84,6 +84,7 @@ public class _220_Creating_A_Custom_PeerGroup_Example {
             // Creation of the network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager( NetworkManager.ConfigMode.EDGE, 
                     Name, ConfigurationFile.toURI());
+            MyNetworkManager.getConfigurator().setPrincipal( Name );
 
             // Starting the network
             PeerGroup MyNetPeerGroup = MyNetworkManager.startNetwork();

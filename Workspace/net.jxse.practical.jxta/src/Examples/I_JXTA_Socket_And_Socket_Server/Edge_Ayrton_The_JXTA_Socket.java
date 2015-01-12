@@ -84,6 +84,7 @@ public class Edge_Ayrton_The_JXTA_Socket {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Checking if RendezVous_Lidong_The_JXTA_Socket_Server should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();

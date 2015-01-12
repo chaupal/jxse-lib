@@ -78,7 +78,8 @@ public class Edge_Chihiro {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal(Name);
+           
             // Adding Jack and Aminah as RendezVous seeds
             MyNetworkConfigurator.clearRendezvousSeeds();
             

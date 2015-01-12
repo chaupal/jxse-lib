@@ -1,10 +1,13 @@
 package net.jxse.osgi.platform;
 
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import net.jxta.impl.loader.RefJxtaLoader;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleBuilder;
+import net.jxta.impl.modulemanager.ImplAdvModuleDescriptor;
 import net.jxta.module.IJxtaModuleBuilder;
 import net.jxta.impl.modulemanager.ImplAdvertisementComparable;
 import net.jxta.impl.platform.Platform;
@@ -19,11 +22,51 @@ import net.jxta.util.cardinality.Cardinality.Denominator;
 
 public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implements IJxtaModuleBuilder<Module>{
 
+	//These are skipped
+	private enum PlatformModules{
+		STD_PEERGROUP,
+		SHADOW_PEERGROUP,
+		PLATFORM;
+		
+		@Override
+		public String toString() {
+			String str = super.toString();
+			switch( this ){
+			case STD_PEERGROUP:
+				str = "net.jxta.impl.platform.StdPeerGroup";
+				break;
+			case SHADOW_PEERGROUP:
+				str = "net.jxta.impl.platform.ShadowPeerGroup";
+				break;
+			case PLATFORM:
+				str = "net.jxta.impl.platform.Platform";
+				break;
+			default:
+				break;
+			}
+			return str;
+		}
+	
+		/**
+		 * Returns true if the code should be included in the given module
+		 * @param code
+		 * @return
+		 */
+		public static boolean isPlatform( String code ){
+			for( PlatformModules sm: values() ){
+				if( !sm.toString().equals( code ))
+					return true;
+			}
+			return false;
+		}
+	}
+
 	public PlatformBuilder() {
 		super.addDescriptor( new PlatformDescriptor() );
 		super.addDescriptor( new ShadowPeerGroupDescriptor() );
 		super.addDescriptor( new StandardPeerGroupDescriptor() );
 	}
+
 	
 	@Override
 	protected boolean onInitBuilder(IModuleDescriptor descriptor) {
@@ -104,14 +147,14 @@ public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implement
 	 * @author Kees
 	 *
 	 */
-	private static class PlatformDescriptor extends AbstractJxtaModuleDescriptor{
+	private static class StandardPeerGroupDescriptor extends AbstractJxtaModuleDescriptor{
 
-		public static final String S_DESCRIPTION = "Standard World PeerGroup Reference Implementation";
-		public static final String S_IDENTIFIER = "net.jxta.impl.platform.Platform";
-		public static final String S_MODULE_SPEC_ID = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010106";
+		public static final String S_DESCRIPTION = "General Purpose Peer Group Implementation";
+		public static final String S_IDENTIFIER  = "net.jxta.impl.platform.StdPeerGroup";
+		public static final String S_MODULE_SPEC_ID = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010306";
 		private static final String S_VERSION ="2.8.0"; 
 
-		PlatformDescriptor() {
+		StandardPeerGroupDescriptor() {
 			super( Denominator.ONE );
 		}
 
@@ -121,13 +164,24 @@ public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implement
 			super.setDescription( S_DESCRIPTION );
 			super.setVersion( S_VERSION );
 			super.setSpecID( S_MODULE_SPEC_ID );
+
+			//Load the dependencies
+			URL url = PlatformBuilder.class.getResource( "/" + RefJxtaLoader.S_RESOURCE_LOCATION );
+			String hashHex = Integer.toString( this.hashCode(), 16);
+			Collection<ModuleImplAdvertisement> implAdvs = RefJxtaLoader.locateModuleImplementations( hashHex, url );
+			for( ModuleImplAdvertisement implAdv: implAdvs ){
+				if( PlatformModules.isPlatform( implAdv.getCode() ))					
+					continue;
+				super.addDependency( new ImplAdvDescriptor( implAdv ));
+			}
 		}
 
 		@Override
 		public boolean onInitialised() {
-			super.setImplAdv( Platform.getDefaultModuleImplAdvertisement() );
+			super.setImplAdv( StdPeerGroup.getDefaultModuleImplAdvertisement() );
 			return true;
-		}		
+		}
+
 	}
 
 	/**
@@ -152,8 +206,19 @@ public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implement
 			super.setDescription( S_DESCRIPTION );
 			super.setVersion( S_VERSION );
 			super.setSpecID( S_MODULE_SPEC_ID );
-		}
 
+			//Load the dependencies
+			URL url = PlatformBuilder.class.getResource( "/" + RefJxtaLoader.S_RESOURCE_LOCATION );
+			String hashHex = Integer.toString( this.hashCode(), 16);
+			Collection<ModuleImplAdvertisement> implAdvs = RefJxtaLoader.locateModuleImplementations( hashHex, url );
+			for( ModuleImplAdvertisement implAdv: implAdvs ){
+				if( PlatformModules.isPlatform( implAdv.getCode() )){					
+					if( !StandardPeerGroupDescriptor.S_IDENTIFIER.equals(implAdv.getCode()))
+						continue;
+				}
+				super.addDependency( new ImplAdvDescriptor( implAdv ));
+			}
+		}
 
 		@Override
 		public boolean onInitialised() {
@@ -167,14 +232,14 @@ public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implement
 	 * @author Kees
 	 *
 	 */
-	private static class StandardPeerGroupDescriptor extends AbstractJxtaModuleDescriptor{
+	private static class PlatformDescriptor extends AbstractJxtaModuleDescriptor{
 
-		public static final String S_DESCRIPTION = "General Purpose Peer Group Implementation";
-		public static final String S_IDENTIFIER  = "net.jxta.impl.platform.StdPeerGroup";
-		public static final String S_MODULE_SPEC_ID = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010306";
+		public static final String S_DESCRIPTION = "Standard World PeerGroup Reference Implementation";
+		public static final String S_IDENTIFIER = "net.jxta.impl.platform.Platform";
+		public static final String S_MODULE_SPEC_ID = "urn:jxta:uuid-deadbeefdeafbabafeedbabe000000010106";
 		private static final String S_VERSION ="2.8.0"; 
 
-		StandardPeerGroupDescriptor() {
+		PlatformDescriptor() {
 			super( Denominator.ONE );
 		}
 
@@ -184,14 +249,41 @@ public class PlatformBuilder extends AbstractJxtaModuleBuilder<Module> implement
 			super.setDescription( S_DESCRIPTION );
 			super.setVersion( S_VERSION );
 			super.setSpecID( S_MODULE_SPEC_ID );
-		}
 
+			//Load the dependencies
+			URL url = PlatformBuilder.class.getResource( "/" + RefJxtaLoader.S_RESOURCE_LOCATION );
+			String hashHex = Integer.toString( this.hashCode(), 16);
+			Collection<ModuleImplAdvertisement> implAdvs = RefJxtaLoader.locateModuleImplementations( hashHex, url );
+			for( ModuleImplAdvertisement implAdv: implAdvs ){
+				if( PlatformModules.isPlatform( implAdv.getCode() )){					
+					if( !StandardPeerGroupDescriptor.S_IDENTIFIER.equals(implAdv.getCode()))
+						continue;
+					if( !ShadowPeerGroupDescriptor.S_IDENTIFIER.equals(implAdv.getCode()))
+						continue;
+				}
+				super.addDependency( new ImplAdvDescriptor( implAdv ));
+			}
+
+		}
 
 		@Override
 		public boolean onInitialised() {
-			super.setImplAdv( StdPeerGroup.getDefaultModuleImplAdvertisement() );
+			super.setImplAdv( Platform.getDefaultModuleImplAdvertisement() );
 			return true;
-		}
-
+		}		
 	}
+
+
+	/**
+	 * Create a descriptor from the given impl advertisement
+	 * @author Kees
+	 *
+	 */
+	private static class ImplAdvDescriptor extends ImplAdvModuleDescriptor{
+		
+		protected ImplAdvDescriptor(ModuleImplAdvertisement implAdv ) {
+			super(implAdv);
+		}
+	}
+
 }

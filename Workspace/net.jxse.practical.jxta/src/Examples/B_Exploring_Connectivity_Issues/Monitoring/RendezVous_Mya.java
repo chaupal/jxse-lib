@@ -45,7 +45,8 @@ public class RendezVous_Mya {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-
+            MyNetworkConfigurator.setPrincipal( Name_RDV );
+            
             // Setting Configuration
             MyNetworkConfigurator.setUseMulticast(false);
 

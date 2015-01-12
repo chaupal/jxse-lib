@@ -93,6 +93,7 @@ public class _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Exam
             // Saving modifications
             Tools.PopInformationMessage(Name, "Saving configuration at:\n\n"
                     + ConfigurationFile.getCanonicalPath());
+            MyNetworkConfigurator.setPrincipal( NewName );
             MyNetworkConfigurator.save();
             
         } catch (IOException Ex) {

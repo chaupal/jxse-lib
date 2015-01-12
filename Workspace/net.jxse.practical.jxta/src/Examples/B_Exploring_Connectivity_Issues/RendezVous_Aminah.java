@@ -76,7 +76,8 @@ public class RendezVous_Aminah {
             
             // Retrieving the configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal(Name);
+           
             // Setting configuration
             MyNetworkConfigurator.setTcpPort(TcpPort);
             MyNetworkConfigurator.setTcpEnabled(true);

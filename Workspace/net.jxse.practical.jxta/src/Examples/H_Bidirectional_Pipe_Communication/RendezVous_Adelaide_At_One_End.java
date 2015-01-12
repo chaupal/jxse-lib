@@ -113,7 +113,8 @@ public class RendezVous_Adelaide_At_One_End implements PipeMsgListener {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal( Name );
+           
             // Setting more configuration
             MyNetworkConfigurator.setTcpPort(TcpPort);
             MyNetworkConfigurator.setTcpEnabled(true);

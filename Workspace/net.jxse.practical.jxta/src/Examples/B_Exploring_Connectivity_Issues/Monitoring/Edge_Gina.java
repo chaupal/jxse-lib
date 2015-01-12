@@ -58,6 +58,7 @@ public class Edge_Gina {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal(Name_EDGE);
 
             // Setting Configuration
             MyNetworkConfigurator.setUseMulticast(false);

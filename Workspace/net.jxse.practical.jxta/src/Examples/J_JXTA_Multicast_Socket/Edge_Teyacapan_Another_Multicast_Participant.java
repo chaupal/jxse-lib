@@ -79,6 +79,7 @@ public class Edge_Teyacapan_Another_Multicast_Participant {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Checking if RendezVous_Hans_A_Multicast_Participant should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();

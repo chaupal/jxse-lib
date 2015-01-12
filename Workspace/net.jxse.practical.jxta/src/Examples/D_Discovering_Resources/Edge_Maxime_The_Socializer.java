@@ -114,6 +114,7 @@ public class Edge_Maxime_The_Socializer implements DiscoveryListener {
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Checking if RendezVous_Jack should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();

@@ -93,7 +93,8 @@ public class Edge_Quinisela_At_The_Other_End implements PipeMsgListener {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            MyNetworkConfigurator.setPrincipal( Name );
+         
             // Checking if RendezVous_Adelaide_At_One_End should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();
             String TheSeed = "tcp://" + InetAddress.getLocalHost().getHostAddress() + ":" + RendezVous_Adelaide_At_One_End.TcpPort;

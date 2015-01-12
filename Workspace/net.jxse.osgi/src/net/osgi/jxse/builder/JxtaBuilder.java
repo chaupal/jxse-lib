@@ -17,7 +17,56 @@ import net.jxta.protocol.ModuleImplAdvertisement;
 
 public class JxtaBuilder extends AbstractModuleBuilder<Module> implements IJxtaModuleBuilder<Module>{
 
-	private static String S_WRN_DESCRIPTER_NOT_REGISTERED = "THe descriptor is not registered because the class was not found on the class path: ";
+	//These are skipped
+	private enum SkippedModules{
+		STD_PEERGROUP,
+		SHADOW_PEERGROUP,
+		PLATFORM,
+		NETTY_TRANSPORT,
+		NETTY_HTTP_TUNNEL_TRANSPORT,
+		SERVLET_HTTP;
+
+		@Override
+		public String toString() {
+			String str = super.toString();
+			switch( this ){
+			case STD_PEERGROUP:
+				str = "net.jxta.impl.platform.StdPeerGroup";
+				break;
+			case SHADOW_PEERGROUP:
+				str = "net.jxta.impl.platform.ShadowPeerGroup";
+				break;
+			case PLATFORM:
+				str = "net.jxta.impl.platform.Platform";
+				break;
+			case NETTY_TRANSPORT:
+				str = "net.jxta.impl.endpoint.netty.NettyTransport";
+				break;
+			case NETTY_HTTP_TUNNEL_TRANSPORT:
+				str = "net.jxta.impl.endpoint.netty.http.NettyHttpTunnelTransport";
+				break;
+			case SERVLET_HTTP:
+				str = "net.jxta.impl.endpoint.servlethttp.ServletHttpTransportImpl";
+				break;
+			default:
+				break;
+			}
+			return str;
+		}
+	
+		/**
+		 * If the given code is contained in the enumeration, the module should be skipped
+		 * @param code
+		 * @return
+		 */
+		public static boolean skip( String code ){
+			for( SkippedModules sm: values() ){
+				if( sm.toString().equals( code ))
+					return true;
+			}
+			return false;
+		}
+	}
 	
 	private Logger logger = Logger.getLogger( JxtaBuilder.class.getName() );
 	
@@ -25,12 +74,17 @@ public class JxtaBuilder extends AbstractModuleBuilder<Module> implements IJxtaM
 		this.prepare();
 	}
 	
+	/**
+	 * Read all the module info from the resources and add them to the builder
+	 */
 	protected void prepare(){
 		String hashHex = Integer.toString( this.hashCode(), 16);
 		URL url = JxtaBuilder.class.getResource( "/" + RefJxtaLoader.S_RESOURCE_LOCATION );
 		Collection<ModuleImplAdvertisement> implAdvs = RefJxtaLoader.locateModuleImplementations( hashHex, url );
 		for( ModuleImplAdvertisement implAdv: implAdvs ){
 			try {
+				if( SkippedModules.skip( implAdv.getCode() ))
+					continue;
 				if( Class.forName(implAdv.getCode(), false, JxtaBuilder.class.getClassLoader()) != null )
 					super.addDescriptor( new ImplAdvDescriptor( implAdv ));
 			} catch (ClassNotFoundException e) {
@@ -84,7 +138,6 @@ public class JxtaBuilder extends AbstractModuleBuilder<Module> implements IJxtaM
 	@Override
 	public Class<? extends Module> getRepresentedClass(
 			IModuleDescriptor descriptor) {
-		// TODO Auto-generated method stub
 		return null;
 	}
 

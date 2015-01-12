@@ -81,6 +81,7 @@ public class RendezVous_Joe_The_Astrologer {
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            MyNetworkConfigurator.setPrincipal( Name );
             
             // Setting more configuration
             MyNetworkConfigurator.setTcpPort(TcpPort);
