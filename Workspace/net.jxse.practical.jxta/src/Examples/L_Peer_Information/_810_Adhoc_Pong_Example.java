@@ -89,6 +89,7 @@ public class _810_Adhoc_Pong_Example {
             // Starting the JXTA network
             Tools.PopInformationMessage(Name, "Start the JXTA network");
             PeerGroup NetPeerGroup = MyNetworkManager.startNetwork();
+            Tools.PopInformationMessage( Name, "Peergroup created: " + NetPeerGroup.getPeerGroupName());
             
             // Stopping the network
             Tools.PopInformationMessage(Name, "Stop the JXTA network");

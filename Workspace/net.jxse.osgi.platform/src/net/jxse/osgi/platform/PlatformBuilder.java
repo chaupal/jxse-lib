@@ -12,7 +12,7 @@ import net.jxta.module.IJxtaModuleBuilder;
 import net.jxta.impl.modulemanager.ImplAdvertisementComparable;
 import net.jxta.impl.platform.Platform;
 import net.jxta.impl.platform.ShadowPeerGroup;
-import net.jxta.impl.platform.StdPeerGroup;
+import net.jxta.impl.peergroup.StdPeerGroup;
 import net.jxta.module.IJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.peergroup.core.Module;
