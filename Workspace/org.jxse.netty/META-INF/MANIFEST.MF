@@ -30,7 +30,8 @@ Import-Package: net.jxta.document,
  org.jboss.netty.handler.codec.oneone;version="[3.2.5,3.10.0)",
  org.jboss.netty.handler.timeout;version="[3.2.5,3.10.0)",
  org.jboss.netty.util;version="[3.2.5,3.10.0)"
-Export-Package: net.jxta.impl.endpoint.netty
+Export-Package: net.jxta.impl.endpoint.netty,
+ org.jboss.netty.handler.timeout
 Service-Component: OSGI-INF/module.xml
 Bundle-ClassPath: lib/httptunnel-0.92.jar,
  .,

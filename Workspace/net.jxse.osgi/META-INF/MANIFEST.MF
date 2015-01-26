@@ -1,8 +1,8 @@
 Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JXSE Osgi Wrapper
-Bundle-SymbolicName: net.jxse.osgi
-Bundle-Version: 1.0.0.v20141109
+Bundle-SymbolicName: net.jxse.osgi;singleton:=true
+Bundle-Version: 2.8.0.v20141109
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Service-Component: OSGI-INF/module.xml

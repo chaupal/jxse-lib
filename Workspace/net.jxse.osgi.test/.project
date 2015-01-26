@@ -20,6 +20,11 @@
 			<arguments>
 			</arguments>
 		</buildCommand>
+		<buildCommand>
+			<name>org.eclipse.pde.ds.core.builder</name>
+			<arguments>
+			</arguments>
+		</buildCommand>
 	</buildSpec>
 	<natures>
 		<nature>org.eclipse.pde.PluginNature</nature>
@@ -30,6 +35,11 @@
 			<name>docs</name>
 			<type>2</type>
 			<location>P:/GitHub/Chaupal/jxse</location>
+		</link>
+		<link>
+			<name>resources</name>
+			<type>2</type>
+			<location>F:/GitHub/Chaupal/jxse/src/main/resources</location>
 		</link>
 	</linkedResources>
 </projectDescription>

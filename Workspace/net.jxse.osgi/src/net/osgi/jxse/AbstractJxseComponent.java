@@ -21,7 +21,7 @@ import net.jxta.peergroup.core.Module;
 public abstract class AbstractJxseComponent implements CommandProvider{
 
 	private JxtaLoaderModuleManager<Module> manager;
-	private static ExecutorService service = Executors.newSingleThreadExecutor();
+	private ExecutorService service = Executors.newSingleThreadExecutor();
 	private boolean started;
 	
 	private Runnable example = new Runnable(){
@@ -43,6 +43,15 @@ public abstract class AbstractJxseComponent implements CommandProvider{
 		this.started = false;
 	}
 	
+	/**
+	 * Get the module manager
+	 * @return
+	 */
+	protected JxtaLoaderModuleManager<Module> getManager() {
+		return manager;
+	}
+
+
 	public void activate(){
 		this.started = true;
 		service.execute(example);

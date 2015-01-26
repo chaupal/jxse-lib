@@ -29,12 +29,22 @@
 		<link>
 			<name>java</name>
 			<type>2</type>
-			<locationURI>JXSE_LOC/src/test/java</locationURI>
+			<locationURI>$%7BCHAUPAL_LOC%7D/jxse/src/test/java</locationURI>
+		</link>
+		<link>
+			<name>jmock-2.5.1</name>
+			<type>2</type>
+			<location>F:/GitHub/Chaupal/jxse/lib/jmock-2.5.1</location>
+		</link>
+		<link>
+			<name>junit</name>
+			<type>2</type>
+			<locationURI>$%7BCHAUPAL_LOC%7D/jxse/lib/junit</locationURI>
 		</link>
 		<link>
 			<name>resources</name>
 			<type>2</type>
-			<location>P:/GitHub/Chaupal/jxse/src/test/resources</location>
+			<locationURI>$%7BCHAUPAL_LOC%7D/jxse/src/test/resources</locationURI>
 		</link>
 	</linkedResources>
 	<variableList>
@@ -44,7 +54,7 @@
 		</variable>
 		<variable>
 			<name>GITHUB_LOC</name>
-			<value>file:/P:/Github</value>
+			<value>file:/F:/Github</value>
 		</variable>
 		<variable>
 			<name>JXSE_LOC</name>
