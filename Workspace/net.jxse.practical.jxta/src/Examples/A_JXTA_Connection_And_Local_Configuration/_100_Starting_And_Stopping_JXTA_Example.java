@@ -45,18 +45,19 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
-import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class _100_Starting_And_Stopping_JXTA_Example {
+public class _100_Starting_And_Stopping_JXTA_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 100";
     
-    public static void main(String[] args) throws ConfiguratorException {
+    public void main(String[] args)  {
         
         try {
 
@@ -67,10 +68,12 @@ public class _100_Starting_And_Stopping_JXTA_Example {
         	NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE, Name, file.toURI() );
             MyNetworkManager.getConfigurator().setPrincipal( Name );
             MyNetworkManager.getConfigurator().setAuthenticationType(Name);
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
             
             // Starting JXTA
             Tools.PopInformationMessage(Name, "Starting JXTA network");
             PeerGroup ConnectedVia = MyNetworkManager.startNetwork();
+            root.addChild( ConnectedVia );
             
             // Diplaying peer group information
             Tools.PopInformationMessage(Name, "Connected via Peer Group: " + ConnectedVia.getPeerGroupName());
@@ -92,10 +95,14 @@ public class _100_Starting_And_Stopping_JXTA_Example {
             Ex.printStackTrace();
                        
         } catch (JxtaException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
     }
-        
+
+	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
 }

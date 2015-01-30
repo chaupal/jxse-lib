@@ -55,15 +55,17 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class RendezVous_Jack {
+public class RendezVous_Jack extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "RendezVous Jack";
     public static final int TcpPort = 9710;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
     
-    public static void main(String[] args) {
+    public void main(String[] args) {
         
         try {
             
@@ -73,7 +75,8 @@ public class RendezVous_Jack {
             // Creation of the network manager
             NetworkManager MyNetworkManager =JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.RENDEZVOUS,
                     Name, ConfigurationFile.toURI());
-            
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+          
             // Retrieving the configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setPrincipal(Name);
@@ -84,15 +87,18 @@ public class RendezVous_Jack {
             MyNetworkConfigurator.setTcpIncoming(true);
             MyNetworkConfigurator.setTcpOutgoing(true);
             MyNetworkConfigurator.setUseMulticast(false);
+            root.addChild( MyNetworkConfigurator);
             
             // Setting the Peer ID
             Tools.PopInformationMessage(Name, "Setting the peer ID to :\n\n" + PID.toString());
             MyNetworkConfigurator.setPeerID(PID);
-
+            root.addChild( MyNetworkConfigurator );
+            
             // Starting the JXTA network
             Tools.PopInformationMessage(Name, "Start the JXTA network");
             PeerGroup NetPeerGroup = MyNetworkManager.startNetwork();
-
+            root.addChild( NetPeerGroup );
+            
             // Waiting for rendezvous connection
             Tools.PopInformationMessage(Name, "Waiting for other peers to connect");
             
@@ -121,6 +127,10 @@ public class RendezVous_Jack {
 			e.printStackTrace();
 		}
 
-    }
+    }	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
 
 }

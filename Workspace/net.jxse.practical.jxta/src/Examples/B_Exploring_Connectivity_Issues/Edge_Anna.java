@@ -56,15 +56,17 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class Edge_Anna {
+public class Edge_Anna extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Edge Anna";
     public static final int TcpPort = 9712;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
     
-    public static void main(String[] args) {
+    public void main(String[] args) {
         
         try {
             
@@ -74,6 +76,7 @@ public class Edge_Anna {
             // Creation of the network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name, ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
@@ -90,6 +93,7 @@ public class Edge_Anna {
             MyNetworkConfigurator.setTcpIncoming(true);
             MyNetworkConfigurator.setTcpOutgoing(true);
             MyNetworkConfigurator.setUseMulticast(false);
+            root.addChild( MyNetworkConfigurator);
 
             // Setting the Peer ID
             Tools.PopInformationMessage(Name, "Setting the peer ID to :\n\n" + PID.toString());
@@ -135,6 +139,10 @@ public class Edge_Anna {
 			e.printStackTrace();
 		}
 
-    }
+    }	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
 
 }

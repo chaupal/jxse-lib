@@ -50,12 +50,14 @@ import net.jxta.exception.JxtaException;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example {
+public class _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example extends AbstractJP2PCompatibility<Object>{
 
     public static final String Name = "Example 120";
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         try {
             
@@ -68,10 +70,11 @@ public class _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Exam
                     NetworkManager.ConfigMode.EDGE,
                     Name,
                     ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
             
             // Checking for configuration existence
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
-            
+            root.addChild( MyNetworkConfigurator);
             if (MyNetworkConfigurator.exists()) {
                 
                 // Found existing configuration
@@ -108,7 +111,11 @@ public class _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Exam
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
     }
-        
+   
+	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
 }

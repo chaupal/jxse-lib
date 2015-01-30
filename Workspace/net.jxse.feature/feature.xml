@@ -84,13 +84,6 @@ END OF TERMS AND CONDITIONS
    </requires>
 
    <plugin
-         id="jxse"
-         download-size="0"
-         install-size="0"
-         version="0.0.0"
-         unpack="false"/>
-
-   <plugin
          id="org.spongycastle.fragment"
          download-size="0"
          install-size="0"
@@ -147,7 +140,14 @@ END OF TERMS AND CONDITIONS
          unpack="false"/>
 
    <plugin
-         id="jxse.source"
+         id="net.jxse.osgi"
+         download-size="0"
+         install-size="0"
+         version="0.0.0"
+         unpack="false"/>
+
+   <plugin
+         id="net.jxse.osgi.platform"
          download-size="0"
          install-size="0"
          version="0.0.0"

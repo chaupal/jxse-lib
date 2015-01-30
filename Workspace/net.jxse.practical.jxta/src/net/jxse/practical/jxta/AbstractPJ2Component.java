@@ -47,6 +47,7 @@ import Examples.L_Peer_Information._810_Adhoc_Pong_Example;
 import Examples.Z_Tools_And_Others.JXTA_Bootstrapping;
 import Examples.Z_Tools_And_Others.Keystore_Creation_Example;
 import net.osgi.jxse.AbstractJxseComponent;
+import net.osgi.jxse.IJP2PCompatibility;
 
 public class AbstractPJ2Component extends AbstractJxseComponent {
 
@@ -134,33 +135,34 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 	@Override
 	protected void onRunJxse() {
 		String[] args = Platform.getCommandLineArgs();
+		IJP2PCompatibility<Object> compat = null;
 		try{
 			switch( example ){
 			case A_100_Starting_And_Stopping_JXTA:
-				_100_Starting_And_Stopping_JXTA_Example.main( args );;
+				compat = new _100_Starting_And_Stopping_JXTA_Example();
 				break;
 			case A_110_Creating_A_Local_Configuration:
-				_110_Creating_A_Local_Configuration_Example.main(args);
+				compat = new _110_Creating_A_Local_Configuration_Example();
 				break;
 			case A_120_Retrieving_Modifying_And_Saving_An_Existing_Configuration:
-				_120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example.main(args);
+				compat =new _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example();
 				break;
 			case A_150_Configuration_Objects:
-				_150_Configuration_Objects.main(args);
+				compat = new _150_Configuration_Objects();
 				break;
 			
 			//B_Exploring_Connectivity_Issues
 			case B_Edge_Anna:
-				Edge_Anna.main(args);
+				compat = new Edge_Anna();
 				break;
 			case B_Edge_Chihiro:
-				Edge_Chihiro.main(args);
+				compat = new Edge_Chihiro();
 				break;
 			case B_RendezVous_Aminah:
-				RendezVous_Aminah.main(args);
+				compat = new  RendezVous_Aminah();
 				break;
 			case B_RendezVous_Jack:
-				RendezVous_Jack.main(args);
+				compat = new RendezVous_Jack();
 				break;
 			
 			//B_Exploring_Connectivity_Issues.Monitoring
@@ -298,6 +300,9 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 			default:
 				break;
 			}
+			
+			if( compat != null )
+				compat.main( args );;
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

@@ -41,18 +41,22 @@
 package Examples.A_JXTA_Connection_And_Local_Configuration;
 
 import Examples.Z_Tools_And_Others.Tools;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+
 import net.jxse.configuration.JxseHttpTransportConfiguration;
 import net.jxse.configuration.JxsePeerConfiguration;
 import net.jxse.configuration.JxseTcpTransportConfiguration;
+import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
 
-public class _150_Configuration_Objects {
+public class _150_Configuration_Objects extends AbstractJP2PCompatibility<Object> {
     
     public static final String Name = "Example 150";
     
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         try {
             
@@ -101,5 +105,11 @@ public class _150_Configuration_Objects {
         }
 
     }
-        
+
+	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
+
 }

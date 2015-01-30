@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Netty Bundle for JXSE
 Bundle-SymbolicName: net.jxse.netty
-Bundle-Version: 2.8.0.v20141124
+Bundle-Version: 2.8.0.v20150128
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: net.jxta.document,

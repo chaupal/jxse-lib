@@ -50,12 +50,14 @@ import net.jxta.exception.JxtaException;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class _110_Creating_A_Local_Configuration_Example {
+public class _110_Creating_A_Local_Configuration_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 110";
     
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         try {
             
@@ -71,12 +73,15 @@ public class _110_Creating_A_Local_Configuration_Example {
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name,
                     ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Setting the peer name 
             Tools.PopInformationMessage(Name, "Setting the peer name");
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setName("My peer name");
             MyNetworkConfigurator.setPrincipal("MyName");
+            root.addChild( MyNetworkConfigurator);
+            
             // Saving persistence
             Tools.PopInformationMessage(Name, "Saving the local configuration in:\n\n"
                     + ConfigurationFile.getCanonicalPath());
@@ -97,5 +102,11 @@ public class _110_Creating_A_Local_Configuration_Example {
 		}
 
     }
-        
+ 
+	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
+
 }

@@ -60,19 +60,22 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.AccessPointAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class Creating_And_Setting_Seeds {
+public class Creating_And_Setting_Seeds extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Creating and setting seeds";
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
     
-    public static void main(String[] args) {
+    public void main(String[] args) {
         
         try {
             
             // Creation of the network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name, ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
@@ -85,7 +88,7 @@ public class Creating_And_Setting_Seeds {
             MyNetworkConfigurator.addSeedRendezvous(TheSeed);
 
             // Creating a document read by seeding URIs
-            XMLDocument MyDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XML_DEFAULTENCODING, "jxta:seeds");
+            XMLDocument<?> MyDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XML_DEFAULTENCODING, "jxta:seeds");
             MyDoc.addAttribute("ordered", "false");
             MyDoc.addAttribute("xmlns:jxta", "http://www.jxta.org");
 
@@ -100,7 +103,7 @@ public class Creating_And_Setting_Seeds {
             MyRouteAdv.setDestPeerID(MyRDV);
             MyRouteAdv.setDest(MyAPA);
 
-            XMLDocument MyRouteAdvDoc = (XMLDocument) MyRouteAdv.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> MyRouteAdvDoc = (XMLDocument<?>) MyRouteAdv.getDocument(MimeMediaType.XMLUTF8);
             Tools.copyElements(MyDoc, MyDoc.getRoot(), MyRouteAdvDoc.getRoot(), true, false);
 
             // Second seed
@@ -114,7 +117,7 @@ public class Creating_And_Setting_Seeds {
             MyRouteAdv2.setDestPeerID(MyRDV2);
             MyRouteAdv2.setDest(MyAPA2);
 
-            XMLDocument MyRouteAdvDoc2 = (XMLDocument) MyRouteAdv2.getDocument(MimeMediaType.APPLICATION_XML_DEFAULTENCODING);
+            XMLDocument<?> MyRouteAdvDoc2 = (XMLDocument<?>) MyRouteAdv2.getDocument(MimeMediaType.APPLICATION_XML_DEFAULTENCODING);
             Tools.copyElements(MyDoc, MyDoc.getRoot(), MyRouteAdvDoc2.getRoot(), true, false);
 
             // Third seed
@@ -128,7 +131,7 @@ public class Creating_And_Setting_Seeds {
             MyRouteAdv3.setDestPeerID(MyRDV3);
             MyRouteAdv3.setDest(MyAPA3);
 
-            XMLDocument MyRouteAdvDoc3 = (XMLDocument) MyRouteAdv3.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> MyRouteAdvDoc3 = (XMLDocument<?>) MyRouteAdv3.getDocument(MimeMediaType.XMLUTF8);
             Tools.copyElements(MyDoc, MyDoc.getRoot(), MyRouteAdvDoc3.getRoot(), true, false);
 
             // Printing the result
@@ -145,5 +148,11 @@ public class Creating_And_Setting_Seeds {
 		}
 
     }
+
+	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
 
 }

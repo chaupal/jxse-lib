@@ -55,15 +55,17 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
+import net.osgi.jxse.AbstractJP2PCompatibility;
+import net.osgi.jxse.IJxtaNode;
 
-public class RendezVous_Aminah {
+public class RendezVous_Aminah extends AbstractJP2PCompatibility<Object> {
     
     public static final String Name = "RendezVous Aminah";
     public static final int TcpPort = 9713;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
     
-    public static void main(String[] args) {
+    public void main(String[] args) {
         
         try {
             
@@ -73,6 +75,7 @@ public class RendezVous_Aminah {
             // Creation of the network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.RENDEZVOUS,
                     Name, ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
             
             // Retrieving the configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
@@ -84,6 +87,7 @@ public class RendezVous_Aminah {
             MyNetworkConfigurator.setTcpIncoming(true);
             MyNetworkConfigurator.setTcpOutgoing(true);
             MyNetworkConfigurator.setUseMulticast(false);
+            root.addChild( MyNetworkConfigurator);
             
             // Setting the Peer ID
             Tools.PopInformationMessage(Name, "Setting the peer ID to :\n\n" + PID.toString());
@@ -120,7 +124,12 @@ public class RendezVous_Aminah {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
     }
+
+	@Override
+	public void deactivate() {
+		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+		MyNetworkManager.stopNetwork();
+	}    
 
 }

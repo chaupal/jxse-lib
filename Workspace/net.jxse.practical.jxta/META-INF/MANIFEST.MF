@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Practical Jxta II Example
 Bundle-SymbolicName: net.jxse.practical.jxta
-Bundle-Version: 1.0.0.v20141013
+Bundle-Version: 1.0.0.v20150130
 Bundle-Vendor: Chaupal
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: net.jxse.configuration,
@@ -35,6 +35,7 @@ Import-Package: net.jxse.configuration,
  net.jxta.socket,
  net.jxta.util,
  net.osgi.jxse,
+ net.osgi.jxse.message,
  org.eclipse.core.runtime;version="3.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ClassPath: .
@@ -53,3 +54,4 @@ Export-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
  Examples.L_Peer_Information,
  Examples.Z_Tools_And_Others,
  net.jxse.practical.jxta
+Service-Component: OSGI-INF/message.xml
