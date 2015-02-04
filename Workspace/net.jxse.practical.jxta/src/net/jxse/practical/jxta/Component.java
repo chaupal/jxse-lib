@@ -3,8 +3,8 @@ package net.jxse.practical.jxta;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import net.osgi.jxse.message.IJxseMessagePrinter;
-import net.osgi.jxse.message.IJxseMessagePrinter.MessageTypes;
+import net.jxse.osgi.message.IJxseMessagePrinter;
+import net.jxse.osgi.message.IJxseMessagePrinter.MessageTypes;
 
 public class Component {
 

@@ -4,4 +4,5 @@
    <service servicefactory="true">
       <provide interface="net.jxta.module.IModuleBuilder"/>
    </service>
+   <property name="JxtaModule" type="String" value="Jetty"/>
 </scr:component>

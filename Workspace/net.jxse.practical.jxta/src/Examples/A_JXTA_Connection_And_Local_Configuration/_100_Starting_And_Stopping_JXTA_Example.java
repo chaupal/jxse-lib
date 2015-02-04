@@ -45,18 +45,22 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.AbstractJP2PCompatibility;
+import net.jxse.osgi.IJxtaNode;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkManager;
-import net.osgi.jxse.AbstractJP2PCompatibility;
-import net.osgi.jxse.IJxtaNode;
 
 public class _100_Starting_And_Stopping_JXTA_Example extends AbstractJP2PCompatibility<Object>{
     
-    public static final String Name = "Example 100";
-    
+	public static final String Name = "Example 100";
+       
+    public _100_Starting_And_Stopping_JXTA_Example() {
+		super( Name );
+	}
+
     public void main(String[] args)  {
         
         try {

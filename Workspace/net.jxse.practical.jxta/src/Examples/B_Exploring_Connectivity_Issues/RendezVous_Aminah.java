@@ -45,6 +45,8 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.AbstractJP2PCompatibility;
+import net.jxse.osgi.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -55,8 +57,6 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
-import net.osgi.jxse.AbstractJP2PCompatibility;
-import net.osgi.jxse.IJxtaNode;
 
 public class RendezVous_Aminah extends AbstractJP2PCompatibility<Object> {
     
@@ -64,8 +64,13 @@ public class RendezVous_Aminah extends AbstractJP2PCompatibility<Object> {
     public static final int TcpPort = 9713;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+ 
     
-    public void main(String[] args) {
+    public RendezVous_Aminah() {
+		super(Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             

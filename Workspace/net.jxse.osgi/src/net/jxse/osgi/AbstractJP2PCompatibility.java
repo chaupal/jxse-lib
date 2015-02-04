@@ -1,4 +1,4 @@
-package net.osgi.jxse;
+package net.jxse.osgi;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -6,8 +6,21 @@ import java.util.Collection;
 public abstract class AbstractJP2PCompatibility<T extends Object> implements
 		IJP2PCompatibility<T> {
 
-	IJxtaNode<T> root;
+	private IJxtaNode<T> root;
+	private String identifier;
 	
+	
+	protected AbstractJP2PCompatibility( String identifier ) {
+		super();
+		this.identifier = identifier;
+	}
+
+
+	@Override
+	public String getIdentifier() {
+		return identifier;
+	}
+
 	/**
 	 * Create the root node
 	 * @param root

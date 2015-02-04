@@ -1,10 +1,10 @@
-package net.osgi.jxse;
+package net.jxse.osgi;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
-import org.eclipse.osgi.framework.console.CommandInterpreter;
-import org.eclipse.osgi.framework.console.CommandProvider;
+import org.osgi.framework.BundleActivator;
+import org.osgi.framework.BundleContext;
 
 import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.module.IModuleBuilder;
@@ -18,12 +18,11 @@ import net.jxta.peergroup.core.Module;
  * @author Kees
  *
  */
-public abstract class AbstractJxseComponent implements CommandProvider{
+public abstract class AbstractJxseActivator implements BundleActivator{
 
 	private JxtaLoaderModuleManager<Module> manager;
 	private ExecutorService service = Executors.newSingleThreadExecutor();
-	private boolean started;
-	
+
 	private Runnable example = new Runnable(){
 
 		@Override
@@ -38,9 +37,25 @@ public abstract class AbstractJxseComponent implements CommandProvider{
 		
 	};
 		
-	public AbstractJxseComponent(){
-		manager = JxtaLoaderModuleManager.getRoot( AbstractJxseComponent.class );	
-		this.started = false;
+	
+	protected AbstractJxseActivator() {
+		super();
+		manager = JxtaLoaderModuleManager.getRoot( this.getClass() );	
+	}
+
+
+	@Override
+	public void stop(BundleContext context) throws Exception {
+		service.shutdown();
+		manager.stopApp();
+		manager = null;		
+	}
+
+	/**
+	 * Activate the example
+	 */
+	public void activate(){
+		service.execute( example );
 	}
 	
 	/**
@@ -49,18 +64,6 @@ public abstract class AbstractJxseComponent implements CommandProvider{
 	 */
 	protected JxtaLoaderModuleManager<Module> getManager() {
 		return manager;
-	}
-
-
-	public void activate(){
-		this.started = true;
-		service.execute(example);
-	}
-	public void deactivate(){
-		this.started = false;
-		service.shutdown();
-		manager.stopApp();
-		manager = null;		
 	}
 
 	public void registerBuilder(IModuleBuilder<Module> builder) {
@@ -73,15 +76,7 @@ public abstract class AbstractJxseComponent implements CommandProvider{
 
 	protected abstract void onRunJxse();
 	
-	public synchronized Object _jxse(CommandInterpreter ci) {
-		ci.println("Bundle " + this.getClass().getPackage() + "has started: " + this.started + "\n");
-		ci.println( "\t and registered the following modules: \n");
-		ci.println( manager.printRegisteredBuilders());
-		ci.println( "\n");
-		return null;
-	}
-	
-	public String getHelp() {
-		return "\tjxse - Provides information about the registered JXSE builders.";
+	public String printRegisteredBuilders(){
+		return this.manager.printRegisteredBuilders();
 	}
 }

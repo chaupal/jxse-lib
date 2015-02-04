@@ -1,9 +1,9 @@
 package net.jxse.osgi.test;
 
+import net.jxse.osgi.AbstractJxseComponent;
 import net.jxse.osgi.test.modulemanager.JxtaLoaderModuleManagerTest;
 import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.peergroup.core.Module;
-import net.osgi.jxse.AbstractJxseComponent;
 
 public class Component extends AbstractJxseComponent{
 

@@ -46,6 +46,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
+import net.jxse.osgi.AbstractJP2PCompatibility;
+import net.jxse.osgi.IJxtaNode;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
@@ -60,15 +62,18 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.AccessPointAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
-import net.osgi.jxse.AbstractJP2PCompatibility;
-import net.osgi.jxse.IJxtaNode;
 
 public class Creating_And_Setting_Seeds extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Creating and setting seeds";
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+ 
     
-    public void main(String[] args) {
+    public Creating_And_Setting_Seeds() {
+		super(Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -79,6 +84,7 @@ public class Creating_And_Setting_Seeds extends AbstractJP2PCompatibility<Object
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
+            root.addChild(MyNetworkConfigurator);
             
             // Checking if RendezVous_Jack should be a seed
             MyNetworkConfigurator.clearRendezvousSeeds();

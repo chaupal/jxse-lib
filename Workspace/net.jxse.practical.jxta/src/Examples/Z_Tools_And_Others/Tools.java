@@ -17,6 +17,7 @@ import java.util.List;
 
 import javax.swing.JOptionPane;
 
+import net.jxse.osgi.message.IJxseMessagePrinter.MessageTypes;
 import net.jxse.practical.jxta.Component;
 import net.jxta.document.Attributable;
 import net.jxta.document.Attribute;
@@ -29,7 +30,6 @@ import net.jxta.peer.PeerID;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.rendezvous.RendezVousService;
-import net.osgi.jxse.message.IJxseMessagePrinter.MessageTypes;
 
 public class Tools {
 

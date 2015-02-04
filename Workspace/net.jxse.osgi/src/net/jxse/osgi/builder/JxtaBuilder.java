@@ -1,4 +1,4 @@
-package net.osgi.jxse.builder;
+package net.jxse.osgi.builder;
 
 import java.net.URL;
 import java.util.ArrayList;

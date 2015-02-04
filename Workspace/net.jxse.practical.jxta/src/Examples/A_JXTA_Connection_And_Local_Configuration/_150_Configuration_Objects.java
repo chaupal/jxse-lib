@@ -49,14 +49,19 @@ import java.io.IOException;
 import net.jxse.configuration.JxseHttpTransportConfiguration;
 import net.jxse.configuration.JxsePeerConfiguration;
 import net.jxse.configuration.JxseTcpTransportConfiguration;
+import net.jxse.osgi.AbstractJP2PCompatibility;
 import net.jxta.platform.NetworkManager;
-import net.osgi.jxse.AbstractJP2PCompatibility;
 
 public class _150_Configuration_Objects extends AbstractJP2PCompatibility<Object> {
     
     public static final String Name = "Example 150";
+  
     
-    public void main(String[] args) {
+    public _150_Configuration_Objects() {
+		super(Name);
+	}
+
+	public void main(String[] args) {
 
         try {
             

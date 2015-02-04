@@ -4,6 +4,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.Platform;
+import org.osgi.framework.BundleContext;
 
 import Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;
 import Examples.A_JXTA_Connection_And_Local_Configuration._110_Creating_A_Local_Configuration_Example;
@@ -46,10 +47,10 @@ import Examples.L_Peer_Information._800_Adhoc_Ping_Example;
 import Examples.L_Peer_Information._810_Adhoc_Pong_Example;
 import Examples.Z_Tools_And_Others.JXTA_Bootstrapping;
 import Examples.Z_Tools_And_Others.Keystore_Creation_Example;
-import net.jxse.osgi.AbstractJxseComponent;
+import net.jxse.osgi.AbstractJxseActivator;
 import net.jxse.osgi.IJP2PCompatibility;
 
-public class AbstractPJ2Component extends AbstractJxseComponent {
+public class AbstractPJ2BundleActivator extends AbstractJxseActivator {
 
 	public enum Examples{
 		//Examples.A_JXTA_Connection_And_Local_Configuration
@@ -125,9 +126,9 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 	}
 	private Examples example;
 
-	private static Logger logger = Logger.getLogger( AbstractPJ2Component.class.getName());
+	private static Logger logger = Logger.getLogger( AbstractPJ2BundleActivator.class.getName());
 
-	protected AbstractPJ2Component( Examples example ) {
+	protected AbstractPJ2BundleActivator( Examples example ) {
 		super();
 		this.example = example;
 	}
@@ -138,6 +139,12 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 		IJP2PCompatibility<?> compat = getJxseCompatible(example);	
 		if( compat != null )
 			compat.main( args );;
+	}
+
+	@Override
+	public void start(BundleContext context) throws Exception {
+		// DO NOTHING
+		
 	}
 
 	/**
@@ -311,8 +318,7 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 				break;
 			default:
 				break;
-			}
-			
+			}			
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();
@@ -320,5 +326,4 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 		}
 		return compat;
 	}
-
 }

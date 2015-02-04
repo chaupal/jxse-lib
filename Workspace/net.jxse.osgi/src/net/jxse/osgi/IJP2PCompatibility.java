@@ -1,7 +1,13 @@
-package net.osgi.jxse;
+package net.jxse.osgi;
 
 public interface IJP2PCompatibility<T extends Object> {
 
+	/**
+	 * Get an identifier for this compatibility object
+	 * @return
+	 */
+	public String getIdentifier();
+	
 	/**
 	 * Get the node which contains the relevant JXTA modules
 	 * @return

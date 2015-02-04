@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="net.jxse.osgi">
-   <implementation class="net.osgi.jxse.builder.JxtaBuilder"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="net.jxse.osgi">
+   <implementation class="net.jxse.osgi.builder.JxtaBuilder"/>
    <service servicefactory="true">
       <provide interface="net.jxta.module.IModuleBuilder"/>
    </service>
+   <property name="JxtaModule" type="String" value="Composite"/>
 </scr:component>

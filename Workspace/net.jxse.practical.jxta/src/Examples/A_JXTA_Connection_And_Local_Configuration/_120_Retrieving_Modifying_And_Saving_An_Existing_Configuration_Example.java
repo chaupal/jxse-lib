@@ -45,19 +45,24 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.AbstractJP2PCompatibility;
+import net.jxse.osgi.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
-import net.osgi.jxse.AbstractJP2PCompatibility;
-import net.osgi.jxse.IJxtaNode;
 
 public class _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example extends AbstractJP2PCompatibility<Object>{
 
     public static final String Name = "Example 120";
 
-    public void main(String[] args) {
+    
+    public _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
 
         try {
             

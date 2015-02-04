@@ -1,4 +1,4 @@
-package net.osgi.jxse.message;
+package net.jxse.osgi.message;
 
 public interface IJxseMessagePrinter {
 

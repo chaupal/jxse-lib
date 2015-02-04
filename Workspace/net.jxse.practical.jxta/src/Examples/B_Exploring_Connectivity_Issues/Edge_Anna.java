@@ -46,6 +46,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import net.jxse.osgi.AbstractJP2PCompatibility;
+import net.jxse.osgi.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -56,8 +58,6 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
-import net.osgi.jxse.AbstractJP2PCompatibility;
-import net.osgi.jxse.IJxtaNode;
 
 public class Edge_Anna extends AbstractJP2PCompatibility<Object>{
     
@@ -65,8 +65,13 @@ public class Edge_Anna extends AbstractJP2PCompatibility<Object>{
     public static final int TcpPort = 9712;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+  
     
-    public void main(String[] args) {
+    public Edge_Anna() {
+		super(Name);
+	}
+    
+	public void main(String[] args) {
         
         try {
             
