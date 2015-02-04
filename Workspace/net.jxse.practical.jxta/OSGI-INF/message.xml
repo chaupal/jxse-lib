@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" name="net.jxse.practical.jxta.message">
    <implementation class="net.jxse.practical.jxta.Component"/>
-   <reference bind="addMessagePrinter" cardinality="0..n" interface="net.osgi.jxse.message.IJxseMessagePrinter" name="IJxseMessagePrinter" policy="static" unbind="removeMessagePrinter"/>
+   <reference bind="addMessagePrinter" cardinality="0..n" interface="net.jxse.osgi.message.IJxseMessagePrinter" name="IJxseMessagePrinter" policy="static" unbind="removeMessagePrinter"/>
 </scr:component>

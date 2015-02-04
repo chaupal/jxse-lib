@@ -3,7 +3,7 @@
    <implementation class="org.jxse.test.Component"/>
    <reference bind="registerBuilder" cardinality="0..n" interface="net.jxta.module.IModuleBuilder" name="org.jxse.test.ModuleBuilder" policy="dynamic" unbind="unregisterBuilder"/>
    <service>
-      <provide interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+      <provide interface="net.jxse.osgi.message.IJxseMessagePrinter"/>
      <!-- <provide interface="net.osgi.jxse.message.IJxseMessagePrinter"/> -->
    </service>
 </scr:component>

@@ -2,7 +2,7 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Practical Jxta II Example
 Bundle-SymbolicName: net.jxse.practical.jxta
-Bundle-Version: 1.0.0.v20150202
+Bundle-Version: 1.0.0.v20150204
 Bundle-Vendor: Chaupal
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: net.jxse.configuration,

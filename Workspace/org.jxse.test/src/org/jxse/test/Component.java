@@ -1,14 +1,14 @@
 package org.jxse.test;
 
 import net.jxse.osgi.AbstractJxseBundleComponent;
+import net.jxse.osgi.message.IJxseMessagePrinter;
 
-public class Component extends AbstractJxseBundleComponent{
+public class Component extends AbstractJxseBundleComponent implements IJxseMessagePrinter{
 
 	public Component() {
 		super( Activator.getActivator() );
 	}
 
-	/*
 	@Override
 	public void printMessage(String[] message) {
 		StringBuffer buffer = new StringBuffer();
@@ -27,5 +27,4 @@ public class Component extends AbstractJxseBundleComponent{
 		System.out.println( "QUESTION?:" + title + "\n\t"+ message );
 		return 1;
 	}
-	*/
 }
