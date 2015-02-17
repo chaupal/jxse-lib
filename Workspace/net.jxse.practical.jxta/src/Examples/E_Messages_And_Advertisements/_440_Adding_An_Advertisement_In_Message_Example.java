@@ -41,19 +41,27 @@
 package Examples.E_Messages_And_Advertisements;
 
 import Examples.Z_Tools_And_Others.Tools;
+
 import java.io.IOException;
+
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.XMLDocument;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.TextDocumentMessageElement;
+import net.jxta.platform.NetworkManager;
 
-public class _440_Adding_An_Advertisement_In_Message_Example {
+public class _440_Adding_An_Advertisement_In_Message_Example extends AbstractJP2PCompatibility<Object>{
 
     public static final String Name = "Example 440";
-    
-    public static void main(String[] args) {
+   
+    public _440_Adding_An_Advertisement_In_Message_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
             
         // Creating a customized advertisement
         _500_Customized_Advertisement_Example MyAdvertisement = new _500_Customized_Advertisement_Example();
@@ -66,7 +74,7 @@ public class _440_Adding_An_Advertisement_In_Message_Example {
         // Creating the message element and adding it
         TextDocumentMessageElement MyTextDocumentMessageElement = new TextDocumentMessageElement(
                 "CUSTOMIZED_ADVERTISEMENT", 
-                (XMLDocument) MyAdvertisement.getDocument(MimeMediaType.XMLUTF8),
+                (XMLDocument<?>) MyAdvertisement.getDocument(MimeMediaType.XMLUTF8),
                 null);
 
         MyMessage.addMessageElement("CUSTOMIZED_ADVERTISEMENT",MyTextDocumentMessageElement);
@@ -76,7 +84,7 @@ public class _440_Adding_An_Advertisement_In_Message_Example {
 
         try {
 
-            XMLDocument TheDocument = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(
+            XMLDocument<?> TheDocument = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(
                 MyMessageElement.getMimeType(),
                 MyMessageElement.getStream());
 
@@ -100,5 +108,11 @@ public class _440_Adding_An_Advertisement_In_Message_Example {
         }
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

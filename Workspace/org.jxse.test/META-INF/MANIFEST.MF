@@ -5,9 +5,7 @@ Bundle-SymbolicName: org.jxse.test
 Bundle-Version: 1.0.0.qualifier
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
- net.jxse.osgi,
  net.jxse.osgi.message,
- net.jxse.osgi.platform,
  net.jxse.practical.jxta,
  net.jxta.exception,
  net.jxta.impl.modulemanager,

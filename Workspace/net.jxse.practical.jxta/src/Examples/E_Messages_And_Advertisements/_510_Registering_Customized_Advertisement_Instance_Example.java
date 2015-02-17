@@ -41,13 +41,19 @@
 package Examples.E_Messages_And_Advertisements;
 
 import Examples.Z_Tools_And_Others.Tools;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.AdvertisementFactory;
+import net.jxta.platform.NetworkManager;
 
-public class _510_Registering_Customized_Advertisement_Instance_Example {
+public class _510_Registering_Customized_Advertisement_Instance_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 510";
 
-    public static void main(String[] args) {
+    public _510_Registering_Customized_Advertisement_Instance_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         // Registering our customized advertisement instance
         AdvertisementFactory.registerAdvertisementInstance(
@@ -59,5 +65,11 @@ public class _510_Registering_Customized_Advertisement_Instance_Example {
                 + _500_Customized_Advertisement_Example.getAdvertisementType());
         
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

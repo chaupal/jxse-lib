@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -19,7 +20,7 @@ import net.jxta.platform.NetworkManager;
 /**
  * Simple RELAY peer.
  */
-public class Relay_Robert {
+public class Relay_Robert extends AbstractJP2PCompatibility<Object> {
 
     // Static
 
@@ -29,10 +30,14 @@ public class Relay_Robert {
     public static final int TcpPort_RELAY = 9715;
     public static final File ConfigurationFile_RELAY = new File("." + System.getProperty("file.separator") + Name_RELAY);
 
+    public Relay_Robert() {
+		super(Name_RELAY);
+	}
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         try {
 
@@ -96,5 +101,11 @@ public class Relay_Robert {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

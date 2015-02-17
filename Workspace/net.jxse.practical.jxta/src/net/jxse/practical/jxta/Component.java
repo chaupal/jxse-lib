@@ -49,7 +49,7 @@ public class Component {
 			return 0;
 		int result = 0;
 		for( IJxseMessagePrinter printer: printers ){
-			result = printer.askQiestion( title, message);
+			result = printer.askQuestion( title, message);
 			if( result != 0 )
 				return result;
 		}

@@ -2,12 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Practical Jxta II Example
 Bundle-SymbolicName: net.jxse.practical.jxta
-Bundle-Version: 1.0.0.v20150204
+Bundle-Version: 1.0.0.v20150217
 Bundle-Vendor: Chaupal
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
 Import-Package: net.jxse.configuration,
- net.jxse.osgi,
+ net.jxse.osgi.compat,
  net.jxse.osgi.message,
+ net.jxse.osgi.platform.activator,
  net.jxta.credential,
  net.jxta.discovery,
  net.jxta.document,
@@ -21,6 +22,7 @@ Import-Package: net.jxse.configuration,
  net.jxta.impl.id.UUID,
  net.jxta.impl.loader,
  net.jxta.impl.membership.pse,
+ net.jxta.impl.modulemanager,
  net.jxta.impl.peergroup,
  net.jxta.impl.platform,
  net.jxta.impl.protocol,
@@ -36,6 +38,7 @@ Import-Package: net.jxse.configuration,
  net.jxta.service,
  net.jxta.socket,
  net.jxta.util,
+ net.jxta.util.cardinality,
  org.eclipse.core.runtime;version="3.4.0",
  org.osgi.framework;version="1.8.0"
 Bundle-ClassPath: .

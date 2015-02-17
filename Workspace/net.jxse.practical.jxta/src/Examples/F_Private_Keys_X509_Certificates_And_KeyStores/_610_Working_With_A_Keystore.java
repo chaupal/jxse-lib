@@ -41,6 +41,7 @@
 package Examples.F_Private_Keys_X509_Certificates_And_KeyStores;
 
 import Examples.Z_Tools_And_Others.Tools;
+
 import java.io.File;
 import java.io.IOException;
 import java.security.KeyStore;
@@ -50,13 +51,16 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.X509Certificate;
+
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.membership.pse.FileKeyStoreManager;
 import net.jxta.impl.membership.pse.PSEUtils;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.platform.NetworkManager;
 
-public class _610_Working_With_A_Keystore {
+public class _610_Working_With_A_Keystore extends AbstractJP2PCompatibility<Object> {
     
     public static final String Name = "Example 610";
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
@@ -86,7 +90,11 @@ public class _610_Working_With_A_Keystore {
         
     }
 
-    public static void main(String[] args) {
+    public _610_Working_With_A_Keystore() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         try {
             
@@ -165,5 +173,11 @@ public class _610_Working_With_A_Keystore {
         }
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

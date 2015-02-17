@@ -41,18 +41,26 @@
 package Examples.E_Messages_And_Advertisements;
 
 import Examples.Z_Tools_And_Others.Tools;
+
 import java.io.IOException;
 import java.io.InputStream;
+
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.MimeMediaType;
 import net.jxta.endpoint.ByteArrayMessageElement;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
+import net.jxta.platform.NetworkManager;
 
-public class _430_Add_ByteArray_Element_And_Retrieve_InputStream_Example {
+public class _430_Add_ByteArray_Element_And_Retrieve_InputStream_Example extends AbstractJP2PCompatibility<Object>{
 
     public static final String Name = "Example 430";
-    
-    public static void main(String[] args) {
+ 
+    public _430_Add_ByteArray_Element_And_Retrieve_InputStream_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         try {
             
@@ -90,5 +98,11 @@ public class _430_Add_ByteArray_Element_And_Retrieve_InputStream_Example {
         } 
         
     }
-        
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
+       
 }

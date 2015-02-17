@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Enumeration;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.discovery.DiscoveryEvent;
 import net.jxta.discovery.DiscoveryListener;
 import net.jxta.discovery.DiscoveryService;
@@ -65,7 +66,7 @@ import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.DiscoveryResponseMsg;
 import net.jxta.protocol.PeerAdvertisement;
 
-public class Edge_Maxime_The_Socializer implements DiscoveryListener {
+public class Edge_Maxime_The_Socializer extends AbstractJP2PCompatibility<Object> implements DiscoveryListener {
     
     public static final String Name = "Edge Maxime, The Socializer";
     public static final int TcpPort = 9721;
@@ -100,8 +101,12 @@ public class Edge_Maxime_The_Socializer implements DiscoveryListener {
         }
         
     }
-    
-    public static void main(String[] args) {
+  
+    public Edge_Maxime_The_Socializer() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         try {
             
@@ -171,13 +176,17 @@ public class Edge_Maxime_The_Socializer implements DiscoveryListener {
             Tools.PopErrorMessage(Name, Ex.toString());
             
         } catch (ConfiguratorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JxtaException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

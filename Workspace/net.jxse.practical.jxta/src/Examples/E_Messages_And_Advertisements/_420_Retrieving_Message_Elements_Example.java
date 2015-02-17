@@ -41,14 +41,20 @@
 package Examples.E_Messages_And_Advertisements;
 
 import Examples.Z_Tools_And_Others.Tools;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
+import net.jxta.platform.NetworkManager;
 
-public class _420_Retrieving_Message_Elements_Example {
+public class _420_Retrieving_Message_Elements_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 420";
-    
-    public static void main(String[] args) {
+ 
+    public _420_Retrieving_Message_Elements_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
 
         // Creating an empty message
         Message MyMessage = new Message();
@@ -78,5 +84,11 @@ public class _420_Retrieving_Message_Elements_Example {
                 + MyMessage.getMessageElement("MyNameSpace", "AddressElement").toString());
         
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

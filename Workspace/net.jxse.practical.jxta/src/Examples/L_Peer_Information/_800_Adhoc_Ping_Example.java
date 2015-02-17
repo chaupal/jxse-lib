@@ -45,6 +45,7 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
@@ -57,14 +58,19 @@ import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 
-public class _800_Adhoc_Ping_Example {
+public class _800_Adhoc_Ping_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 800";
     public static final int TcpPort = 9756;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+  
     
-    public static void main(String[] args) {
+    public _800_Adhoc_Ping_Example() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -131,5 +137,11 @@ public class _800_Adhoc_Ping_Example {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

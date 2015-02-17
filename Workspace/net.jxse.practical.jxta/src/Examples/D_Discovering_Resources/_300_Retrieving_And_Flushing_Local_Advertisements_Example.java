@@ -48,6 +48,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.util.Enumeration;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.exception.ConfiguratorException;
@@ -63,7 +64,7 @@ import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 
-public class _300_Retrieving_And_Flushing_Local_Advertisements_Example {
+public class _300_Retrieving_And_Flushing_Local_Advertisements_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 300";
     
@@ -71,7 +72,11 @@ public class _300_Retrieving_And_Flushing_Local_Advertisements_Example {
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
     
-    public static void main(String[] args) {
+    public _300_Retrieving_And_Flushing_Local_Advertisements_Example() {
+		super(Name);
+	}
+    
+    public void main(String[] args) {
         
         try {
             
@@ -171,4 +176,10 @@ public class _300_Retrieving_And_Flushing_Local_Advertisements_Example {
 
     }
         
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
+
 }

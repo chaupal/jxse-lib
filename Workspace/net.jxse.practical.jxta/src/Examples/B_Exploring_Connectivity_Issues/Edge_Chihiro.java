@@ -47,8 +47,8 @@ import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
 
-import net.jxse.osgi.AbstractJP2PCompatibility;
-import net.jxse.osgi.IJxtaNode;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;

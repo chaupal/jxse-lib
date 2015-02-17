@@ -11,6 +11,7 @@ import java.util.concurrent.TimeUnit;
 
 import javax.swing.JOptionPane;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -26,7 +27,7 @@ import net.jxta.platform.NetworkManager;
 /**
  * Simple EDGE peer connecting via the NetPeerGroup.
  */
-public class Edge_Gina {
+public class Edge_Gina extends AbstractJP2PCompatibility<Object>{
 
     // Static
 
@@ -39,10 +40,14 @@ public class Edge_Gina {
     public static final String ChildPeerGroupName = "Child peer group";
     public static final PeerGroupID ChildPeerGroupID = IDFactory.newPeerGroupID(PeerGroupID.defaultNetPeerGroupID, ChildPeerGroupName.getBytes());
 
+    public Edge_Gina() {
+		super(Name_EDGE);
+	}
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         try {
 
@@ -146,13 +151,16 @@ public class Edge_Gina {
             System.err.println(Ex.toString());
 
         } catch (ConfiguratorException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (JxtaException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 
     }
 
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 }

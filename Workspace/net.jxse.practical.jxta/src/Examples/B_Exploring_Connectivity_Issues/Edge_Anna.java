@@ -46,8 +46,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
-import net.jxse.osgi.AbstractJP2PCompatibility;
-import net.jxse.osgi.IJxtaNode;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -108,7 +108,8 @@ public class Edge_Anna extends AbstractJP2PCompatibility<Object>{
             Tools.PopInformationMessage(Name, "Start the JXTA network and to wait for a rendezvous\nconnection with "
                     + RendezVous_Jack.Name + " for maximum 2 minutes");
             PeerGroup NetPeerGroup = MyNetworkManager.startNetwork();
-            
+            root.addChild( NetPeerGroup);
+           
             // Disabling any rendezvous autostart
             NetPeerGroup.getRendezVousService().setAutoStart(false);
             
@@ -116,15 +117,10 @@ public class Edge_Anna extends AbstractJP2PCompatibility<Object>{
                 
                 Tools.popConnectedRendezvous(NetPeerGroup.getRendezVousService(),Name);
                 
-            } else {
-                
+            } else {          
                 Tools.PopInformationMessage(Name, "Did not connect to a rendezvous");
-
             }
             
-            // Stopping the network
-            Tools.PopInformationMessage(Name, "Stop the JXTA network");
-            MyNetworkManager.stopNetwork();
             
         } catch (IOException Ex) {
             

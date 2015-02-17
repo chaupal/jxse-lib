@@ -46,8 +46,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 
-import net.jxse.osgi.AbstractJP2PCompatibility;
-import net.jxse.osgi.IJxtaNode;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;

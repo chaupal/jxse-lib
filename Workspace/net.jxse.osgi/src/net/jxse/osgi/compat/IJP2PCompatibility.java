@@ -1,4 +1,5 @@
-package net.jxse.osgi;
+package net.jxse.osgi.compat;
+
 
 public interface IJP2PCompatibility<T extends Object> {
 
@@ -14,6 +15,19 @@ public interface IJP2PCompatibility<T extends Object> {
 	 */
 	public IJxtaNode<T> getRoot();
 	
+	/**
+	 * add a compatibility listener
+	 * @param listener
+	 */
+	public void addListener( ICompatibilityListener listener );
+
+
+	/**
+	 * remove a compatibility listener
+	 * @param listener
+	 */
+	public void removeListener( ICompatibilityListener listener );
+
 	/**
 	 * A standard JXTa application is usually run from main, so we allow this
 	 * @param args

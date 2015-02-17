@@ -1,8 +1,9 @@
-package net.jxse.osgi;
+package net.jxse.osgi.internal;
 
 import org.eclipse.osgi.framework.console.CommandInterpreter;
 import org.eclipse.osgi.framework.console.CommandProvider;
 
+import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.module.IModuleBuilder;
 import net.jxta.peergroup.core.Module;
 
@@ -14,38 +15,44 @@ import net.jxta.peergroup.core.Module;
  * @author Kees
  *
  */
-public abstract class AbstractJxseBundleComponent implements CommandProvider{
+public class JxseCommandProvider implements CommandProvider{
 
-	private AbstractJxseActivator activator;
-	private boolean started;
+	private JxtaLoaderModuleManager<Module> manager;
 			
-	protected AbstractJxseBundleComponent( AbstractJxseActivator activator ){
-		this.activator = activator;	
-		this.started = false;
+	public JxseCommandProvider(){
+		manager = JxtaLoaderModuleManager.getRoot( JxseCommandProvider.class, true );	
 	}
 	
-	public void activate(){
-		this.started = true;
-		this.activator.activate();
+	/**
+	 * Get the module manager
+	 * @return
+	 */
+	protected JxtaLoaderModuleManager<Module> getManager() {
+		return manager;
 	}
+
+
+	public void activate(){
+	}
+	
 	public void deactivate(){
-		this.started = false;
+		manager.stopApp();
+		manager = null;		
 	}
 
 	public void registerBuilder(IModuleBuilder<Module> builder) {
-		this.activator.registerBuilder( builder);
+		manager.registerBuilder( builder);
 	}
 
 	public void unregisterBuilder( IModuleBuilder<Module> builder ) {
-		this.activator.unregisterBuilder( builder );
+		manager.unregisterBuilder( builder );
 	}
 
-	public synchronized Object _jxse(CommandInterpreter ci) {
-		ci.println("Bundle " + this.getClass().getPackage() + "has started: " + this.started + "\n");
-		ci.println( "\t and registered the following modules: \n");
-		ci.println( activator.printRegisteredBuilders());
-		ci.println( "\n");
-		return null;
+	public Object _jxse(CommandInterpreter ci) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append( manager.printRegisteredBuilders());
+		buffer.append( "\n");
+		return buffer.toString();
 	}
 	
 	public String getHelp() {

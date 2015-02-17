@@ -49,7 +49,7 @@ import java.io.IOException;
 import net.jxse.configuration.JxseHttpTransportConfiguration;
 import net.jxse.configuration.JxsePeerConfiguration;
 import net.jxse.configuration.JxseTcpTransportConfiguration;
-import net.jxse.osgi.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.platform.NetworkManager;
 
 public class _150_Configuration_Objects extends AbstractJP2PCompatibility<Object> {

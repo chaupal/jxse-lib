@@ -45,6 +45,7 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.Message;
 import net.jxta.exception.ConfiguratorException;
@@ -64,7 +65,7 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 
-public class RendezVous_Chandra_Receiving_Messages implements PipeMsgListener {
+public class RendezVous_Chandra_Receiving_Messages extends AbstractJP2PCompatibility<Object> implements PipeMsgListener {
     
     // PipeService.UnicastType or PipeService.UnicastSecureType or PipeService.PropagateType
     public static final String PipeType = PipeService.UnicastType;
@@ -101,8 +102,12 @@ public class RendezVous_Chandra_Receiving_Messages implements PipeMsgListener {
         return MyPipeAdvertisement;
         
     }
-    
-    public static void main(String[] args) {
+  
+    public RendezVous_Chandra_Receiving_Messages() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -177,5 +182,11 @@ public class RendezVous_Chandra_Receiving_Messages implements PipeMsgListener {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

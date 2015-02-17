@@ -45,8 +45,8 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
-import net.jxse.osgi.AbstractJP2PCompatibility;
-import net.jxse.osgi.IJxtaNode;
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -97,8 +97,7 @@ public class RendezVous_Jack extends AbstractJP2PCompatibility<Object>{
             // Setting the Peer ID
             Tools.PopInformationMessage(Name, "Setting the peer ID to :\n\n" + PID.toString());
             MyNetworkConfigurator.setPeerID(PID);
-            root.addChild( MyNetworkConfigurator );
-            
+             
             // Starting the JXTA network
             Tools.PopInformationMessage(Name, "Start the JXTA network");
             PeerGroup NetPeerGroup = MyNetworkManager.startNetwork();
@@ -108,12 +107,7 @@ public class RendezVous_Jack extends AbstractJP2PCompatibility<Object>{
             Tools.PopInformationMessage(Name, "Waiting for other peers to connect");
             
             // Retrieving connected peers
-            Tools.popConnectedPeers(NetPeerGroup.getRendezVousService(), Name);
-            
-            // Stopping the network
-            Tools.PopInformationMessage(Name, "Stop the JXTA network");
-            MyNetworkManager.stopNetwork();
-            
+            Tools.popConnectedPeers(NetPeerGroup.getRendezVousService(), Name);     
         } catch (IOException Ex) {
             
             // Raised when access to local file and directories caused an error
@@ -134,6 +128,7 @@ public class RendezVous_Jack extends AbstractJP2PCompatibility<Object>{
 
     }	@Override
 	public void deactivate() {
+        Tools.PopInformationMessage(Name, "Stop the JXTA network");
 		NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
 		MyNetworkManager.stopNetwork();
 	}    

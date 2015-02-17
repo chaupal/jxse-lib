@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.exception.ConfiguratorException;
@@ -64,7 +65,7 @@ import net.jxta.protocol.ModuleSpecAdvertisement;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.util.JxtaBiDiPipe;
 
-public class Edge_Jill_The_Customer implements PipeMsgListener {
+public class Edge_Jill_The_Customer extends AbstractJP2PCompatibility<Object> implements PipeMsgListener {
     
     public static final String Name = "Edge Jill, The Customer";
     public static final int TcpPort = 9746;
@@ -82,7 +83,13 @@ public class Edge_Jill_The_Customer implements PipeMsgListener {
         
     }
 
-    public static void main(String[] args) {
+    
+    public Edge_Jill_The_Customer() {
+		super( Name);
+	}
+
+
+	public void main(String[] args) {
         
         try {
             
@@ -182,5 +189,11 @@ public class Edge_Jill_The_Customer implements PipeMsgListener {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

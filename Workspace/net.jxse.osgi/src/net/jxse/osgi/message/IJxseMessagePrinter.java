@@ -32,6 +32,6 @@ public interface IJxseMessagePrinter {
 	 * Ask a question.
 	 * @param message
 	 */
-	public int askQiestion( String title, String message );
+	public int askQuestion( String title, String message );
 
 }

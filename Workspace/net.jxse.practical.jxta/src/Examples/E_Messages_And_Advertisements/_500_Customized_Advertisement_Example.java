@@ -43,6 +43,7 @@ package Examples.E_Messages_And_Advertisements;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
+
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.Document;
@@ -73,9 +74,7 @@ public class _500_Customized_Advertisement_Example extends Advertisement {
     private final static String[] IndexableFields = { IDTag, NameTag };
 
     public _500_Customized_Advertisement_Example() {
-        
-        // Accepting default values
-
+        //super( Name );// Accepting default values
     }
 
     public _500_Customized_Advertisement_Example(Element<?> Root) {

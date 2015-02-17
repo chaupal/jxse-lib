@@ -45,6 +45,7 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.XMLElement;
 import net.jxta.exception.ConfiguratorException;
@@ -65,7 +66,7 @@ import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class _220_Creating_A_Custom_PeerGroup_Example {
+public class _220_Creating_A_Custom_PeerGroup_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 220";
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
@@ -74,7 +75,11 @@ public class _220_Creating_A_Custom_PeerGroup_Example {
     public static final String PeerGroupName = "Custom peer group name";
     public static final PeerGroupID CustPeerGroupID = IDFactory.newPeerGroupID(PeerGroupID.defaultNetPeerGroupID, PeerGroupName.getBytes());
     
-    public static void main(String[] args) {
+    public _220_Creating_A_Custom_PeerGroup_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         try {
             
@@ -158,5 +163,11 @@ public class _220_Creating_A_Custom_PeerGroup_Example {
         return implAdv;
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

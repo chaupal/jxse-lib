@@ -40,16 +40,22 @@
 
 package Examples.C_Peers_And_PeerGroups;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.id.IDFactory;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.pipe.PipeID;
+import net.jxta.platform.NetworkManager;
 
-public class _200_Creating_IDs_Example {
+public class _200_Creating_IDs_Example extends AbstractJP2PCompatibility<Object>{
 
     public static final String Name = "Example 200";
-    
-    public static void main(String[] args) {
+ 
+    public _200_Creating_IDs_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
 
         // Creating a peer group ID and a sub-peer group ID
         PeerGroupID MyPeerGroupID_A = IDFactory.newPeerGroupID();
@@ -81,5 +87,11 @@ public class _200_Creating_IDs_Example {
         System.out.println("Peer of C           : " + MyPeer_C.toString());
 
     }
-        
+ 
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
+
 }

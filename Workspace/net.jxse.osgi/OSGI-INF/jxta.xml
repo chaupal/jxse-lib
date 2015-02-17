@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" deactivate="deactivate" enabled="true" immediate="false" name="net.jxse.osgi.commands">
+   <implementation class="net.jxse.osgi.internal.JxseCommandProvider"/>
+   <reference bind="registerBuilder" cardinality="0..n" interface="net.jxta.module.IModuleBuilder" name="IModuleBuilder" policy="static" unbind="unregisterBuilder"/>
+   <service>
+      <provide interface="org.eclipse.osgi.framework.console.CommandProvider"/>
+   </service></scr:component>

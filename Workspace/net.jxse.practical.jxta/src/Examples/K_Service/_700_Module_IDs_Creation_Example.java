@@ -40,15 +40,22 @@
 
 package Examples.K_Service;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.id.UUID.ModuleClassID;
 import net.jxta.peergroup.core.ModuleSpecID;
+import net.jxta.platform.NetworkManager;
 
-public class _700_Module_IDs_Creation_Example {
+public class _700_Module_IDs_Creation_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 700";
+  
     
-    public static void main(String[] args) {
+    public _700_Module_IDs_Creation_Example() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         // Creating a new random module class ID
         ModuleClassID MyModuleClassID = (ModuleClassID) IDFactory.newModuleClassID();
@@ -61,5 +68,11 @@ public class _700_Module_IDs_Creation_Example {
         System.out.println(MyModuleSpecID.toURI().toString() + "\n");
 
     }
-        
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
+
 }

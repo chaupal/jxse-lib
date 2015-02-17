@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.exception.ConfiguratorException;
@@ -62,7 +63,7 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.util.JxtaBiDiPipe;
 
-public class Edge_Quinisela_At_The_Other_End implements PipeMsgListener {
+public class Edge_Quinisela_At_The_Other_End extends AbstractJP2PCompatibility<Object> implements PipeMsgListener {
     
     public static final String Name = "Edge Quinisela, at the other end";
     public static final int TcpPort = 9725;
@@ -80,7 +81,13 @@ public class Edge_Quinisela_At_The_Other_End implements PipeMsgListener {
         
     }
 
-    public static void main(String[] args) {
+    
+    public Edge_Quinisela_At_The_Other_End() {
+		super( Name);
+	}
+
+
+	public void main(String[] args) {
         
         try {
             
@@ -180,5 +187,11 @@ public class Edge_Quinisela_At_The_Other_End implements PipeMsgListener {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

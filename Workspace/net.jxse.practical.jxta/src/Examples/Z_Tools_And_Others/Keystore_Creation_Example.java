@@ -41,17 +41,20 @@
 package Examples.Z_Tools_And_Others;
 
 import java.io.File;
+
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.impl.membership.pse.FileKeyStoreManager;
 import net.jxta.platform.NetworkManager;
 
-public class Keystore_Creation_Example {
-    
-    public static void main(String args[]) throws Throwable {
+public class Keystore_Creation_Example extends AbstractJP2PCompatibility<Object>{
+
+    private static final String MyKeyStoreFileName = "MyKeyStoreFile";
+
+    public void main(String args[]){
         
         try {
             
             // Preparing data
-            String MyKeyStoreFileName = "MyKeyStoreFile";
             String MyKeyStoreLocation = "." + File.separator + "MyKeyStoreLocation";
             String MyKeyStorePassword = "My Key Store Password";
             String MyKeyStoreProvider = "Me Myself And I";
@@ -90,7 +93,13 @@ public class Keystore_Creation_Example {
     }
 
     public Keystore_Creation_Example() {
-
+    	super( MyKeyStoreFileName );
     }
 
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
+    
 }

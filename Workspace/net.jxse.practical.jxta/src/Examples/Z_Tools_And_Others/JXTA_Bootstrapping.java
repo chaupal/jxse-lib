@@ -45,6 +45,7 @@ import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.peergroup.IModuleDefinitions;
@@ -55,13 +56,13 @@ import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.rendezvous.RendezVousService;
 
-public class JXTA_Bootstrapping {
+public class JXTA_Bootstrapping extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Jxta_Bootstrapping";
 
 	public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
   
-    public static void main(String args[]) throws Throwable {
+    public void main(String args[]) {
         
         try {
             
@@ -148,14 +149,22 @@ public class JXTA_Bootstrapping {
             
         } catch (PeerGroupException Ex) {
             
-            Ex.printStackTrace();
-            
+            Ex.printStackTrace();   
+        }catch( Exception ex ){
+        	ex.printStackTrace();
         }
         
     }
 
     public JXTA_Bootstrapping() {
-
+    	super( Name );
     }
+
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

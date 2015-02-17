@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
@@ -68,7 +69,7 @@ import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaServerSocket;
 
-public class RendezVous_Lidong_The_JXTA_Socket_Server {
+public class RendezVous_Lidong_The_JXTA_Socket_Server extends AbstractJP2PCompatibility<Object> {
     
     // Static attributes
     public static final String Name = "RendezVous Lidong, the JXTA socket server";
@@ -90,8 +91,13 @@ public class RendezVous_Lidong_The_JXTA_Socket_Server {
         return MyPipeAdvertisement;
         
     }
-    
-    public static void main(String[] args) {
+     
+    public RendezVous_Lidong_The_JXTA_Socket_Server() {
+		super( Name);
+	}
+
+
+	public void main(String[] args) {
         
         try {
             
@@ -190,5 +196,11 @@ public class RendezVous_Lidong_The_JXTA_Socket_Server {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

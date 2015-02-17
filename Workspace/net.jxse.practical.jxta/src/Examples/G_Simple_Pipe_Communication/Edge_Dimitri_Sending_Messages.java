@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.InetAddress;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.exception.ConfiguratorException;
@@ -63,7 +64,7 @@ import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 
-public class Edge_Dimitri_Sending_Messages implements OutputPipeListener {
+public class Edge_Dimitri_Sending_Messages extends AbstractJP2PCompatibility<Object> implements OutputPipeListener {
     
     public static final String Name = "Edge Dimitri, Sending Messages";
     public static final int TcpPort = 9723;
@@ -97,7 +98,12 @@ public class Edge_Dimitri_Sending_Messages implements OutputPipeListener {
         
     }    
     
-    public static void main(String[] args) {
+    public Edge_Dimitri_Sending_Messages() {
+		super( Name);
+	}
+
+
+	public void main(String[] args) {
         
         try {
             
@@ -178,5 +184,11 @@ public class Edge_Dimitri_Sending_Messages implements OutputPipeListener {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

@@ -94,8 +94,12 @@ public class Tools {
     }
     
     public static void CheckForRendezVousSeedAddition(String name, String theSeed, NetworkConfigurator TheNC) {
-    	if( Component.printMessage( MessageTypes.QUESTION, name, "Do you want to add seed: " + theSeed + "?" ))
+    	int result = Component.askQuestion( name, "Do you want to add seed: " + theSeed + "?" );
+        if (JOptionPane.YES_OPTION == result ) {
+            URI LocalSeedingRendezVousURI = URI.create(theSeed);
+            TheNC.addSeedRendezvous(LocalSeedingRendezVousURI);
        		return;
+        }
          if (JOptionPane.YES_OPTION==PopYesNoQuestion(name, "Do you want to add seed: " + theSeed + "?")) {
             URI LocalSeedingRendezVousURI = URI.create(theSeed);
             TheNC.addSeedRendezvous(LocalSeedingRendezVousURI);
@@ -129,13 +133,16 @@ public class Tools {
         return JOptionPane.showConfirmDialog( null, question, name, JOptionPane.YES_NO_OPTION ); 
     }
     
-    public static void CheckForExistingConfigurationDeletion(String name, File ConfigurationFile) throws IOException {
-        if (JOptionPane.YES_OPTION==PopYesNoQuestion(name, "Do you want to delete the existing configuration in:\n\n"
-                + ConfigurationFile.getCanonicalPath())) {
+    public static int CheckForExistingConfigurationDeletion(String name, File ConfigurationFile) throws IOException {
+        String question = "Do you want to delete the existing configuration in:\n\n";
+    	int answer = Component.askQuestion(  name, question ); 
+        if( answer > 0)
+        	return answer;
+        answer = PopYesNoQuestion(name, question + ConfigurationFile.getCanonicalPath());
+        if (JOptionPane.YES_OPTION==answer) {
             NetworkManager.RecursiveDelete(ConfigurationFile);
-            
         }
-        
+        return answer;
     }
     
     public static void DisplayMessageContent(String Name, Message TheMessage) {

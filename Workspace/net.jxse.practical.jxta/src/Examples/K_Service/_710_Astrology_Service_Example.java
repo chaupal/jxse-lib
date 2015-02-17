@@ -49,6 +49,7 @@ import java.net.URI;
 
 import javax.swing.JFileChooser;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.XMLDocument;
@@ -68,6 +69,7 @@ import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeMsgEvent;
 import net.jxta.pipe.PipeMsgListener;
 import net.jxta.pipe.PipeService;
+import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.ModuleSpecAdvertisement;
 import net.jxta.protocol.PipeAdvertisement;
@@ -75,7 +77,7 @@ import net.jxta.service.Service;
 import net.jxta.util.JxtaBiDiPipe;
 import net.jxta.util.JxtaServerPipe;
 
-public class _710_Astrology_Service_Example implements Service, Runnable {
+public class _710_Astrology_Service_Example extends AbstractJP2PCompatibility<Object> implements Service, Runnable {
     
     // Static
     
@@ -110,7 +112,7 @@ public class _710_Astrology_Service_Example implements Service, Runnable {
         
     }
 
-  public static final XMLDocument STD_COMPAT =
+  public static final XMLDocument<?> STD_COMPAT =
 		  CompatibilityUtils.createDefaultCompatStatement();
 
     // Not static
@@ -120,14 +122,14 @@ public class _710_Astrology_Service_Example implements Service, Runnable {
     
     private JxtaServerPipe MyBiDiPipeServer = null;
 
-    public static void main(String[] args) {
+    public void main(String[] args) {
         
         // Dummy main method for compilation
         
     }
     
     public _710_Astrology_Service_Example() {
-        
+        super( Name );
     }
     
     public static PipeAdvertisement GetPipeAdvertisement() {
@@ -382,5 +384,11 @@ public class _710_Astrology_Service_Example implements Service, Runnable {
         }
         
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

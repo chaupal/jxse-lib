@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.InetAddress;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -59,14 +60,19 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.socket.JxtaMulticastSocket;
 
-public class Edge_Teyacapan_Another_Multicast_Participant {
+public class Edge_Teyacapan_Another_Multicast_Participant extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Edge Teyacapan, another JXTA multicast socket participant";
     public static final int TcpPort = 9735;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+
     
-    public static void main(String[] args) {
+    public Edge_Teyacapan_Another_Multicast_Participant() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -160,5 +166,11 @@ public class Edge_Teyacapan_Another_Multicast_Participant {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

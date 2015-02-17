@@ -2,10 +2,11 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: JXSE Osgi Wrapper
 Bundle-SymbolicName: net.jxse.osgi.platform
-Bundle-Version: 2.8.0.v20150204
+Bundle-Version: 2.8.0.v20150217
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: net.jxta.access,
+Import-Package: net.jxse.osgi.compat,
+ net.jxta.access,
  net.jxta.configuration,
  net.jxta.content,
  net.jxta.credential,
@@ -42,6 +43,6 @@ Import-Package: net.jxta.access,
  org.osgi.framework;version="1.8.0"
 Service-Component: OSGI-INF/module.xml
 Export-Package: net.jxse.configuration,
- net.jxse.osgi.platform,
+ net.jxse.osgi.platform.activator,
  net.jxta.impl.platform,
  net.jxta.platform

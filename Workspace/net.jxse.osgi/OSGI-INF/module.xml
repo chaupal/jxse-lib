@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="net.jxse.osgi">
-   <implementation class="net.jxse.osgi.builder.JxtaBuilder"/>
+<scr:component xmlns:scr="http://www.osgi.org/xmlns/scr/v1.1.0" activate="activate" immediate="false" name="net.jxse.osgi.modules">
+   <implementation class="net.jxse.osgi.internal.JxtaBuilder"/>
    <service servicefactory="true">
       <provide interface="net.jxta.module.IModuleBuilder"/>
    </service>

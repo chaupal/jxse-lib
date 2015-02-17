@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 import java.net.DatagramPacket;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
@@ -62,7 +63,7 @@ import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaMulticastSocket;
 
-public class RendezVous_Hans_A_Multicast_Participant {
+public class RendezVous_Hans_A_Multicast_Participant extends AbstractJP2PCompatibility<Object> {
     
     // Static attributes
     public static final String Name = "RendezVous Hans, a JXTA multicast socket participant";
@@ -84,8 +85,14 @@ public class RendezVous_Hans_A_Multicast_Participant {
         return MyPipeAdvertisement;
         
     }
+
     
-    public static void main(String[] args) {
+    public RendezVous_Hans_A_Multicast_Participant() {
+		super( Name);
+	}
+
+
+	public void main(String[] args) {
         
         try {
             
@@ -158,5 +165,11 @@ public class RendezVous_Hans_A_Multicast_Participant {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

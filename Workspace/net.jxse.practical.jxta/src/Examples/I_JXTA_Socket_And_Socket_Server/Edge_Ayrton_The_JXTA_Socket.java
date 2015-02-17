@@ -52,6 +52,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.InetAddress;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -64,14 +65,19 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.socket.JxtaSocket;
 
-public class Edge_Ayrton_The_JXTA_Socket {
+public class Edge_Ayrton_The_JXTA_Socket extends AbstractJP2PCompatibility<Object> {
     
     public static final String Name = "Edge Ayrton, the JXTA socket";
     public static final int TcpPort = 9730;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+
     
-    public static void main(String[] args) {
+    public Edge_Ayrton_The_JXTA_Socket() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -172,5 +178,11 @@ public class Edge_Ayrton_The_JXTA_Socket {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

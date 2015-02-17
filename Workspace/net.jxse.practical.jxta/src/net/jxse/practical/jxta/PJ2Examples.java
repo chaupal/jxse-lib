@@ -3,8 +3,7 @@ package net.jxse.practical.jxta;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
-import org.eclipse.core.runtime.Platform;
-
+import net.jxse.osgi.compat.IJP2PCompatibility;
 import Examples.A_JXTA_Connection_And_Local_Configuration._100_Starting_And_Stopping_JXTA_Example;
 import Examples.A_JXTA_Connection_And_Local_Configuration._110_Creating_A_Local_Configuration_Example;
 import Examples.A_JXTA_Connection_And_Local_Configuration._120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example;
@@ -46,10 +45,8 @@ import Examples.L_Peer_Information._800_Adhoc_Ping_Example;
 import Examples.L_Peer_Information._810_Adhoc_Pong_Example;
 import Examples.Z_Tools_And_Others.JXTA_Bootstrapping;
 import Examples.Z_Tools_And_Others.Keystore_Creation_Example;
-import net.jxse.osgi.AbstractJxseComponent;
-import net.jxse.osgi.IJP2PCompatibility;
 
-public class AbstractPJ2Component extends AbstractJxseComponent {
+public class PJ2Examples {
 
 	public enum Examples{
 		//Examples.A_JXTA_Connection_And_Local_Configuration
@@ -64,12 +61,12 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 		B_Edge_Chihiro,
 		B_RendezVous_Aminah,
 		B_RendezVous_Jack,
-
+	
 		//B_Exploring_Connectivity_Issues_Monitoring
 		B_Edge_Gina,
 		B_Relay_Robert,
 		B_RendezVous_Mya,
-
+	
 		//C_Peers_And_PeerGroups
 		C_200_Creating_IDS,
 		C_210_Creating_A_New_Peer,
@@ -123,30 +120,15 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 		Keystore_Creation,
 		JXTA_Bootstrapping;
 	}
-	private Examples example;
 
-	private static Logger logger = Logger.getLogger( AbstractPJ2Component.class.getName());
-
-	protected AbstractPJ2Component( Examples example ) {
-		super();
-		this.example = example;
-	}
-
-	@Override
-	protected void onRunJxse() {
-		String[] args = Platform.getCommandLineArgs();
-		IJP2PCompatibility<?> compat = getJxseCompatible(example);	
-		if( compat != null )
-			compat.main( args );;
-	}
-
+	private static Logger logger = Logger.getLogger(PJ2Examples.class.getName() );
+	
 	/**
 	 * Get hte correct compatible JXSE object
 	 * @param example
 	 * @return
 	 */
-	public static IJP2PCompatibility<?> getJxseCompatible( Examples example ) {
-		String[] args = null;
+	public static IJP2PCompatibility<Object> getJxseCompatible( Examples example ) {
 		IJP2PCompatibility<Object> compat = null;
 		try{
 			switch( example ){
@@ -157,7 +139,7 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 				compat = new _110_Creating_A_Local_Configuration_Example();
 				break;
 			case A_120_Retrieving_Modifying_And_Saving_An_Existing_Configuration:
-				compat =new _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example();
+				compat = new _120_Retrieving_Modifying_And_Saving_An_Existing_Configuration_Example();
 				break;
 			case A_150_Configuration_Objects:
 				compat = new _150_Configuration_Objects();
@@ -179,123 +161,123 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 			
 			//B_Exploring_Connectivity_Issues.Monitoring
 			case B_Edge_Gina:
-				Edge_Gina.main( args );
+				compat = new Edge_Gina();
 				break;
 			case B_Relay_Robert:
-				Relay_Robert.main(args);
+				compat = new Relay_Robert();
 				break;
 			case B_RendezVous_Mya:
-				RendezVous_Mya.main(args);
+				compat = new RendezVous_Mya();
 				break;
 			
 				//C_Peers_And_PeerGroups:
 			case C_200_Creating_IDS:
-				_200_Creating_IDs_Example.main(args);
+				compat = new _200_Creating_IDs_Example();
 				break;
 			case C_210_Creating_A_New_Peer:
-				_210_Creating_A_New_Peer_Example.main(args);
+				compat = new _210_Creating_A_New_Peer_Example();
 				break;
 			case C_220_Creating_A_Custom_PeerGroup:
-				_220_Creating_A_Custom_PeerGroup_Example.main( args );
+				compat = new _220_Creating_A_Custom_PeerGroup_Example();
 				break;
 			
 			//D_Discovering_Resources:
 			case D_300_Retrieving_And_Flushing_Local_Advertisements:
-				_300_Retrieving_And_Flushing_Local_Advertisements_Example.main(args);
+				compat = new _300_Retrieving_And_Flushing_Local_Advertisements_Example();
 				break;
 			case D_Edge_Maxime_The_Socializer:
-				Edge_Maxime_The_Socializer.main(args);
+				compat = new Edge_Maxime_The_Socializer();
 				break;
 			
 			//Messages_And_Advertisements
 			case E_400_Creating_An_Empty_Message:
-				_400_Creating_An_Empty_Message_Example.main( args );
+				compat = new _400_Creating_An_Empty_Message_Example();
 				break;
 			case E_410_Add_String_Long_Int_Elements:
-				_410_Add_String_Long_Int_Elements_Example.main(args);
+				compat = new _410_Add_String_Long_Int_Elements_Example();
 				break;
 			case E_420_Retrieving_Message_Elements:
-				_420_Retrieving_Message_Elements_Example.main(args);
+				compat = new _420_Retrieving_Message_Elements_Example();
 				break;
 			case E_430_Add_ByteArray_Element_And_Retrieve_InputStream:
-				_430_Add_ByteArray_Element_And_Retrieve_InputStream_Example.main(args);
+				compat = new _430_Add_ByteArray_Element_And_Retrieve_InputStream_Example();
 				break;
 			case E_440_Adding_An_Advertisement_In_Message:
-				_440_Adding_An_Advertisement_In_Message_Example.main(args);
+				compat = new _440_Adding_An_Advertisement_In_Message_Example();
 				break;
 			case E_510_Registering_Customized_Advertisement_Instance:
-				_510_Registering_Customized_Advertisement_Instance_Example.main(args);
+				compat = new _510_Registering_Customized_Advertisement_Instance_Example();
 				break;
 			
 			//F Private_Keys_X509_Certificates_And_KeyStores:
 			case F_600_Exporting_And_Importing_Private_Keys_And_X509_Certificates:
-				_600_Exporting_And_Importing_Private_Keys_And_X509_Certificates.main(args);
+				compat = new _600_Exporting_And_Importing_Private_Keys_And_X509_Certificates();
 				break;
 			case F_610_Working_With_A_Keystore:
-				_610_Working_With_A_Keystore.main(args);
+				compat = new _610_Working_With_A_Keystore();
 				break;
 			case F_620_Creating_A_Custom_PSE_PeerGroup:
-				_620_Creating_A_Custom_PSE_PeerGroup_Example.main(args);
+				compat = new _620_Creating_A_Custom_PSE_PeerGroup_Example();
 				break;
 			
 			//Simple_Pipe_Communication:
 			case G_Edge_Dimitri_Sending_Messages:
-				Edge_Dimitri_Sending_Messages.main(args);
+				compat = new Edge_Dimitri_Sending_Messages();
 				break;
 			case G_RendezVous_Chandra_Receiving_Messages:
-				RendezVous_Chandra_Receiving_Messages.main(args);
+				compat = new RendezVous_Chandra_Receiving_Messages();
 				break;
 				
 			//Bidirectional_Pipe_Communication,
 			case H_Edge_Quinisela_At_The_Other_End:
-				Edge_Quinisela_At_The_Other_End.main(args);
+				compat = new Edge_Quinisela_At_The_Other_End();
 				break;
 			case H_RendezVous_Adelaide_At_One_End:
-				RendezVous_Adelaide_At_One_End.main(args);
+				compat = new RendezVous_Adelaide_At_One_End();
 				break;
 				
 			//JXTA_Socket_And_Socket_Server
 			case I_Edge_Ayrton_The_JXTA_Socket:
-				Edge_Ayrton_The_JXTA_Socket.main(args);
+				compat = new Edge_Ayrton_The_JXTA_Socket();
 				break;
 			case I_RendezVous_Lidong_The_JXTA_Socket_Server:
-				RendezVous_Lidong_The_JXTA_Socket_Server.main(args);
+				compat = new RendezVous_Lidong_The_JXTA_Socket_Server();
 				break;
 				
 			//J_JXTA_Multicast_Socket
 			case J_Edge_Teyacapan_Another_Multicast_Participant:
-				Edge_Teyacapan_Another_Multicast_Participant.main(args);
+				compat = new Edge_Teyacapan_Another_Multicast_Participant();
 				break;
 			case J_RendezVous_Hans_A_Multicast_Participant:
-				RendezVous_Hans_A_Multicast_Participant.main(args);
+				compat = new RendezVous_Hans_A_Multicast_Participant();
 				break;
 				
 			//K_Service
 			case K_700_Module_IDs_Creation:
-				_700_Module_IDs_Creation_Example.main(args);
+				compat = new _700_Module_IDs_Creation_Example();
 				break;
 			case K_710_Astrology_Service:
-				_710_Astrology_Service_Example.main(args);
+				compat = new _710_Astrology_Service_Example();
 				break;
 			case K_Edge_Jill_The_Customer:
-				Edge_Jill_The_Customer.main(args);
+				compat = new Edge_Jill_The_Customer();
 				break;
 			case K_RendezVous_Joe_The_Astrologer:
-				RendezVous_Joe_The_Astrologer.main(args);
+				compat = new RendezVous_Joe_The_Astrologer();
 				break;
 				
 			//Peer_Information
 			case L_800_Adhoc_Ping:
-				_800_Adhoc_Ping_Example.main(args);
+				compat = new _800_Adhoc_Ping_Example();
 				break;
 			case L_810_Adhoc_Pong:
-				_810_Adhoc_Pong_Example.main(args);
+				compat = new _810_Adhoc_Pong_Example();
 				break;
 				
 			//Z_Tools_And_Others
 			case Keystore_Creation:
 				try {
-					Keystore_Creation_Example.main(args);
+					compat = new Keystore_Creation_Example();
 				} catch (Throwable e) {
 					logger.severe( e.getMessage());
 					e.printStackTrace();
@@ -303,7 +285,7 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 				break;
 			case JXTA_Bootstrapping:
 				try {
-					JXTA_Bootstrapping.main( args );
+					compat = new JXTA_Bootstrapping();
 				} catch (Throwable e) {
 					logger.severe( e.getMessage());
 					e.printStackTrace();
@@ -311,8 +293,7 @@ public class AbstractPJ2Component extends AbstractJxseComponent {
 				break;
 			default:
 				break;
-			}
-			
+			}			
 		}
 		catch( Exception ex ){
 			ex.printStackTrace();

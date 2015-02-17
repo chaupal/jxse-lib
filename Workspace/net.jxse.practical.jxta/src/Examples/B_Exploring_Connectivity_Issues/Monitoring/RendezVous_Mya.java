@@ -5,6 +5,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -19,7 +20,7 @@ import net.jxta.platform.NetworkManager;
 /**
  * Simple RENDEZVOUS peer connecting via the NetPeerGroup.
  */
-public class RendezVous_Mya {
+public class RendezVous_Mya extends AbstractJP2PCompatibility<Object> {
 
     // Static
 
@@ -28,10 +29,14 @@ public class RendezVous_Mya {
     public static final int TcpPort_RDV = 9711;
     public static final File ConfigurationFile_RDV = new File("." + System.getProperty("file.separator") + Name_RDV);
 
+    public RendezVous_Mya() {
+		super(Name_RDV);
+	}
+
     /**
      * @param args the command line arguments
      */
-    public static void main(String[] args) {
+    public void main(String[] args) {
 
         try {
 
@@ -91,4 +96,9 @@ public class RendezVous_Mya {
 
     }
 
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }   
 }

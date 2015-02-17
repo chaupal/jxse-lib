@@ -1,10 +1,7 @@
 package net.jxse.jetty;
 
-import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
-
-import org.osgi.framework.Bundle;
 
 import net.jxta.impl.endpoint.servlethttp.ServletHttpTransportImpl;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleBuilder;
@@ -17,9 +14,6 @@ import net.jxta.protocol.ModuleImplAdvertisement;
 
 public class JettyHttpBuilder extends AbstractJxtaModuleBuilder<ServletHttpTransportImpl> implements IJxtaModuleBuilder<ServletHttpTransportImpl>{
 
-	private static final String S_BUNDLE_ID = "net.jxse.osgi.platform";
-	private static final String S_URL_BASE = "/bin/net/jxta/impl/platform/";
-
 	public JettyHttpBuilder() {
 		super.addDescriptor( new JettyHttpDescriptor());
 	}
@@ -31,7 +25,7 @@ public class JettyHttpBuilder extends AbstractJxtaModuleBuilder<ServletHttpTrans
 
 	@Override
 	protected boolean onInitBuilder(IModuleDescriptor descriptor) {
-		return false;
+		return true;
 	}
 
 	/**
@@ -64,17 +58,6 @@ public class JettyHttpBuilder extends AbstractJxtaModuleBuilder<ServletHttpTrans
 		public boolean onInitialised() {
 			return true;
 		}
-
-		/**
-		 * Get the resource URL
-		 * @return
-		 */
-		public URL getResourceURL(){
-			Bundle bundle = org.eclipse.core.runtime.Platform.getBundle( S_BUNDLE_ID );
-			String str = S_URL_BASE + "ShadowPeerGroup.class";// + Platform.class.getPackage().getName() + "/";
-			URL url = bundle.getEntry( str);
-			return url;
-		}
 		
 	}
 
@@ -104,7 +87,6 @@ public class JettyHttpBuilder extends AbstractJxtaModuleBuilder<ServletHttpTrans
 	@Override
 	public Class<? extends ServletHttpTransportImpl> getRepresentedClass(
 			IModuleDescriptor descriptor) {
-		// TODO Auto-generated method stub
-		return null;
+		return ServletHttpTransportImpl.class;
 	}
 }

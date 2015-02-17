@@ -1,4 +1,4 @@
-package net.jxse.osgi;
+package net.jxse.osgi.compat;
 
 public interface IJxtaNode<T extends Object> {
 

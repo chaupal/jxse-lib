@@ -52,6 +52,7 @@ import java.security.PrivateKey;
 import java.security.UnrecoverableKeyException;
 import java.security.cert.X509Certificate;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.credential.AuthenticationCredential;
 import net.jxta.credential.Credential;
 import net.jxta.document.MimeMediaType;
@@ -81,7 +82,7 @@ import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
-public class _620_Creating_A_Custom_PSE_PeerGroup_Example {
+public class _620_Creating_A_Custom_PSE_PeerGroup_Example extends AbstractJP2PCompatibility<Object>{
     
     public static final String Name = "Example 620";
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
@@ -114,7 +115,11 @@ public class _620_Creating_A_Custom_PSE_PeerGroup_Example {
         
     }
 
-    public static void main(String[] args) {
+    public _620_Creating_A_Custom_PSE_PeerGroup_Example() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         try {
             
@@ -301,5 +306,11 @@ public class _620_Creating_A_Custom_PSE_PeerGroup_Example {
         return implAdv;
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

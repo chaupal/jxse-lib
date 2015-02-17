@@ -45,6 +45,7 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -58,17 +59,22 @@ import net.jxta.platform.JxtaApplication;
 import net.jxta.platform.NetworkConfigurator;
 import net.jxta.platform.NetworkManager;
 
-public class RendezVous_Joe_The_Astrologer {
+public class RendezVous_Joe_The_Astrologer extends AbstractJP2PCompatibility<Object> {
     
     // Static attributes
     public static final String Name = "RendezVous Joe, The Astrologer";
     public static final int TcpPort = 9745;
     public static final PeerID PID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID, Name.getBytes());
     public static final File ConfigurationFile = new File("." + System.getProperty("file.separator") + Name);
+
     
     // public static final 
 
-    public static void main(String[] args) {
+    public RendezVous_Joe_The_Astrologer() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -140,5 +146,11 @@ public class RendezVous_Joe_The_Astrologer {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

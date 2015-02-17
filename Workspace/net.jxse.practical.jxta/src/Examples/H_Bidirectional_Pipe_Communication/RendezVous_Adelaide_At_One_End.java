@@ -45,6 +45,7 @@ import Examples.Z_Tools_And_Others.Tools;
 import java.io.File;
 import java.io.IOException;
 
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
@@ -66,7 +67,7 @@ import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.util.JxtaBiDiPipe;
 import net.jxta.util.JxtaServerPipe;
 
-public class RendezVous_Adelaide_At_One_End implements PipeMsgListener {
+public class RendezVous_Adelaide_At_One_End extends AbstractJP2PCompatibility<Object> implements PipeMsgListener {
     
     // Static attributes
     public static final String Name = "RendezVous Adelaide, at one end";
@@ -100,7 +101,12 @@ public class RendezVous_Adelaide_At_One_End implements PipeMsgListener {
         
     }
     
-    public static void main(String[] args) {
+    
+    public RendezVous_Adelaide_At_One_End() {
+		super( Name);
+	}
+
+	public void main(String[] args) {
         
         try {
             
@@ -197,5 +203,11 @@ public class RendezVous_Adelaide_At_One_End implements PipeMsgListener {
 		}
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }

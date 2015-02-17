@@ -41,6 +41,7 @@
 package Examples.F_Private_Keys_X509_Certificates_And_KeyStores;
 
 import Examples.Z_Tools_And_Others.Tools;
+
 import java.io.ByteArrayInputStream;
 import java.io.StringReader;
 import java.security.KeyFactory;
@@ -48,13 +49,20 @@ import java.security.PrivateKey;
 import java.security.cert.CertificateFactory;
 import java.security.cert.X509Certificate;
 import java.security.spec.PKCS8EncodedKeySpec;
-import net.jxta.impl.membership.pse.PSEUtils;
 
-public class _600_Exporting_And_Importing_Private_Keys_And_X509_Certificates {
+import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxta.impl.membership.pse.PSEUtils;
+import net.jxta.platform.NetworkManager;
+
+public class _600_Exporting_And_Importing_Private_Keys_And_X509_Certificates extends AbstractJP2PCompatibility<Object> {
     
     public static final String Name = "Example 600";
 
-    public static void main(String[] args) {
+    public _600_Exporting_And_Importing_Private_Keys_And_X509_Certificates() {
+		super(Name);
+	}
+
+    public void main(String[] args) {
         
         try {
         
@@ -117,5 +125,11 @@ public class _600_Exporting_And_Importing_Private_Keys_And_X509_Certificates {
         }
 
     }
+
+    @Override
+    public void deactivate() {
+    	NetworkManager MyNetworkManager = (NetworkManager) super.getRoot().getModule();
+    	MyNetworkManager.stopNetwork();
+    }    
 
 }
