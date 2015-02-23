@@ -2,11 +2,11 @@ package net.jxse.practical.jxta;
 
 import org.osgi.framework.BundleContext;
 
-import net.jxse.osgi.platform.activator.AbstractPlatformBundleActivator;
+import net.jxse.osgi.platform.activator.PlatformJxseBuilder;
 
-public class AbstractPJ2BundleActivator extends AbstractPlatformBundleActivator<Object> {
+public class PracticalJxta2Builder extends PlatformJxseBuilder<Object> {
 
-	protected AbstractPJ2BundleActivator( String bundle_id, PJ2Examples.Examples example ) {
+	public PracticalJxta2Builder( String bundle_id, PJ2Examples.Examples example ) {
 		super( bundle_id, PJ2Examples.getJxseCompatible(example));
 	}
 

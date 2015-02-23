@@ -14,7 +14,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.logging.Logger;
 
-import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 import org.osgi.framework.ServiceEvent;
 import org.osgi.framework.ServiceListener;
@@ -27,7 +26,7 @@ import net.jxta.module.IModuleDescriptor;
 import net.jxta.module.IModuleManager;
 import net.jxta.peergroup.core.Module;
 
-public abstract class AbstractJxseBundleActivator implements BundleActivator {
+public abstract class AbstractJxseBuilder{
 
 	private static final String S_ERR_CANNOT_ACTIVATE = " Cannot activvate this descriptor, because the required modules are not loaded: ";
 	private static final String S_STARTING_JXSE = " Activating JXSE Service: ";
@@ -90,7 +89,7 @@ public abstract class AbstractJxseBundleActivator implements BundleActivator {
 	};
 			
 	//private 
-	protected AbstractJxseBundleActivator(String bundle_id, IModuleDescriptor descriptor ) {
+	protected AbstractJxseBuilder(String bundle_id, IModuleDescriptor descriptor ) {
 		this.bundle_id = bundle_id;
 		this.descriptor = descriptor;
 		this.started = false;
@@ -107,12 +106,10 @@ public abstract class AbstractJxseBundleActivator implements BundleActivator {
 	}
 
 	/**
-	 * Run the code in this method in a sepearte thread
+	 * Run the code in this method in a separate thread
 	 */
 	protected abstract void onRunJxse();
 	
-
-	@Override
 	public void start(final BundleContext bundleContext) throws Exception {
 		context = bundleContext;
 		moduleTracker = new ServiceTracker<Object, Object>( bundleContext, IModuleBuilder.class.getName(), null );
@@ -124,7 +121,6 @@ public abstract class AbstractJxseBundleActivator implements BundleActivator {
 		}
 	}
 
-	@Override
 	public void stop(BundleContext bundleContext) throws Exception {
 		this.started = false;
 		bundleContext.removeServiceListener( sl );

@@ -4,25 +4,25 @@ import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.Platform;
 
-import net.jxse.osgi.compat.AbstractJxseBundleActivator;
+import net.jxse.osgi.compat.AbstractJxseBuilder;
 import net.jxse.osgi.compat.IJP2PCompatibility;
 import net.jxta.impl.modulemanager.AbstractJxtaModuleDescriptor;
 import net.jxta.module.IModuleDescriptor;
 import net.jxta.util.cardinality.Cardinality.Denominator;
 
-public class AbstractPlatformBundleActivator<T extends Object> extends AbstractJxseBundleActivator {
+public class PlatformJxseBuilder<T extends Object> extends AbstractJxseBuilder {
 
 	private IJP2PCompatibility<T> compat;
 
-	static Logger logger = Logger.getLogger( AbstractPlatformBundleActivator.class.getName());
+	static Logger logger = Logger.getLogger( PlatformJxseBuilder.class.getName());
 
 	
-	protected AbstractPlatformBundleActivator( String bundle_id, IModuleDescriptor descriptor, IJP2PCompatibility<T> compat ) {
+	protected PlatformJxseBuilder( String bundle_id, IModuleDescriptor descriptor, IJP2PCompatibility<T> compat ) {
 		super( bundle_id, descriptor );
 		this.compat = compat;
 	}
 
-	protected AbstractPlatformBundleActivator( String bundle_id, IJP2PCompatibility<T> compat ) {
+	protected PlatformJxseBuilder( String bundle_id, IJP2PCompatibility<T> compat ) {
 		this( bundle_id, new PlatformDescriptor(), compat );
 	}
 

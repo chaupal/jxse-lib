@@ -1,20 +1,17 @@
 package org.jxse.test;
 
-import net.jxse.practical.jxta.AbstractPJ2BundleActivator;
+import net.jxse.practical.jxta.PracticalJxta2Builder;
 import net.jxse.practical.jxta.PJ2Examples;
 
+import org.osgi.framework.BundleActivator;
 import org.osgi.framework.BundleContext;
 
-public class Activator extends AbstractPJ2BundleActivator {
+public class Activator implements BundleActivator{
 
 	public static final String S_BUNDLE_ID = "org.jxse.test";
 	
-	private static AbstractPJ2BundleActivator activator;
+	private PracticalJxta2Builder builder;
 	
-	public Activator() {
-		super( S_BUNDLE_ID, PJ2Examples.Examples.B_RendezVous_Jack);
-	}
-
 	private static BundleContext context;
 	
 	static BundleContext getContext() {
@@ -27,8 +24,8 @@ public class Activator extends AbstractPJ2BundleActivator {
 	 */
 	public void start(BundleContext bundleContext) throws Exception {
 		Activator.context = bundleContext;
-		activator = this;
-		super.start(bundleContext);
+		builder = new PracticalJxta2Builder( S_BUNDLE_ID, PJ2Examples.Examples.B_RendezVous_Jack);
+		builder.start(bundleContext);
 	}
 
 	/*
@@ -36,12 +33,8 @@ public class Activator extends AbstractPJ2BundleActivator {
 	 * @see org.osgi.framework.BundleActivator#stop(org.osgi.framework.BundleContext)
 	 */
 	public void stop(BundleContext bundleContext) throws Exception {
-		super.stop(bundleContext);
-		activator = null;
+		builder.stop(bundleContext);
+		builder = null;
 		Activator.context = null;
-	}
-	
-	public static AbstractPJ2BundleActivator getActivator(){
-		return activator;
 	}
 }
