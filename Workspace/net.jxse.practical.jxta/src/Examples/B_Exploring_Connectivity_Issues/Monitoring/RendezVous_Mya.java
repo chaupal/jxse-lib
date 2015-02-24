@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -47,6 +48,7 @@ public class RendezVous_Mya extends AbstractJP2PCompatibility<Object> {
             final NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(
                     NetworkManager.ConfigMode.RENDEZVOUS,
                     Name_RDV, ConfigurationFile_RDV.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();

@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -84,7 +85,8 @@ public class RendezVous_Joe_The_Astrologer extends AbstractJP2PCompatibility<Obj
             // Creation of network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.RENDEZVOUS,
                     Name, ConfigurationFile.toURI());
-            
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+           
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setPrincipal( Name );

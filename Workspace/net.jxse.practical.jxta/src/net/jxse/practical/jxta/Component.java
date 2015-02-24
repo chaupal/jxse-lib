@@ -3,11 +3,16 @@ package net.jxse.practical.jxta;
 import java.util.ArrayList;
 import java.util.Collection;
 
+import org.eclipse.osgi.framework.console.CommandInterpreter;
+import org.eclipse.osgi.framework.console.CommandProvider;
+
 import net.jxse.osgi.message.IJxseMessagePrinter;
 import net.jxse.osgi.message.IJxseMessagePrinter.MessageTypes;
 
-public class Component {
+public class Component implements CommandProvider{
 
+	private static final String S_ASSIGNED_PRINTERS = "The following jxse printers are registered:\n";
+	
 	public static Collection<IJxseMessagePrinter> printers = new ArrayList<IJxseMessagePrinter>();
 	
 	public void activate(){ /*NOTHING */};
@@ -56,4 +61,17 @@ public class Component {
 		return result;
 	}
 
+	public Object _jxse_prt(CommandInterpreter ci) {
+		StringBuffer buffer = new StringBuffer();
+		buffer.append( S_ASSIGNED_PRINTERS );
+		for( IJxseMessagePrinter printer: printers){
+			buffer.append( printer.toString() + "\n");
+		}
+		buffer.append( "\n");
+		return buffer.toString();
+	}
+	
+	public String getHelp() {
+		return "\tjxse_prt - Show the registered JXSE printers for practical JXTA II.";
+	}
 }

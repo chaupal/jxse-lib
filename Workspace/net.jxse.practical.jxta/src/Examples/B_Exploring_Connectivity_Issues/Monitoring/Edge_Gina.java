@@ -12,6 +12,7 @@ import java.util.concurrent.TimeUnit;
 import javax.swing.JOptionPane;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -60,6 +61,7 @@ public class Edge_Gina extends AbstractJP2PCompatibility<Object>{
             final NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(
                     NetworkManager.ConfigMode.EDGE,
                     Name_EDGE, ConfigurationFile_EDGE.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();

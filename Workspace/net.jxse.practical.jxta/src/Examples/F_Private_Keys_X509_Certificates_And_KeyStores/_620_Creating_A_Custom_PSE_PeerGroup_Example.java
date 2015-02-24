@@ -53,6 +53,7 @@ import java.security.UnrecoverableKeyException;
 import java.security.cert.X509Certificate;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.credential.AuthenticationCredential;
 import net.jxta.credential.Credential;
 import net.jxta.document.MimeMediaType;
@@ -177,6 +178,7 @@ public class _620_Creating_A_Custom_PSE_PeerGroup_Example extends AbstractJP2PCo
             // Creation of the network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name, ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();

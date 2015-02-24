@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.Message;
 import net.jxta.exception.ConfiguratorException;
@@ -117,7 +118,8 @@ public class RendezVous_Chandra_Receiving_Messages extends AbstractJP2PCompatibi
             // Creation of network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.RENDEZVOUS,
                     Name, ConfigurationFile.toURI());
-            
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+          
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setPrincipal( Name );

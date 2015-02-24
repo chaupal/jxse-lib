@@ -53,6 +53,7 @@ import java.io.OutputStream;
 import java.net.InetAddress;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -87,7 +88,8 @@ public class Edge_Ayrton_The_JXTA_Socket extends AbstractJP2PCompatibility<Objec
             // Creation of network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name, ConfigurationFile.toURI());
-            
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+           
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setPrincipal( Name );

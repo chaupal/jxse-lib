@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.JxtaException;
 import net.jxta.exception.PeerGroupException;
@@ -78,7 +79,8 @@ public class _210_Creating_A_New_Peer_Example extends AbstractJP2PCompatibility<
            NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(
                     NetworkManager.ConfigMode.EDGE, Name,
                     ConfigurationFile.toURI());
-            MyNetworkManager.getConfigurator().setPrincipal( Name );
+           IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+           MyNetworkManager.getConfigurator().setPrincipal( Name );
 
             // Creating a new peer
             PeerID MyPeerID = IDFactory.newPeerID(PeerGroupID.defaultNetPeerGroupID,

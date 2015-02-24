@@ -47,6 +47,7 @@ import java.io.IOException;
 import java.net.InetAddress;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.exception.ConfiguratorException;
@@ -99,6 +100,7 @@ public class Edge_Jill_The_Customer extends AbstractJP2PCompatibility<Object> im
             // Creation of network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name, ConfigurationFile.toURI());
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
             
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();

@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.StringMessageElement;
@@ -116,7 +117,8 @@ public class RendezVous_Adelaide_At_One_End extends AbstractJP2PCompatibility<Ob
             // Creation of network manager
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.RENDEZVOUS,
                     Name, ConfigurationFile.toURI());
-            
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+           
             // Retrieving the network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setPrincipal( Name );

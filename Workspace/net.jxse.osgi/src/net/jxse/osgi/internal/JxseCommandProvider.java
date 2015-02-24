@@ -18,11 +18,13 @@ import net.jxta.peergroup.core.Module;
 public class JxseCommandProvider implements CommandProvider{
 
 	private JxtaLoaderModuleManager<Module> manager;
-			
-	public JxseCommandProvider(){
+		
+	public JxseCommandProvider() {
+		super();
 		manager = JxtaLoaderModuleManager.getRoot( JxseCommandProvider.class, true );	
 	}
-	
+
+
 	/**
 	 * Get the module manager
 	 * @return
@@ -37,7 +39,6 @@ public class JxseCommandProvider implements CommandProvider{
 	
 	public void deactivate(){
 		manager.stopApp();
-		manager = null;		
 	}
 
 	public void registerBuilder(IModuleBuilder<Module> builder) {
@@ -56,6 +57,6 @@ public class JxseCommandProvider implements CommandProvider{
 	}
 	
 	public String getHelp() {
-		return "\tjxse - Provides information about the registered JXSE builders.";
+		return "\tjxse - Provides information about the registered JXSE builder and moduless.";
 	}
 }

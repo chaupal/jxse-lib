@@ -29,6 +29,7 @@ import net.jxta.peergroup.core.Module;
 public abstract class AbstractJxseBuilder{
 
 	private static final String S_ERR_CANNOT_ACTIVATE = " Cannot activvate this descriptor, because the required modules are not loaded: ";
+	private static final String S_ERR_NO_MODULES_FOUND = " No Modules are found. Please verify that the JXSE bundles are activated correctly ";
 	private static final String S_STARTING_JXSE = " Activating JXSE Service: ";
 	
 	private String filter = "(objectclass=" + IModuleBuilder.class.getName() + ")";
@@ -116,6 +117,10 @@ public abstract class AbstractJxseBuilder{
 		moduleTracker.open();
 		bundleContext.addServiceListener(sl, filter);
 		ServiceReference<?>[] srl = bundleContext.getServiceReferences(( String )null, filter);
+		if( srl == null ){
+			logger.severe( S_ERR_NO_MODULES_FOUND );
+			return;	
+		}
 		for( ServiceReference<?> sr:  srl ) {
 			sl.serviceChanged(new ServiceEvent(ServiceEvent.REGISTERED, sr));
 		}

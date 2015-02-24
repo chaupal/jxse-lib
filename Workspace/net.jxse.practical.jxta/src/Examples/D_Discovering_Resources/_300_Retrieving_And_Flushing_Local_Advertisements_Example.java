@@ -49,6 +49,7 @@ import java.net.InetAddress;
 import java.util.Enumeration;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.exception.ConfiguratorException;
@@ -86,7 +87,8 @@ public class _300_Retrieving_And_Flushing_Local_Advertisements_Example extends A
             // Preparing context
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager(NetworkManager.ConfigMode.EDGE,
                     Name, ConfigurationFile.toURI());
-            
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
+         
             // Retrieving network configurator
             NetworkConfigurator MyNetworkConfigurator = MyNetworkManager.getConfigurator();
             MyNetworkConfigurator.setPrincipal( Name );

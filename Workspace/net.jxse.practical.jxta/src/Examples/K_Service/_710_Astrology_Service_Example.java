@@ -50,6 +50,7 @@ import java.net.URI;
 import javax.swing.JFileChooser;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.XMLDocument;
@@ -230,7 +231,8 @@ public class _710_Astrology_Service_Example extends AbstractJP2PCompatibility<Ob
         try {
 
             MyBiDiPipeServer = new JxtaServerPipe(ThePeerGroup, GetPipeAdvertisement(), 5000);
-            
+            IJxtaNode<Object> root = super.createRoot( MyBiDiPipeServer );
+           
             Thread thread = new Thread(this);
             thread.start();
             

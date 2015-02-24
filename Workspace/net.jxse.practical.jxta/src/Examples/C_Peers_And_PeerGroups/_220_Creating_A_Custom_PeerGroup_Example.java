@@ -46,6 +46,7 @@ import java.io.File;
 import java.io.IOException;
 
 import net.jxse.osgi.compat.AbstractJP2PCompatibility;
+import net.jxse.osgi.compat.IJxtaNode;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.XMLElement;
 import net.jxta.exception.ConfiguratorException;
@@ -90,6 +91,7 @@ public class _220_Creating_A_Custom_PeerGroup_Example extends AbstractJP2PCompat
             NetworkManager MyNetworkManager = JxtaApplication.getNetworkManager( NetworkManager.ConfigMode.EDGE, 
                     Name, ConfigurationFile.toURI());
             MyNetworkManager.getConfigurator().setPrincipal( Name );
+            IJxtaNode<Object> root = super.createRoot( MyNetworkManager );
 
             // Starting the network
             PeerGroup MyNetPeerGroup = MyNetworkManager.startNetwork();

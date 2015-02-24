@@ -15,6 +15,18 @@ public interface IJxseMessagePrinter {
 	}
 
 	/**
+	 * The registered printer with the highest priority gets the assigned job 
+	 * @return
+	 */
+	public int getPriority();
+	
+	/**
+	 * Get a unique identifier for the printer. Is the bundle id by default
+	 * @return
+	 */
+	public String getIdentifier();
+	
+	/**
 	 * Print a message. Ideally this should convert to:
 	 * - Message type, title and comment
 	 * @param message
@@ -33,5 +45,11 @@ public interface IJxseMessagePrinter {
 	 * @param message
 	 */
 	public int askQuestion( String title, String message );
+	
+	/**
+	 * A readable format for this printer
+	 * @return
+	 */
+	public String toString();
 
 }
