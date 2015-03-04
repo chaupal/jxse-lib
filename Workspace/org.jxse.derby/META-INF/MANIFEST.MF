@@ -2,18 +2,13 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Derby Bundle for JXSE
 Bundle-SymbolicName: net.jxse.derby
-Bundle-Version: 2.8.0.v20150128
+Bundle-Version: 2.8.0.v20150303
 Bundle-Vendor: Chaupal.org
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: net.jxta.document,
- net.jxta.impl.cm,
- net.jxta.impl.cm.sql,
+Import-Package: net.jxta.impl.cm.sql,
  net.jxta.impl.modulemanager,
- net.jxta.impl.util,
  net.jxta.impl.util.threads,
- net.jxta.logging,
  net.jxta.module,
  net.jxta.peergroup.core,
- net.jxta.protocol,
  org.apache.derby.jdbc
 Export-Package: net.jxta.impl.cm.sql.derby
