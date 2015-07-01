@@ -2,9 +2,9 @@ Manifest-Version: 1.0
 Bundle-ManifestVersion: 2
 Bundle-Name: Netty Bundle for JXSE
 Bundle-SymbolicName: net.jxse.netty
-Bundle-Version: 2.8.0.v20150204
+Bundle-Version: 2.8.0.v20150701
 Bundle-Vendor: Chaupal.org
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Import-Package: net.jxta.document,
  net.jxta.endpoint,
  net.jxta.exception,
@@ -32,6 +32,4 @@ Import-Package: net.jxta.document,
  org.jboss.netty.util;version="[3.2.5,3.10.0)"
 Export-Package: net.jxta.impl.endpoint.netty
 Service-Component: OSGI-INF/module.xml
-Bundle-ClassPath: lib/httptunnel-0.92.jar,
- .,
- lib/netty-3.6.2.Final.jar
+Bundle-ClassPath: .

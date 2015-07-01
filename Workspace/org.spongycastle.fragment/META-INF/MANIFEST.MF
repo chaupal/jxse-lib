@@ -5,7 +5,7 @@ Bundle-SymbolicName: org.spongycastle.fragment;singleton:=true
 Bundle-Version: 1.47.0.2
 Bundle-Vendor: Condast
 Fragment-Host: system.bundle; extension:=framework
-Bundle-RequiredExecutionEnvironment: JavaSE-1.7
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
 Bundle-ClassPath: libs/sc-light-jdk15on-1.47.0.2.jar,
  libs/scpkix-jdk15on-1.47.0.2.jar,
  libs/scprov-jdk15on-1.47.0.2.jar,
