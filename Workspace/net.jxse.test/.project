@@ -25,28 +25,6 @@
 		<nature>org.eclipse.pde.PluginNature</nature>
 		<nature>org.eclipse.jdt.core.javanature</nature>
 	</natures>
-	<linkedResources>
-		<link>
-			<name>java</name>
-			<type>2</type>
-			<locationURI>$%7BCHAUPAL_LOC%7D/jxse/src/test/java</locationURI>
-		</link>
-		<link>
-			<name>jmock-2.5.1</name>
-			<type>2</type>
-			<location>F:/GitHub/Chaupal/jxse/lib/jmock-2.5.1</location>
-		</link>
-		<link>
-			<name>junit</name>
-			<type>2</type>
-			<locationURI>$%7BCHAUPAL_LOC%7D/jxse/lib/junit</locationURI>
-		</link>
-		<link>
-			<name>resources</name>
-			<type>2</type>
-			<locationURI>$%7BCHAUPAL_LOC%7D/jxse/src/test/resources</locationURI>
-		</link>
-	</linkedResources>
 	<variableList>
 		<variable>
 			<name>CHAUPAL_LOC</name>
