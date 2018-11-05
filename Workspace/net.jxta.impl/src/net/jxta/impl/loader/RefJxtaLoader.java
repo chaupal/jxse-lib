@@ -70,6 +70,7 @@ import net.jxta.platform.JxtaLoader;
 import net.jxta.platform.Module;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
+import net.jxta.util.IOUtils;
 
 import java.io.*;
 import java.lang.reflect.Method;
@@ -345,10 +346,16 @@ public class RefJxtaLoader extends JxtaLoader {
 
             if (parentLoader instanceof JxtaLoader) {
 
-                JxtaLoader jxtaLoader = (JxtaLoader) parentLoader;
-                Class<? extends Module> result = jxtaLoader.loadClass(spec);
+            	JxtaLoader jxtaLoader = (JxtaLoader) parentLoader;
+            	Class<? extends Module> result = null;
+            	try {
+            		result = jxtaLoader.loadClass(spec);
+            	}
+            	finally {
+            		IOUtils.closeQuietly( jxtaLoader );
+            	}
 
-                Logging.logCheckedFinest(LOG, hashHex(), ": Parent found: ", result);
+            	Logging.logCheckedFinest(LOG, hashHex(), ": Parent found: ", result);
 
                 return result;
 
@@ -366,8 +373,7 @@ public class RefJxtaLoader extends JxtaLoader {
 
         // Now try locally
         try {
-
-            Class found = findClass(spec);
+            Class<?> found = findClass(spec);
             Logging.logCheckedFinest(LOG, hashHex(), ": Self loaded: ", found);
 
             return verifyAndCast(found);
@@ -438,7 +444,7 @@ public class RefJxtaLoader extends JxtaLoader {
      * {@inheritDoc}
      */
     @Override
-    public ModuleImplAdvertisement findModuleImplAdvertisement(Class clazz) {
+    public ModuleImplAdvertisement findModuleImplAdvertisement(Class<? extends Module> clazz) {
         Class<? extends Module> modClass;
         try {
             modClass = verifyAndCast(clazz);
@@ -451,11 +457,17 @@ public class RefJxtaLoader extends JxtaLoader {
 
         ClassLoader parentLoader = getParent();
         if (parentLoader instanceof JxtaLoader) {
-            JxtaLoader jxtaLoader = (JxtaLoader) parentLoader;
-            ModuleImplAdvertisement result = jxtaLoader.findModuleImplAdvertisement(modClass);
-            if (result != null) {
-                return result;
-            }
+        	ModuleImplAdvertisement result = null;
+        	JxtaLoader jxtaLoader = (JxtaLoader) parentLoader;
+        	try {
+        		result = jxtaLoader.findModuleImplAdvertisement(modClass);
+        	}
+        	finally {
+        		IOUtils.closeQuietly(jxtaLoader);
+        	}
+        	if (result != null) {
+        		return result;
+        	}
         }
 
         ModuleImplAdvertisement result = implAdvs.get(modClass);
@@ -540,7 +552,7 @@ public class RefJxtaLoader extends JxtaLoader {
         for (Map.Entry<String, Class<? extends Module>> anEntry : compats.entrySet()) {
             String aCompat = anEntry.getKey();
 
-            StructuredDocument asDoc;
+            StructuredDocument<?> asDoc;
 
             try {
                 asDoc = StructuredDocumentFactory.newStructuredDocument(

@@ -74,8 +74,9 @@ import java.util.logging.Logger;
  * @see net.jxta.peergroup.PeerGroupID
  */
 public final class PeerGroupBinaryID extends net.jxta.peergroup.PeerGroupID {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * LOG object for this class.
      */
     private final static transient Logger LOG = Logger.getLogger(PeerGroupBinaryID.class.getName());

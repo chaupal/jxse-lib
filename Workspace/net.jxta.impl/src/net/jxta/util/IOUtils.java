@@ -5,6 +5,8 @@ import java.io.InputStream;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.jxta.platform.JxtaLoader;
+
 public class IOUtils {
 
 	/**
@@ -25,6 +27,19 @@ public class IOUtils {
 	  catch( IOException ioex ){
 	    logger.log( Level.SEVERE, ioex.getMessage(), ioex );
 	  }
+	}
+
+	public static void closeQuietly(JxtaLoader loader) {
+		  Logger logger = Logger.getLogger( IOUtils.class.getName() );
+		  if( loader == null )
+		    return;
+		
+		  try{
+		    loader.close();
+		  }
+		  catch( IOException ioex ){
+		    logger.log( Level.SEVERE, ioex.getMessage(), ioex );
+		  }
 	}
 
 }

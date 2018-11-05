@@ -70,8 +70,9 @@ import java.util.logging.Logger;
  * @see net.jxta.peergroup.PeerGroupID
  */
 public final class PipeBinaryID extends net.jxta.pipe.PipeID {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * LOG object for this class.
      */
     private final static transient Logger LOG = Logger.getLogger(PipeBinaryID.class.getName());

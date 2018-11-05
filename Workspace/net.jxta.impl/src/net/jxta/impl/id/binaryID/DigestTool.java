@@ -60,6 +60,8 @@ import java.security.MessageDigest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.jxta.util.IOUtils;
+
 /**
  * This is a utility class used to create pipe advertisement named and BinaryID for the pipeID to create
  * a private address space that can be hosted in the public discovery system or sent over unencrypted
@@ -340,10 +342,10 @@ public class DigestTool {
 
         byte[] digest1 = generateHash(clearTextID);
         byte[] digest2;
-
+        net.jxta.impl.util.BASE64InputStream decoder = null;
         try {
             java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
-            net.jxta.impl.util.BASE64InputStream decoder = new net.jxta.impl.util.BASE64InputStream(
+            decoder = new net.jxta.impl.util.BASE64InputStream(
                     new java.io.StringReader(testHash));
 
             while (true) {
@@ -360,6 +362,9 @@ public class DigestTool {
         } catch (Exception e) {
             LOG.log(Level.SEVERE, "Failed to create a digest.\n", e);
             return false;
+        }
+        finally {
+        	IOUtils.closeQuietly(decoder);
         }
 
         if (digest1.length != digest2.length) {

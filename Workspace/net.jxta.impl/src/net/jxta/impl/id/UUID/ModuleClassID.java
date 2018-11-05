@@ -60,6 +60,7 @@ package net.jxta.impl.id.UUID;
  *  An implementation of the {@link net.jxta.platform.ModuleClassID} ID Type.
  */
 public class ModuleClassID extends net.jxta.platform.ModuleClassID {
+	private static final long serialVersionUID = 1L;
 
     /**
      *  Location of the class id
@@ -70,16 +71,6 @@ public class ModuleClassID extends net.jxta.platform.ModuleClassID {
      *  Location of the role id
      */
     private final static int moduleRoleIdOffset = moduleClassIdOffset + IDFormat.uuidSize;
-
-    /**
-     *  location of the start of the pad space
-     */
-    private final static int padOffset = ModuleClassID.moduleRoleIdOffset + IDFormat.uuidSize;
-
-    /**
-     *  size of the unused space
-     */
-    private final static int padSize = IDFormat.flagsOffset - ModuleClassID.padOffset;
 
     /**
      *  The id data

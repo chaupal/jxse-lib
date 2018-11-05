@@ -60,6 +60,7 @@ package net.jxta.impl.id.UUID;
  *  An implementation of the {@link net.jxta.peergroup.PeerGroupID} ID Type.
  */
 public class PeerGroupID extends net.jxta.peergroup.PeerGroupID {
+	private static final long serialVersionUID = 1L;
 
     /**
      *  Location of the group id UUID within the id bytes.

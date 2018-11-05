@@ -69,8 +69,9 @@ import java.util.logging.Logger;
  * @see net.jxta.impl.id.UUID.UUIDFactory
  */
 public final class PeerBinaryID extends net.jxta.peer.PeerID {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * LOG object form this class
      */
     private final static transient Logger LOG = Logger.getLogger(PeerBinaryID.class.getName());

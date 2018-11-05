@@ -60,6 +60,8 @@ import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
+import net.jxta.util.IOUtils;
+
 /**
  * A <code>BinaryID</code> is a 256-byte, identifier.
  * This class should be immutable so that it is thread safe.
@@ -70,8 +72,9 @@ import java.util.logging.Logger;
  */
 
 public class BinaryID implements Serializable {
-
-    private final static transient Logger LOG = Logger.getLogger(BinaryID.class.getName());
+	private static final long serialVersionUID = 1L;
+	
+	private final static transient Logger LOG = Logger.getLogger(BinaryID.class.getName());
     public static String UUIDEncoded = "uuid";
     public final static int flagsSize = 1;
 
@@ -193,9 +196,10 @@ public class BinaryID implements Serializable {
      * @return returns the data part of the array.
      */
     public byte[] toByteArray() {
-        try {
+    	net.jxta.impl.util.BASE64InputStream decoder = null;
+    	try {
             java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
-            net.jxta.impl.util.BASE64InputStream decoder = new net.jxta.impl.util.BASE64InputStream(
+            decoder = new net.jxta.impl.util.BASE64InputStream(
                     new java.io.StringReader(encodedValue.substring(1)));
 
             while (true) {
@@ -213,6 +217,9 @@ public class BinaryID implements Serializable {
             LOG.log(Level.SEVERE, "Unable to decode binary value.\n", e);
             throw new RuntimeException("Unable to encode binary value.");
         }
+    	finally {
+    		IOUtils.closeQuietly(decoder);
+    	}
 
     }
 

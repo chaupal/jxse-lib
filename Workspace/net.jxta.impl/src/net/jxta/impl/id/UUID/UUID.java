@@ -94,6 +94,7 @@ import java.io.Serializable;
  *
  */
 public final class UUID implements Serializable {
+	private static final long serialVersionUID = 1L;
 
     /**
      *  The null UUID. Useful for comparisons.
