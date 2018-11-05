@@ -735,7 +735,7 @@ public class RelayClient implements MessageReceiver, Runnable {
 
         if (null != advElement) {
             try {
-                XMLDocument asDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(advElement);
+                XMLDocument<?> asDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(advElement);
                 Advertisement adv = AdvertisementFactory.newAdvertisement(asDoc);
 
                 if (adv instanceof RdvAdvertisement) {
@@ -930,7 +930,7 @@ public class RelayClient implements MessageReceiver, Runnable {
                 Logging.logCheckedFine(LOG, "find transport for ", addr);
 
                 // get the list of messengers on this endpoint
-                Iterator transports = client.endpoint.getAllMessageTransports();
+                Iterator<MessageTransport> transports = client.endpoint.getAllMessageTransports();
 
                 while (transports.hasNext() && messenger == null) {
 
@@ -1124,7 +1124,8 @@ public class RelayClient implements MessageReceiver, Runnable {
      *
      * @param relayRoute address of the relay to add
      */
-    private void addRelay(PeerGroup pg, RouteAdvertisement relayRoute) {
+    @SuppressWarnings("unchecked")
+	private void addRelay(PeerGroup pg, RouteAdvertisement relayRoute) {
 
         ID assignedID = PeerGroup.endpointClassID;
 
@@ -1134,7 +1135,7 @@ public class RelayClient implements MessageReceiver, Runnable {
 
             // update our own peer advertisement
             PeerAdvertisement padv = pg.getPeerAdvertisement();
-            XMLDocument myParam = (XMLDocument) padv.getServiceParam(assignedID);
+            XMLDocument<?> myParam = (XMLDocument<?>) padv.getServiceParam(assignedID);
 
             RouteAdvertisement route = null;
 
@@ -1146,8 +1147,8 @@ public class RelayClient implements MessageReceiver, Runnable {
 
             } else {
 
-                Enumeration<XMLElement> paramChilds = myParam.getChildren(RouteAdvertisement.getAdvertisementType());
-                XMLElement param = null;
+                Enumeration<XMLElement<?>> paramChilds = (Enumeration<XMLElement<?>>) myParam.getChildren(RouteAdvertisement.getAdvertisementType());
+                XMLElement<?> param = null;
 
                 if (paramChilds.hasMoreElements()) {
                     param = paramChilds.nextElement();
@@ -1179,8 +1180,8 @@ public class RelayClient implements MessageReceiver, Runnable {
             Logging.logCheckedFine(LOG, "NEW route info to local peer", route.display());
 
             // create the new param route
-            myParam = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
-            StructuredTextDocument xptDoc = (StructuredTextDocument)
+            myParam = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
+            StructuredTextDocument<?> xptDoc = (StructuredTextDocument<?>)
                     route.getDocument(MimeMediaType.XMLUTF8);
 
             StructuredDocumentUtils.copyElements(myParam, myParam, xptDoc);
@@ -1222,7 +1223,7 @@ public class RelayClient implements MessageReceiver, Runnable {
 
             // update our peer advertisement
             padv = group.getPeerAdvertisement();
-            XMLDocument myParam = (XMLDocument) padv.getServiceParam(assignedID);
+            XMLDocument<?> myParam = (XMLDocument<?>) padv.getServiceParam(assignedID);
 
             RouteAdvertisement route = null;
 
@@ -1234,14 +1235,14 @@ public class RelayClient implements MessageReceiver, Runnable {
 
             } else {
 
-                Enumeration<XMLElement> paramChilds = myParam.getChildren(RouteAdvertisement.getAdvertisementType());
-                XMLElement param = null;
+                @SuppressWarnings("unchecked")
+				Enumeration<XMLElement<?>> paramChilds = (Enumeration<XMLElement<?>>) myParam.getChildren(RouteAdvertisement.getAdvertisementType());
+                XMLElement<?> param = null;
 
                 if (paramChilds.hasMoreElements()) {
                     param = paramChilds.nextElement();
                     route = (RouteAdvertisement) AdvertisementFactory.newAdvertisement( param);
                 }
-
             }
 
             if (route == null) {
@@ -1254,8 +1255,8 @@ public class RelayClient implements MessageReceiver, Runnable {
             Logging.logCheckedFine(LOG, "new route info to the peer", route.display());
 
             // create the new param route
-            myParam = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
-            XMLDocument xptDoc = (XMLDocument) route.getDocument(MimeMediaType.XMLUTF8);
+            myParam = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
+            XMLDocument<?> xptDoc = (XMLDocument<?>) route.getDocument(MimeMediaType.XMLUTF8);
 
             StructuredDocumentUtils.copyElements(myParam, myParam, xptDoc);
 

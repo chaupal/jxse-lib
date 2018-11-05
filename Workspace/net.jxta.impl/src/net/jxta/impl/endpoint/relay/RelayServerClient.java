@@ -206,7 +206,6 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
                     Messenger useMessenger;
                     QueuedMessage message;
-                    boolean wasOOB;
 
                     synchronized (this) {
 
@@ -223,11 +222,9 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
                         if (outOfBandMessage != null) {
                             message = outOfBandMessage;
                             outOfBandMessage = null;
-                            wasOOB = true;
                         } else {
                             message = messageList.poll();
-                            wasOOB = false;
-                        }
+                         }
 
                         // No messages? We are now inactive.
                         if(null == message) {

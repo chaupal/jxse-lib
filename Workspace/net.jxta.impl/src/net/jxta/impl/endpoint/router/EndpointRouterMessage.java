@@ -84,7 +84,6 @@ import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
-import net.jxta.peergroup.PeerGroup;
 import net.jxta.protocol.AccessPointAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 
@@ -114,9 +113,9 @@ public class EndpointRouterMessage {
     private EndpointAddress lastHop = null; // Plain PeerID
 
     private transient Vector<AccessPointAdvertisement> forwardGateways = null;
-    private transient Vector<XMLElement> forwardCache = null;
+    private transient Vector<XMLElement<?>> forwardCache = null;
     private transient Vector<AccessPointAdvertisement> reverseGateways = null;
-    private transient Vector<XMLElement> reverseCache = null;
+    private transient Vector<XMLElement<?>> reverseCache = null;
     private transient RouteAdvertisement radv = null;
 
     // A flag that represents the existence of data.  Which is
@@ -143,7 +142,8 @@ public class EndpointRouterMessage {
         return rmDirty;
     }
 
-    public EndpointRouterMessage(Message message, boolean removeMsg, MembershipService membershipService)
+    @SuppressWarnings("unchecked")
+	public EndpointRouterMessage(Message message, boolean removeMsg, MembershipService membershipService)
     {
         this.membershipService = membershipService;
 
@@ -167,12 +167,12 @@ public class EndpointRouterMessage {
                 return;
             }
 
-            XMLDocument doc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(rmElem);
+            XMLDocument<?> doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(rmElem);
 
-            Enumeration<XMLElement> each;
-            XMLElement e;
+            Enumeration<XMLElement<?>> each;
+            XMLElement<?> e;
 
-            each = doc.getChildren();
+            each = (Enumeration<XMLElement<?>>) doc.getChildren();
             if (!each.hasMoreElements()) {
                 // results in rmExists being false.
                 return;
@@ -198,15 +198,15 @@ public class EndpointRouterMessage {
                     }
 
                     if (e.getName().equals(GatewayForwardTag)) {
-                        for (Enumeration<XMLElement> eachXpt = e.getChildren(); eachXpt.hasMoreElements();) {
+                        for (Enumeration<XMLElement<?>> eachXpt = (Enumeration<XMLElement<?>>) e.getChildren(); eachXpt.hasMoreElements();) {
 
                             if (forwardGateways == null) {
                                 forwardGateways = new Vector<AccessPointAdvertisement>();
                             }
                             if (forwardCache == null) {
-                                forwardCache = new Vector<XMLElement>();
+                                forwardCache = new Vector<XMLElement<?>>();
                             }
-                            XMLElement aXpt = eachXpt.nextElement();
+                            XMLElement<?> aXpt = eachXpt.nextElement();
                             AccessPointAdvertisement xptAdv = (AccessPointAdvertisement)
                                     AdvertisementFactory.newAdvertisement(aXpt);
 
@@ -218,14 +218,14 @@ public class EndpointRouterMessage {
                     }
 
                     if (e.getName().equals(GatewayReverseTag)) {
-                        for (Enumeration<XMLElement> eachXpt = e.getChildren(); eachXpt.hasMoreElements();) {
+                        for (Enumeration<XMLElement<?>> eachXpt = (Enumeration<XMLElement<?>>) e.getChildren(); eachXpt.hasMoreElements();) {
                             if (reverseGateways == null) {
                                 reverseGateways = new Vector<AccessPointAdvertisement>();
                             }
                             if (reverseCache == null) {
-                                reverseCache = new Vector<XMLElement>();
+                                reverseCache = new Vector<XMLElement<?>>();
                             }
-                            XMLElement aXpt = eachXpt.nextElement();
+                            XMLElement<?> aXpt = eachXpt.nextElement();
                             AccessPointAdvertisement xptAdv = (AccessPointAdvertisement)
                                     AdvertisementFactory.newAdvertisement(aXpt);
 
@@ -256,7 +256,8 @@ public class EndpointRouterMessage {
         }
     }
 
-    public void updateMessage() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public void updateMessage() {
 
         if (!rmDirty) {
             return;
@@ -281,13 +282,13 @@ public class EndpointRouterMessage {
         // The element was either created or changed. Replace whatever
         // if anything was in the message
 
-        XMLDocument doc = (XMLDocument)
+        XMLDocument doc = (XMLDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, Name);
 
         doc.addAttribute("xmlns:jxta", "http://jxta.org");
         doc.addAttribute("xml:space", "preserve");
 
-        XMLElement e;
+        XMLElement<?> e;
 
         if (srcAddress != null) {
             e = doc.createElement(SrcTag, srcAddress.toString());
@@ -502,7 +503,7 @@ public class EndpointRouterMessage {
         rmDirty = true;
         if (reverseGateways == null) {
             reverseGateways = new Vector<AccessPointAdvertisement>();
-            reverseCache = new Vector<XMLElement>();
+            reverseCache = new Vector<XMLElement<?>>();
         }
 
         reverseGateways.add(0, apa);
@@ -512,13 +513,14 @@ public class EndpointRouterMessage {
         }
 
         // if we still have a cache (we where able to keep it conistent, update it
-        XMLDocument apDoc = (XMLDocument) apa.getDocument(MimeMediaType.XMLUTF8);
+        XMLDocument<?> apDoc = (XMLDocument<?>) apa.getDocument(MimeMediaType.XMLUTF8);
 
         reverseCache.add(0, apDoc);
     }
 
     // Do not call this routine lightly: it blasts the cache.
-    public void setReverseHops(Vector<AccessPointAdvertisement> rhops) {
+    @SuppressWarnings("unchecked")
+	public void setReverseHops(Vector<AccessPointAdvertisement> rhops) {
         rmExists = true;
         rmDirty = true;
 
@@ -535,7 +537,8 @@ public class EndpointRouterMessage {
         reverseCache = null;
     }
 
-    public Vector<AccessPointAdvertisement> getReverseHops() {
+    @SuppressWarnings("unchecked")
+	public Vector<AccessPointAdvertisement> getReverseHops() {
 
         if (reverseGateways == null) {
             return null;

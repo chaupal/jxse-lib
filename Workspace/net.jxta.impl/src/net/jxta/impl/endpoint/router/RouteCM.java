@@ -59,6 +59,7 @@ package net.jxta.impl.endpoint.router;
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
+import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
@@ -145,19 +146,19 @@ class RouteCM implements Module {
         // extract Router service configuration properties
 
         ConfigParams confAdv = group.getConfigAdvertisement();
-        XMLElement paramBlock = null;
+        XMLElement<?> paramBlock = null;
 
         if (confAdv != null) {
-            paramBlock = (XMLElement) confAdv.getServiceParam(assignedID);
+            paramBlock = (XMLElement<?>) confAdv.getServiceParam(assignedID);
         }
 
         if (paramBlock != null) {
             // get our tunable router parameter
-            Enumeration param;
+            Enumeration<? extends Element<?>> param;
 
             param = paramBlock.getChildren("useCM");
             if (param.hasMoreElements()) {
-                useCMConfig = Boolean.getBoolean(((XMLElement) param.nextElement()).getTextValue());
+                useCMConfig = Boolean.getBoolean(((XMLElement<?>) param.nextElement()).getTextValue());
             }
         }
 

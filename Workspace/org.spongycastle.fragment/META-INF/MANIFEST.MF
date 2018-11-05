@@ -430,3 +430,4 @@ Export-Package: org.spongycastle,
  org.spongycastle.x509.examples;uses:="org.spongycastle.x509",
  org.spongycastle.x509.extension;uses:="org.spongycastle.asn1,org.spongycastle.asn1.x509",
  org.spongycastle.x509.util;uses:="org.spongycastle.x509,org.spongycastle.jce"
+Automatic-Module-Name: org.spongycastle.fragment

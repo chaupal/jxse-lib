@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
+  * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
  *
  *  The Sun Project JXTA(TM) Software License
  *
@@ -387,7 +387,7 @@ public class RouteControl implements RouteController {
 
         try {
             // get the direct routes
-            for (Iterator it = router.getAllCachedMessengerDestinations(); it.hasNext();) {
+            for (Iterator<EndpointAddress> it = router.getAllCachedMessengerDestinations(); it.hasNext();) {
                 ea = (EndpointAddress) it.next();
                 AccessPointAdvertisement ap = (AccessPointAdvertisement)
                         AdvertisementFactory.newAdvertisement(AccessPointAdvertisement.getAdvertisementType());

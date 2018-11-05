@@ -379,7 +379,8 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
     /**
      * {@inheritDoc}
      */
-    public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
+    @SuppressWarnings("unchecked")
+	public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
 
         this.group = group;
         ModuleImplAdvertisement implAdvertisement = (ModuleImplAdvertisement) impl;
@@ -389,24 +390,24 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         ConfigParams configAdv = group.getConfigAdvertisement();
 
         // Get out invariable parameters from the implAdv
-        XMLElement param = (XMLElement) implAdvertisement.getParam();
+        XMLElement<?> param = (XMLElement<?>) implAdvertisement.getParam();
 
         if (param != null) {
-            Enumeration<XMLElement> list = param.getChildren("Proto");
+            Enumeration<XMLElement<?>> list = (Enumeration<XMLElement<?>>) param.getChildren("Proto");
 
             if (list.hasMoreElements()) {
-                XMLElement pname = list.nextElement();
+                XMLElement<?> pname = list.nextElement();
                 protocolName = pname.getTextValue();
             }
         }
 
         // Get our peer-defined parameters in the configAdv
-        param = (XMLElement) configAdv.getServiceParam(assignedID);
+        param = (XMLElement<?>) configAdv.getServiceParam(assignedID);
         if (null == param) {
             throw new IllegalArgumentException(TransportAdvertisement.getAdvertisementType() + " could not be located.");
         }
 
-        Enumeration<XMLElement> tcpChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
+        Enumeration<XMLElement<?>> tcpChilds = (Enumeration<XMLElement<?>>) param.getChildren(TransportAdvertisement.getAdvertisementType());
 
         // get the TransportAdv
         if (tcpChilds.hasMoreElements()) {

@@ -138,6 +138,11 @@ class JTlsInputStream extends InputStream {
         int seqnum;
         MessageElement elt;
         boolean ackd;
+        
+		@SuppressWarnings("unused")
+		public boolean isAckd() {
+			return ackd;
+		}
     }
 
     public JTlsInputStream(TlsConn conn, long timeout) {

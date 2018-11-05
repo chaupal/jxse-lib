@@ -1133,7 +1133,7 @@ public class TcpMessenger extends BlockingMessenger implements Runnable {
      *
      * @return absolute time in milliseconds.
      */
-    private long getLastUsed() {
+    protected long getLastUsed() {
         return !selfDestruct ? System.currentTimeMillis() : lastUsed;
     }
 

@@ -416,6 +416,10 @@ class Destinations {
         wisdomGCHandle = executor.scheduleAtFixedRate(new WisdomGCTask(), 60, 60, TimeUnit.SECONDS);
     }
 
+    public boolean isStopped() {
+		return stopped;
+	}
+
     /**
      * Shutdown this cache. (stop the gc)
      */

@@ -75,6 +75,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
+import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointListener;
@@ -346,7 +347,7 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
         }
 
         // Get its EndpointService advertisement
-        XMLElement endpParam = (XMLElement)
+        XMLElement<?> endpParam = (XMLElement<?>)
                 newPadv.getServiceParam(PeerGroup.endpointClassID);
 
         if (endpParam == null) {
@@ -359,12 +360,12 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
         }
 
         // get the Route Advertisement element
-        Enumeration paramChilds = endpParam.getChildren(RouteAdvertisement.getAdvertisementType());
-        XMLElement param;
+        Enumeration<? extends Element<?>> paramChilds = endpParam.getChildren(RouteAdvertisement.getAdvertisementType());
+        XMLElement<?> param;
 
         if (paramChilds.hasMoreElements()) {
 
-            param = (XMLElement) paramChilds.nextElement();
+            param = (XMLElement<?>) paramChilds.nextElement();
 
         } else {
 
@@ -663,7 +664,11 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
     public EndpointRouter() {
     }
 
-    /**
+    public boolean isStopped() {
+		return stopped;
+	}
+
+	/**
      * {@inheritDoc}
      */
     public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
@@ -1509,14 +1514,15 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
     /**
      * {@inheritDoc}
      */
-    public void processIncomingMessage(Message msg, EndpointAddress srcAddr, EndpointAddress dstAddr) {
+    @SuppressWarnings("unchecked")
+	public void processIncomingMessage(Message msg, EndpointAddress srcAddr, EndpointAddress dstAddr) {
         EndpointAddress srcPeerAddress;
         EndpointAddress destPeer;
         EndpointAddress lastHop = null;
         boolean connectLastHop = false;
         EndpointAddress origSrcAddr;
         EndpointAddress origDstAddr;
-        Vector origHops = null; // original route of the message
+        Vector<AccessPointAdvertisement> origHops = null; // original route of the message
         EndpointRouterMessage routerMsg;
         EndpointAddress nextHop = null;
         RouteAdvertisement radv;
@@ -1876,7 +1882,7 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
         }
     }
 
-    private void cantRoute(String logMsg, Exception exception, EndpointAddress origSrcAddr, EndpointAddress destPeer, Vector origHops) {
+    private void cantRoute(String logMsg, Exception exception, EndpointAddress origSrcAddr, EndpointAddress destPeer, Vector<AccessPointAdvertisement> origHops) {
 
         if (exception == null) {
             Logging.logCheckedWarning(LOG, logMsg);
@@ -1894,14 +1900,14 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
      * @param hops of forward hops in the route
      * @return next hop to be used
      */
-    private EndpointAddress getNextHop(Vector hops) {
+    private EndpointAddress getNextHop(Vector<AccessPointAdvertisement> hops) {
         // check if we have a real route
         if ((hops == null) || (hops.size() == 0)) {
             return null;
         }
 
         // find the next hop.
-        for (Enumeration e = hops.elements(); e.hasMoreElements();) {
+        for (Enumeration<AccessPointAdvertisement> e = hops.elements(); e.hasMoreElements();) {
             AccessPointAdvertisement ap = (AccessPointAdvertisement) e.nextElement();
 
             if (localPeerId.equals(ap.getPeerID())) {
@@ -2387,7 +2393,8 @@ public class EndpointRouter implements EndpointListener, EndpointRoutingTranspor
      * @return EndpointAddress The address (logical) where to send the message next. Null if there
      *         is nowhere to send it to.
      */
-    EndpointAddress addressMessage(Message message, EndpointAddress dstAddress) {
+    @SuppressWarnings("unchecked")
+	EndpointAddress addressMessage(Message message, EndpointAddress dstAddress) {
 
         if (endpoint == null) return null;
 

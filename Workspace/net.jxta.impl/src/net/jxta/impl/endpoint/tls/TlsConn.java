@@ -266,8 +266,16 @@ class TlsConn {
         // handshake mode.
         tlsSocket = newConnect;
     }
+    
+    public boolean isClosing() {
+		return closing;
+	}
 
-    /**
+	protected PlaintextMessageReader getReaderThread() {
+		return readerThread;
+	}
+
+	/**
      * @inheritDoc <p/>An implementation which is useful for debugging.
      */
     @Override

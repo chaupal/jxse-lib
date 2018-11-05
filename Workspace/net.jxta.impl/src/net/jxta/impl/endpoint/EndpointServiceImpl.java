@@ -1199,7 +1199,7 @@ public class EndpointServiceImpl implements EndpointService, MessengerEventListe
             }
 
             PeerAdvertisement padv = group.getPeerAdvertisement();
-            StructuredDocument myParam = padv.getServiceParam(assignedID);
+            StructuredDocument<?> myParam = padv.getServiceParam(assignedID);
 
             RouteAdvertisement route = null;
 

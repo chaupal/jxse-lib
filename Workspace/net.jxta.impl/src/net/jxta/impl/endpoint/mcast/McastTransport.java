@@ -244,8 +244,12 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
      */
     public McastTransport() {
     }
+    
+    public ID getAssignedID() {
+		return assignedID;
+	}
 
-    /**
+	/**
      * {@inheritDoc}
      */
     @Override
@@ -272,7 +276,8 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
     /**
      * {@inheritDoc}
      */
-    public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
+    @SuppressWarnings("unchecked")
+	public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
 
         this.group = group;
         this.assignedID = assignedID;
@@ -281,24 +286,24 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
         ConfigParams configAdv = group.getConfigAdvertisement();
 
         // Get out invariable parameters from the implAdv
-        XMLElement param = (XMLElement) implAdvertisement.getParam();
+        XMLElement<?> param = (XMLElement<?>) implAdvertisement.getParam();
 
         if (param != null) {
-            Enumeration<XMLElement> list = param.getChildren("Proto");
+            Enumeration<XMLElement<?>> list = (Enumeration<XMLElement<?>>) param.getChildren("Proto");
             if (list.hasMoreElements()) {
-                XMLElement pname = list.nextElement();
+                XMLElement<?> pname = list.nextElement();
                 protocolName = pname.getTextValue();
             }
         }
 
         // Get our peer-defined parameters in the configAdv
-        param = (XMLElement) configAdv.getServiceParam(PeerGroup.multicastProtoClassID);
+        param = (XMLElement<?>) configAdv.getServiceParam(PeerGroup.multicastProtoClassID);
 
         if (null == param) {
             throw new IllegalArgumentException(TransportAdvertisement.getAdvertisementType() + " could not be located.");
         }
 
-        Enumeration<XMLElement> multiChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
+		Enumeration<XMLElement<?>> multiChilds = (Enumeration<XMLElement<?>>) param.getChildren(TransportAdvertisement.getAdvertisementType());
 
         // get the TransportAdv
         if (multiChilds.hasMoreElements()) {
