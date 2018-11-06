@@ -216,7 +216,7 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             return new RelayConfigAdv(root);
         }
     }
@@ -244,13 +244,13 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
 
     private RelayConfigAdv() {}
 
-    private RelayConfigAdv(Element root) {
+    private RelayConfigAdv(Element<?> root) {
 
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
         }
 
-        XMLElement doc = (XMLElement) root;
+        XMLElement<?> doc = (XMLElement<?>) root;
 
         String doctype = doc.getName();
 
@@ -266,7 +266,7 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration eachAttr = doc.getAttributes();
+        Enumeration<Attribute> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -291,11 +291,11 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
             }
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedWarning(LOG, "Unhandled Element: ", elem);
@@ -453,17 +453,17 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (RELAY_CLIENT_ELEMENT.equals(elem.getName())) {
 
-            Enumeration eachAttr = elem.getAttributes();
+            Enumeration<Attribute> eachAttr = elem.getAttributes();
 
             while (eachAttr.hasMoreElements()) {
 
@@ -489,15 +489,15 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
 
             }
 
-            Enumeration elements = elem.getChildren();
+            Enumeration<? extends Element<?>> elements = elem.getChildren();
 
             while (elements.hasMoreElements()) {
 
-                XMLElement seedsElem = (XMLElement) elements.nextElement();
+                XMLElement<?> seedsElem = (XMLElement<?>) elements.nextElement();
 
                 if (RELAY_CLIENT_SEEDS_ELEMENT.equals(seedsElem.getName())) {
 
-                    Enumeration eachSeedsAttr = seedsElem.getAttributes();
+                    Enumeration<Attribute> eachSeedsAttr = seedsElem.getAttributes();
 
                     while (eachSeedsAttr.hasMoreElements()) {
 
@@ -511,10 +511,10 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
 
                     }
 
-                    Enumeration addrElements = seedsElem.getChildren();
+                    Enumeration<? extends Element<?>> addrElements = seedsElem.getChildren();
 
                     while (addrElements.hasMoreElements()) {
-                        XMLElement addrElem = (XMLElement) addrElements.nextElement();
+                        XMLElement<?> addrElem = (XMLElement<?>) addrElements.nextElement();
 
                         if (SEED_RELAY_ADDR_ELEMENT.equals(addrElem.getName())) {
                             String endpAddrString = addrElem.getTextValue();
@@ -550,7 +550,7 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
 
         } else if (RELAY_SERVER_ELEMENT.equals(elem.getName())) {
 
-            Enumeration eachAttr = elem.getAttributes();
+            Enumeration<Attribute> eachAttr = elem.getAttributes();
 
             while (eachAttr.hasMoreElements()) {
 
@@ -606,10 +606,11 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
 
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
         if (!(adv instanceof Attributable)) {
             throw new IllegalStateException("Only Attributable documents are supported.");
@@ -655,13 +656,13 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
             }
 
             for (EndpointAddress seedRelay : seedRelays) {
-                Element addrElement = adv.createElement(SEED_RELAY_ADDR_ELEMENT, seedRelay.toString());
+                Element<?> addrElement = adv.createElement(SEED_RELAY_ADDR_ELEMENT, seedRelay.toString());
 
                 seedsElem.appendChild(addrElement);
             }
 
             for (URI seedingURI : seedingURIs) {
-                Element addrElement = adv.createElement(SEED_RELAY_ADDR_ELEMENT, seedingURI.toString());
+                Element<?> addrElement = adv.createElement(SEED_RELAY_ADDR_ELEMENT, seedingURI.toString());
 
                 seedsElem.appendChild(addrElement);
 
@@ -669,7 +670,7 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
             }
         }
 
-        Element serverElem = adv.createElement(RELAY_SERVER_ELEMENT);
+        Element<?> serverElem = adv.createElement(RELAY_SERVER_ELEMENT);
 
         adv.appendChild(serverElem);
 
@@ -695,7 +696,7 @@ public final class RelayConfigAdv extends ExtendableAdvertisement implements Clo
             attrElem.addAttribute(RELAY_SERVER_ANNOUNCE_ATTR, Long.toString(announceInterval));
         }
         if (aclURI != null) {
-            Element acl = adv.createElement(ACL_URI, aclURI.toString());
+            Element<?> acl = adv.createElement(ACL_URI, aclURI.toString());
 
             adv.appendChild(acl);
         }

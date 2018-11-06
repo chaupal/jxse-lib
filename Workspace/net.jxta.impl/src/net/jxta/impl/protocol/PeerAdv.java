@@ -138,12 +138,12 @@ public class PeerAdv extends PeerAdvertisement {
         /**
          *  {@inheritDoc}
          **/
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new PeerAdv((XMLElement) root);
+            return new PeerAdv((XMLElement<?>) root);
         }
     }
 
@@ -157,7 +157,7 @@ public class PeerAdv extends PeerAdvertisement {
      *
      *  @param doc The XML serialization of the advertisement.
      */
-    private PeerAdv(XMLElement doc) {
+    private PeerAdv(XMLElement<?> doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -172,11 +172,11 @@ public class PeerAdv extends PeerAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                     Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -208,13 +208,13 @@ public class PeerAdv extends PeerAdvertisement {
      *  {@inheritDoc}
      **/
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (elem.getName().equals(pidTag)) {
             try {
@@ -253,12 +253,12 @@ public class PeerAdv extends PeerAdvertisement {
         }
 
         if (elem.getName().equals(svcTag)) {
-            Enumeration elems = elem.getChildren();
+            Enumeration<? extends Element<?>> elems = elem.getChildren();
             ModuleClassID classID = null;
-            Element param = null;
+            Element<?> param = null;
 
             while (elems.hasMoreElements()) {
-                XMLElement e = (XMLElement) elems.nextElement();
+                XMLElement<?> e = (XMLElement<?>) elems.nextElement();
 
                 if (e.getName().equals(mcidTag)) {
                     try {
@@ -292,16 +292,17 @@ public class PeerAdv extends PeerAdvertisement {
     /**
      *  {@inheritDoc}
      **/
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
         PeerID peerID = getPeerID();
 
         if ((null == peerID) || ID.nullID.equals(peerID)) {
             throw new IllegalStateException("Cannot generate Peer Advertisement with no Peer ID!");
         }
-        Element e = adv.createElement(pidTag, peerID.toString());
+        Element<?> e = adv.createElement(pidTag, peerID.toString());
 
         adv.appendChild(e);
 
@@ -321,7 +322,7 @@ public class PeerAdv extends PeerAdvertisement {
         }
 
         // desc is optional
-        StructuredDocument desc = getDesc();
+        StructuredDocument<?> desc = getDesc();
 
         if (desc != null) {
             StructuredDocumentUtils.copyElements(adv, adv, desc);
@@ -330,8 +331,8 @@ public class PeerAdv extends PeerAdvertisement {
         // service params are optional
         // FIXME: this is inefficient - we force our base class to make
         // a deep clone of the table.
-        Hashtable serviceParams = getServiceParams();
-        Enumeration classIds = serviceParams.keys();
+        Hashtable<ID, StructuredDocument<?>> serviceParams = getServiceParams();
+        Enumeration<ID> classIds = serviceParams.keys();
 
         while (classIds.hasMoreElements()) {
             ModuleClassID classId = (ModuleClassID) classIds.nextElement();
@@ -343,7 +344,7 @@ public class PeerAdv extends PeerAdvertisement {
             e = adv.createElement(mcidTag, classId.toString());
             s.appendChild(e);
 
-            e = (Element) serviceParams.get(classId);
+            e = (Element<?>) serviceParams.get(classId);
             StructuredDocumentUtils.copyElements(adv, s, e, paramTag);
         }
         return adv;

@@ -116,12 +116,12 @@ public class RdvAdv extends RdvAdvertisement {
         /**
          * {@inheritDoc}
          **/
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new RdvAdv((XMLElement) root);
+            return new RdvAdv((XMLElement<?>) root);
         }
     }
 
@@ -136,7 +136,7 @@ public class RdvAdv extends RdvAdvertisement {
      *
      *  @param doc The XML serialization of the advertisement.
      */
-    private RdvAdv(XMLElement doc) {
+    private RdvAdv(XMLElement<?> doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -151,11 +151,11 @@ public class RdvAdv extends RdvAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -189,13 +189,13 @@ public class RdvAdv extends RdvAdvertisement {
      *  {@inheritDoc}
      **/
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (elem.getName().equals(RdvAdvertisement.GroupIDTag)) {
             try {
@@ -229,9 +229,9 @@ public class RdvAdv extends RdvAdvertisement {
         }
 
         if (elem.getName().equals(RdvAdvertisement.RouteTag)) {
-            for (Enumeration eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
+            for (Enumeration<? extends Element<?>> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
 
-                XMLElement aXpt = (XMLElement) eachXpt.nextElement();
+                XMLElement<?> aXpt = (XMLElement<?>) eachXpt.nextElement();
 
                 RouteAdvertisement xptAdv = (RouteAdvertisement)
                         AdvertisementFactory.newAdvertisement(aXpt);
@@ -252,7 +252,8 @@ public class RdvAdv extends RdvAdvertisement {
     /**
      *  {@inheritDoc}
      **/
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
 
         // Sanity Check!!!
@@ -268,9 +269,9 @@ public class RdvAdv extends RdvAdvertisement {
             throw new IllegalStateException("Missing service name");
         }
 
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
-        Element e = adv.createElement(RdvAdvertisement.GroupIDTag, getGroupID().toString());
+        Element<?> e = adv.createElement(RdvAdvertisement.GroupIDTag, getGroupID().toString());
 
         adv.appendChild(e);
 
@@ -288,11 +289,11 @@ public class RdvAdv extends RdvAdvertisement {
         }
 
         if (getRouteAdv() != null) {
-            Element el = adv.createElement(RdvAdvertisement.RouteTag);
+            Element<?> el = adv.createElement(RdvAdvertisement.RouteTag);
 
             adv.appendChild(el);
 
-            StructuredTextDocument xptDoc = (StructuredTextDocument)
+            StructuredTextDocument<?> xptDoc = (StructuredTextDocument<?>)
                     getRouteAdv().getDocument(encodeAs);
 
             StructuredDocumentUtils.copyElements(adv, el, xptDoc);

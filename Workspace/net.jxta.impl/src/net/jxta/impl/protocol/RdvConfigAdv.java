@@ -132,12 +132,12 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new RdvConfigAdv((XMLElement) root);
+            return new RdvConfigAdv((XMLElement<?>) root);
         }
     }
 
@@ -289,7 +289,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
      *
      *  @param doc The XML serialization of the advertisement.
      */
-    private RdvConfigAdv(XMLElement doc) {
+    private RdvConfigAdv(XMLElement<?> doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -304,7 +304,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration eachAttr = doc.getAttributes();
+        Enumeration<Attribute> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -380,11 +380,11 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
             }
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem))
                 Logging.logCheckedWarning(LOG, "Unhandled Element: ", elem);
@@ -442,20 +442,20 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (SEEDS_RDV_ELEMENT.equals(elem.getName())) {
 
-            Enumeration eachSeedElem = elem.getChildren();
+            Enumeration<? extends Element<?>> eachSeedElem = elem.getChildren();
 
             while (eachSeedElem.hasMoreElements()) {
-                XMLElement aSeedElem = (XMLElement) eachSeedElem.nextElement();
+                XMLElement<?> aSeedElem = (XMLElement<?>) eachSeedElem.nextElement();
 
                 if (SEED_RDV_ADDR_ELEMENT.equals(aSeedElem.getName())) {
                     String endpAddrString = aSeedElem.getTextValue();
@@ -479,7 +479,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
                 }
             }
 
-            Enumeration eachAttr = elem.getAttributes();
+            Enumeration<Attribute> eachAttr = elem.getAttributes();
 
             while (eachAttr.hasMoreElements()) {
 
@@ -518,9 +518,10 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
         if (!(adv instanceof Attributable)) {
             throw new IllegalStateException("Only Attributable documents are supported.");
@@ -612,7 +613,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
             }
 
             for (URI seedRendezvou : seedRendezvous) {
-                Element aSeed = adv.createElement(SEED_RDV_ADDR_ELEMENT, seedRendezvou.toString());
+                Element<?> aSeed = adv.createElement(SEED_RDV_ADDR_ELEMENT, seedRendezvou.toString());
 
                 seedsElem.appendChild(aSeed);
             }
@@ -627,7 +628,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
                 seedAttr.addAttribute(SEED_RDV_ADDR_SEEDING_ATTR, Boolean.TRUE.toString());
             }
             if (aclURI != null) {
-                Element acl = adv.createElement(ACL_URI, aclURI.toString());
+                Element<?> acl = adv.createElement(ACL_URI, aclURI.toString());
 
                 adv.appendChild(acl);
             }

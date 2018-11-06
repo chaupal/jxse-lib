@@ -132,7 +132,7 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
         /**
          *  {@inheritDoc}
          */
-        public Advertisement newInstance( net.jxta.document.Element root ) {
+        public Advertisement newInstance( net.jxta.document.Element<?> root ) {
             return new ContentAdvertisementImpl( root );
         }
     };
@@ -143,12 +143,12 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
         setMetaID( null );
     }
 
-    public ContentAdvertisementImpl( Element root ) {
+    public ContentAdvertisementImpl( Element<?> root ) {
         if( !XMLElement.class.isInstance( root ) )
             throw new IllegalArgumentException(
                     getClass().getName() + " only supports XMLElement" );
 
-        XMLElement doc = (XMLElement) root;
+        XMLElement<?> doc = (XMLElement<?>) root;
 
         String doctype = doc.getName();
 
@@ -164,9 +164,9 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
                     + doc.getName() );
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
         while (elements.hasMoreElements()) {
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if ( !handleElement(elem) ) {
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -180,12 +180,12 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
      *  {@inheritDoc}
      */
     @Override
-    protected boolean handleElement( Element raw ) {
+    protected boolean handleElement( Element<?> raw ) {
 
         if ( super.handleElement( raw ) )
             return true;
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
         String nm = elem.getName();
         MimeMediaType mimeType;
         String str;
@@ -226,10 +226,11 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
     /**
      *  {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public Document getDocument( MimeMediaType encodeAs ) {
-        StructuredDocument adv = (StructuredDocument) super.getDocument( encodeAs );
-        Element e;
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument( encodeAs );
+        Element<?> e;
 
         e = adv.createElement(contentIDTag, getContentID().toString());
         adv.appendChild(e);

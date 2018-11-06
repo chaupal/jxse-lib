@@ -124,12 +124,12 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new ModuleClassAdv((XMLElement) root);
+            return new ModuleClassAdv((XMLElement<?>) root);
         }
     }
 
@@ -143,7 +143,8 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
      *
      *  @param doc The XML serialization of the advertisement.
      */
-    private ModuleClassAdv(XMLElement doc) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private ModuleClassAdv(XMLElement doc) {
 
         String doctype = doc.getName();
 
@@ -159,11 +160,11 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<XMLElement> elements = doc.getChildren();
+        Enumeration<XMLElement<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = elements.nextElement();
+            XMLElement<?> elem = elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -189,13 +190,13 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (elem.getName().equals(nameTag)) {
             setName(elem.getTextValue());
@@ -227,15 +228,16 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         if (null == getModuleClassID()) {
             throw new IllegalStateException("Module Class ID was not specified.");
         }
 
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
-        Element e;
+        Element<?> e;
 
         e = adv.createElement(idTag, getModuleClassID().toString());
         adv.appendChild(e);

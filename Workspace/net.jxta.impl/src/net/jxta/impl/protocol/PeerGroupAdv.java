@@ -57,6 +57,7 @@
 package net.jxta.impl.protocol;
 
 import net.jxta.document.*;
+import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroupID;
@@ -105,7 +106,7 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(net.jxta.document.Element root) {
+        public Advertisement newInstance(net.jxta.document.Element<?> root) {
             return new PeerGroupAdv(root);
         }
     }
@@ -120,12 +121,12 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
      *
      * @param root the element
      */
-    private PeerGroupAdv(Element root) {
+    private PeerGroupAdv(Element<?> root) {
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
         }
 
-        XMLElement doc = (XMLElement) root;
+        XMLElement<?> doc = (XMLElement<?>) root;
 
         String doctype = doc.getName();
 
@@ -141,11 +142,11 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -175,13 +176,13 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (elem.getName().equals(nameTag)) {
             setName(elem.getTextValue());
@@ -220,12 +221,12 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
         }
 
         if (elem.getName().equals(svcTag)) {
-            Enumeration elems = elem.getChildren();
+            Enumeration<? extends Element<?>> elems = elem.getChildren();
             String classID = null;
-            Element param = null;
+            Element<?> param = null;
 
             while (elems.hasMoreElements()) {
-                TextElement e = (TextElement) elems.nextElement();
+                TextElement<?> e = (TextElement<?>) elems.nextElement();
 
                 if (e.getName().equals(mcidTag)) {
                     classID = e.getTextValue();
@@ -256,7 +257,8 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         if (null == getPeerGroupID()) {
             throw new IllegalStateException("Peer Group Advertisement did not contain a peer group id.");
@@ -266,9 +268,9 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
             throw new IllegalStateException("Peer Group Advertisement did not contain a module spec id.");
         }
 
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
-        Element e;
+        Element<?> e;
 
         e = adv.createElement(gidTag, getPeerGroupID().toString());
         adv.appendChild(e);
@@ -283,7 +285,7 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
         }
 
         // desc is optional
-        StructuredDocument desc = getDesc();
+        StructuredDocument<?> desc = getDesc();
 
         if (desc != null) {
             StructuredDocumentUtils.copyElements(adv, adv, desc);
@@ -291,8 +293,8 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
 
         // FIXME: this is inefficient - we force our base class to make
         // a deep clone of the table.
-        Hashtable serviceParams = getServiceParams();
-        Enumeration classIds = serviceParams.keys();
+        Hashtable<ID, StructuredDocument<?>> serviceParams = getServiceParams();
+        Enumeration<ID> classIds = serviceParams.keys();
 
         while (classIds.hasMoreElements()) {
             ModuleClassID classId = (ModuleClassID) classIds.nextElement();
@@ -304,7 +306,7 @@ public class PeerGroupAdv extends PeerGroupAdvertisement {
             e = adv.createElement(mcidTag, classId.toString());
             s.appendChild(e);
 
-            e = (Element) serviceParams.get(classId);
+            e = (Element<?>) serviceParams.get(classId);
             StructuredDocumentUtils.copyElements(adv, s, e, paramTag);
 
         }

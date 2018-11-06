@@ -109,7 +109,8 @@ public class RouteResponse{
      *
      * @param doc the element
      */
-    public RouteResponse(XMLElement doc) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public RouteResponse(XMLElement doc) {
 
         String doctype = doc.getName();
 
@@ -118,14 +119,14 @@ public class RouteResponse{
                     "Could not construct : " + getClass().getName() + " from doc containing a " + doctype);
         }
 
-        Enumeration<XMLElement> elements = doc.getChildren();
+        Enumeration<XMLElement<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
             XMLElement elem = elements.nextElement();
 
             if (elem.getName().equals(destRouteTag)) {
-                for (Enumeration<XMLElement> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
-                    XMLElement aXpt = eachXpt.nextElement();
+                for (Enumeration<XMLElement<?>> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
+                    XMLElement<?> aXpt = eachXpt.nextElement();
 
                     RouteAdvertisement route = (RouteAdvertisement) AdvertisementFactory.newAdvertisement(aXpt);
 
@@ -135,8 +136,8 @@ public class RouteResponse{
             }
 
             if (elem.getName().equals(srcRouteTag)) {
-                for (Enumeration<XMLElement> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
-                    XMLElement aXpt = eachXpt.nextElement();
+                for (Enumeration<XMLElement<?>> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
+                    XMLElement<?> aXpt = eachXpt.nextElement();
 
                     RouteAdvertisement route = (RouteAdvertisement) AdvertisementFactory.newAdvertisement(aXpt);
 
@@ -219,7 +220,8 @@ public class RouteResponse{
     /**
      * return a Document representation of this object
      */
-    public Document getDocument(MimeMediaType asMimeType) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public Document getDocument(MimeMediaType asMimeType) {
         if (null == getSrcRoute()) {
             throw new IllegalStateException("Missing source route.");
         }
@@ -239,18 +241,18 @@ public class RouteResponse{
         StructuredDocument adv = StructuredDocumentFactory.newStructuredDocument(asMimeType, getAdvertisementType());
 
         if (adv instanceof XMLDocument) {
-            ((XMLDocument) adv).addAttribute("xmlns:jxta", "http://jxta.org");
-            ((XMLDocument) adv).addAttribute("xml:space", "preserve");
+            ((XMLDocument<?>) adv).addAttribute("xmlns:jxta", "http://jxta.org");
+            ((XMLDocument<?>) adv).addAttribute("xml:space", "preserve");
         }
 
-        Element e;
+        Element<?> e;
 
         RouteAdvertisement route = getDestRoute();
 
         if (route != null) {
             e = adv.createElement(destRouteTag);
             adv.appendChild(e);
-            StructuredTextDocument xptDoc = (StructuredTextDocument)
+            StructuredTextDocument<?> xptDoc = (StructuredTextDocument<?>)
                     route.getDocument(asMimeType);
 
             StructuredDocumentUtils.copyElements(adv, e, xptDoc);
@@ -260,7 +262,7 @@ public class RouteResponse{
         if (route != null) {
             e = adv.createElement(srcRouteTag);
             adv.appendChild(e);
-            StructuredTextDocument xptDoc = (StructuredTextDocument)
+            StructuredTextDocument<?> xptDoc = (StructuredTextDocument<?>)
                     route.getDocument(asMimeType);
 
             StructuredDocumentUtils.copyElements(adv, e, xptDoc);
@@ -275,7 +277,7 @@ public class RouteResponse{
      */
     @Override
     public String toString() {
-        XMLDocument doc = (XMLDocument) getDocument(MimeMediaType.XMLUTF8);
+        XMLDocument<?> doc = (XMLDocument<?>) getDocument(MimeMediaType.XMLUTF8);
 
         doc.addAttribute("xml:space", "default");
 

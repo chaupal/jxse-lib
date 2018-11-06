@@ -104,12 +104,12 @@ public class GroupConfig extends ConfigParams implements Cloneable {
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new GroupConfig((XMLElement) root);
+            return new GroupConfig((XMLElement<?>) root);
         }
     }
 
@@ -123,7 +123,8 @@ public class GroupConfig extends ConfigParams implements Cloneable {
      *
      * @param doc the element
      */
-    GroupConfig(XMLElement doc) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	GroupConfig(XMLElement doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -138,11 +139,11 @@ public class GroupConfig extends ConfigParams implements Cloneable {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<XMLElement> elements = doc.getChildren();
+        Enumeration<XMLElement<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            Element elem = (Element) elements.nextElement();
+            Element<?> elem = (Element<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -186,8 +187,8 @@ public class GroupConfig extends ConfigParams implements Cloneable {
      * {@inheritDoc}
      */
     @Override
-    public StructuredDocument getDocument(MimeMediaType encodeAs) {
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+    public StructuredDocument<?> getDocument(MimeMediaType encodeAs) {
+        StructuredDocument<?> adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
         addDocumentElements(adv);
 

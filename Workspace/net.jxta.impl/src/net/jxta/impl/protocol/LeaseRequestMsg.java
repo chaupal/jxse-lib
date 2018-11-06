@@ -150,13 +150,6 @@ public class LeaseRequestMsg {
 
         XMLElement<?> doc = (XMLElement<?>) root;
 
-        String typedoctype = "";
-        Attribute itsType = doc.getAttribute("type");
-
-        if (null != itsType) {
-            typedoctype = itsType.getValue();
-        }
-
         if (!doc.getName().equals(getMessageType())) {
             throw new IllegalArgumentException(
                     "Could not construct : " + getClass().getName() + " from doc containing a '" + doc.getName()

@@ -112,11 +112,11 @@ public class SignedAdv extends SignedAdvertisement {
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?>  root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
-            return new SignedAdv((XMLElement) root);
+            return new SignedAdv((XMLElement<?> ) root);
         }
     }
 
@@ -154,7 +154,7 @@ public class SignedAdv extends SignedAdvertisement {
      *
      *  @param doc The XML serialization of the advertisement.
      */
-    private SignedAdv(XMLElement doc) {
+    private SignedAdv(XMLElement<?>  doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -169,11 +169,11 @@ public class SignedAdv extends SignedAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            Element elem = (Element) elements.nextElement();
+            Element<?>  elem = (Element<?> ) elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -214,13 +214,13 @@ public class SignedAdv extends SignedAdvertisement {
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?>  raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?>  elem = (XMLElement<?> ) raw;
 
         if ("Credential".equals(elem.getName())) {
             signer = new PSECredential(elem);
@@ -258,34 +258,42 @@ public class SignedAdv extends SignedAdvertisement {
                 Reader advertisementB64 = new StringReader(elem.getTextValue());
                 InputStream bis = new BASE64InputStream(advertisementB64);
                 ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                try {
+                	do {
+                		int c = bis.read();
 
-                do {
-                    int c = bis.read();
+                		if (-1 == c) {
+                			break;
+                		}
+                		bos.write(c);
+                	} while (true);
 
-                    if (-1 == c) {
-                        break;
-                    }
-                    bos.write(c);
-                } while (true);
+                	byte advbytes[] = bos.toByteArray();
 
-                byte advbytes[] = bos.toByteArray();
+                	Signature verifier = ((PSECredential) signer).getSignatureVerifier("SHA1WITHRSA");
 
-                Signature verifier = ((PSECredential) signer).getSignatureVerifier("SHA1WITHRSA");
+                	verifier.update(advbytes);
 
-                verifier.update(advbytes);
+                	boolean matched = verifier.verify(signature);
 
-                boolean matched = verifier.verify(signature);
-
-                if (!matched) {
-                    throw new IllegalArgumentException("Advertisement could not be verified");
+                	if (!matched) {
+                		throw new IllegalArgumentException("Advertisement could not be verified");
+                	}
+                }
+                finally {
+                	bos.close();
+                	bis.close();
                 }
 
                 advertisementB64 = new StringReader(elem.getTextValue());
                 bis = new BASE64InputStream(advertisementB64);
-
-                XMLDocument advDocument = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(elem.getRoot().getMimeType(),bis);
+                try {
+                XMLDocument<?> advDocument = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(elem.getRoot().getMimeType(),bis);
                 adv = AdvertisementFactory.newAdvertisement(advDocument);
-
+                }
+                finally {
+                	bis.close();
+                }
                 return true;
             } catch (IOException failed) {
                 IllegalArgumentException failure = new IllegalArgumentException("Could not process Advertisement");
@@ -314,7 +322,8 @@ public class SignedAdv extends SignedAdvertisement {
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	@Override
     public Document getDocument(MimeMediaType encodeAs) {
 
         if (null == adv) {
@@ -329,9 +338,9 @@ public class SignedAdv extends SignedAdvertisement {
             throw new IllegalStateException("Signer Credential not initialized");
         }
 
-        StructuredDocument doc = (StructuredDocument) super.getDocument(encodeAs);
+        StructuredDocument doc = (StructuredDocument<?>) super.getDocument(encodeAs);
 
-        StructuredDocument advDoc = (StructuredDocument) adv.getDocument(encodeAs);
+        StructuredDocument<?> advDoc = (StructuredDocument<?>) adv.getDocument(encodeAs);
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -362,11 +371,11 @@ public class SignedAdv extends SignedAdvertisement {
             advertisementOut.write(advData);
             advertisementOut.close();
 
-            StructuredDocument creddoc = signer.getDocument(encodeAs);
+            StructuredDocument<?> creddoc = signer.getDocument(encodeAs);
 
             StructuredDocumentUtils.copyElements(doc, doc, creddoc, "Credential");
 
-            Element elem = doc.createElement("Signature", signatureB64.toString());
+            Element<?> elem = doc.createElement("Signature", signatureB64.toString());
 
             doc.appendChild(elem);
 
