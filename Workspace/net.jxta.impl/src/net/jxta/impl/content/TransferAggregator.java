@@ -598,7 +598,6 @@ public class TransferAggregator
             ContentTransfer transfer, ContentTransferState state) {
 
         ContentTransferEvent toFire = null;
-        TransferException exception;
         boolean terminateTransfer = false;
         boolean doTransferStart = false;
 
@@ -683,7 +682,7 @@ public class TransferAggregator
                     }
                 }
             } catch (TransferException transx) {
-                exception = transx;
+                transx.printStackTrace();
             }
             terminateTransfer = true;
         } else if (!state.isRetrieving()) {

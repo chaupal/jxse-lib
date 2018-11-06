@@ -545,7 +545,8 @@ public class BTree extends Paged {
         private BTreeNode parent;
         private boolean loaded;
 
-        public BTreeNode(Page page) {
+        @SuppressWarnings("unused")
+		public BTreeNode(Page page) {
             this(page, null);
         }
 

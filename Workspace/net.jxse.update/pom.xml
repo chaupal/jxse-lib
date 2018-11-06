@@ -5,10 +5,10 @@ xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xs
 
   <!-- Link to the parent pom -->
   <parent>
-    <artifactId>net.jxse.parent</artifactId>
+    <artifactId>net.jxse.root</artifactId>
     <groupId>net.jxse</groupId>
     <version>1.0.0-SNAPSHOT</version>
-    <relativePath>../net.jxse.project</relativePath>
+    <relativePath>../..</relativePath>
   </parent>
 
   <artifactId>net.jxse.update</artifactId>

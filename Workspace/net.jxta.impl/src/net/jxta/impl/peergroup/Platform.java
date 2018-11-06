@@ -141,7 +141,7 @@ public class Platform extends StdPeerGroup {
         // (none)
 
         // Insert the paramAdv in the World PeerGroup Impl Advertisement.
-        implAdv.setParam((XMLDocument) paramAdv.getDocument(MimeMediaType.XMLUTF8));
+        implAdv.setParam((XMLDocument<?>) paramAdv.getDocument(MimeMediaType.XMLUTF8));
 
         return implAdv;
     }

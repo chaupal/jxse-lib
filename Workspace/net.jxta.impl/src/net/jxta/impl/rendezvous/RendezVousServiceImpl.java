@@ -58,8 +58,6 @@ package net.jxta.impl.rendezvous;
 
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -78,12 +76,9 @@ import java.util.logging.Logger;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.XMLDocument;
-import net.jxta.endpoint.EndpointAddress;
-import net.jxta.endpoint.EndpointListener;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.Message;
 import net.jxta.id.ID;
-import net.jxta.impl.endpoint.EndpointUtils;
 import net.jxta.impl.id.UUID.UUID;
 import net.jxta.impl.id.UUID.UUIDFactory;
 import net.jxta.impl.meter.MonitorManager;
@@ -104,9 +99,6 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.Module;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
-import net.jxta.protocol.PeerAdvertisement;
-import net.jxta.protocol.RdvAdvertisement;
-import net.jxta.protocol.RouteAdvertisement;
 import net.jxta.rendezvous.RendezVousService;
 import net.jxta.rendezvous.RendezVousStatus;
 import net.jxta.rendezvous.RendezvousEvent;
@@ -233,7 +225,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
             Advertisement adv = null;
 
             try {
-                XMLDocument configDoc = (XMLDocument) confAdv.getServiceParam(getAssignedID());
+                XMLDocument<?> configDoc = (XMLDocument<?>) confAdv.getServiceParam(getAssignedID());
 
                 if (null != configDoc) {
                     adv = AdvertisementFactory.newAdvertisement(configDoc);
@@ -859,7 +851,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
      */
     public final void generateEvent(int type, ID regarding) {
 
-        Iterator eachListener = Arrays.asList(eventListeners.toArray()).iterator();
+        Iterator<RendezvousListener> eachListener = new ArrayList<>(eventListeners).iterator();
 //        RendezvousEvent event = new RendezvousEvent(getInterface(), type, regarding);
         RendezvousEvent event = new RendezvousEvent(this, type, regarding);
 

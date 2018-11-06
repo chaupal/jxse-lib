@@ -115,7 +115,11 @@ public class MonitorEvent {
         this.monitorReport = monitorReport;
     }
 
-    /**
+    protected int getRequestId() {
+		return requestId;
+	}
+
+	/**
      * Get the Type of Event (one of the above constants)
      *
      */

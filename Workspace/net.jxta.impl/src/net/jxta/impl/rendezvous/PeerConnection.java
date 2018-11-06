@@ -55,7 +55,6 @@
  */
 package net.jxta.impl.rendezvous;
 
-import net.jxta.discovery.DiscoveryService;
 import net.jxta.endpoint.*;
 import net.jxta.id.ID;
 import net.jxta.impl.endpoint.EndpointUtils;
@@ -66,7 +65,6 @@ import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 
 import java.io.IOException;
-import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

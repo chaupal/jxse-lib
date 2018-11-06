@@ -91,6 +91,7 @@ import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.rendezvous.RendezvousEvent;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
@@ -155,7 +156,8 @@ public class RdvPeerRdvService extends StdRendezVousService {
      * @param group      the peer group
      * @param rdvService the rendezvous service object
      */
-    public RdvPeerRdvService(PeerGroup group, RendezVousServiceImpl rdvService) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public RdvPeerRdvService(PeerGroup group, RendezVousServiceImpl rdvService) {
 
         super(group, rdvService);
 
@@ -166,7 +168,7 @@ public class RdvPeerRdvService extends StdRendezVousService {
         // the defaults (edge peer/no auto-rdv)
         if (confAdv != null) {
             try {
-                XMLDocument configDoc = (XMLDocument) confAdv.getServiceParam(rdvService.getAssignedID());
+                XMLDocument<?> configDoc = (XMLDocument<?>) confAdv.getServiceParam(rdvService.getAssignedID());
 
                 if (null != configDoc) {
                     adv = AdvertisementFactory.newAdvertisement(configDoc);
@@ -205,9 +207,9 @@ public class RdvPeerRdvService extends StdRendezVousService {
         // Update the peeradv with that information:
         // XXX 20050409 bondolo How does this interact with auto-rdv?
         try {
-            XMLDocument params = (XMLDocument)
+            XMLDocument params = (XMLDocument<?>)
                     StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
-            Element e = params.createElement("Rdv", Boolean.TRUE.toString());
+            Element<?> e = params.createElement("Rdv", Boolean.TRUE.toString());
 
             params.appendChild(e);
             group.getPeerAdvertisement().putServiceParam(rdvService.getAssignedID(), params);
@@ -376,7 +378,7 @@ public class RdvPeerRdvService extends StdRendezVousService {
     public Vector<ID> getConnectedPeerIDs() {
 
         Vector<ID> result = new Vector<ID>();
-        List allClients = Arrays.asList(clients.values().toArray());
+        List<ClientConnection> allClients = new ArrayList<>(clients.values());
 
         for (Object allClient : allClients) {
             PeerConnection aConnection = (PeerConnection) allClient;
@@ -562,7 +564,7 @@ public class RdvPeerRdvService extends StdRendezVousService {
         try {
             MessageElement elem = msg.getMessageElement("jxta", DisconnectRequest);
 
-            XMLDocument asDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(elem);
+            XMLDocument<?> asDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(elem);
 
             adv = (PeerAdvertisement) AdvertisementFactory.newAdvertisement(asDoc);
 
@@ -593,7 +595,7 @@ public class RdvPeerRdvService extends StdRendezVousService {
         try {
             MessageElement elem = msg.getMessageElement("jxta", ConnectRequest);
 
-            XMLDocument asDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(elem);
+            XMLDocument<?> asDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(elem);
 
             padv = (PeerAdvertisement) AdvertisementFactory.newAdvertisement(asDoc);
             msg.removeMessageElement(elem);
@@ -766,7 +768,7 @@ public class RdvPeerRdvService extends StdRendezVousService {
                 long gcStart = TimeUtils.timeNow();
                 int gcedClients = 0;
 
-                List allClients = Arrays.asList(clients.values().toArray());
+                List<ClientConnection> allClients = new ArrayList<>(clients.values() );
 
                 for (Object allClient : allClients) {
                     ClientConnection pConn = (ClientConnection) allClient;

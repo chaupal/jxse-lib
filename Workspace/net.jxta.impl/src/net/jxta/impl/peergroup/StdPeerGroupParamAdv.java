@@ -71,6 +71,7 @@ import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.ModuleClassID;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
+
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -116,7 +117,7 @@ public class StdPeerGroupParamAdv {
      *     {@link net.jxta.protocol.ModuleImplAdvertisement}.</li>
      * </ul>
      */ 
-    private final Map<ModuleClassID, Object> services = new HashMap<ModuleClassID, Object>();
+    private final Map<ModuleClassID, Object> services = new HashMap<>();
 
     /**
      * The protocols (message transports) which will be loaded for this peer
@@ -139,7 +140,7 @@ public class StdPeerGroupParamAdv {
      *     {@link net.jxta.protocol.ModuleImplAdvertisement}.</li>
      * </ul>
      */ 
-    private final Map<ModuleClassID, Object> apps = new HashMap<ModuleClassID, Object>();
+    private final Map<ModuleClassID, Object> apps = new HashMap<>();
 
     /**
      * Private constructor for new instances.

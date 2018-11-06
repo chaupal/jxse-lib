@@ -70,8 +70,9 @@ import java.net.URI;
  * @since JXTA 1.0
  */
 public abstract class PeerGroupID extends ID {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * Creates an ID by parsing the given URI.
      *
      * <p>This convenience factory method works as if by invoking the
@@ -126,8 +127,9 @@ public abstract class PeerGroupID extends ID {
 }
 
 final class WorldPeerGroupID extends PeerGroupID {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * The name associated with this ID Format.
      */
     final static String JXTAFormat = "jxta";
@@ -181,8 +183,9 @@ final class WorldPeerGroupID extends PeerGroupID {
 }
 
 final class NetPeerGroupID extends PeerGroupID {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * The name associated with this ID Format.
      */
     final static String JXTAFormat = "jxta";

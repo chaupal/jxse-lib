@@ -56,9 +56,6 @@
  */
 package net.jxta.impl.xindice.core;
 
-import java.util.HashMap;
-import java.util.Map;
-
 /**
  * FaultCodes defines the Xindice specific fault codes and associated error
  * messages.
@@ -138,11 +135,8 @@ public enum FaultCodes {
     URI_NULL(801, "URI Null"),
     URI_PARSE_ERROR(820, "URI Parse Error"),
     JAVA_RUNTIME_ERROR(2070, "Java Runtime Error");
-    /**
-     * All known faults.
-     */
-    private static final Map<Integer, FaultCodes> knownFaults = new HashMap<Integer, FaultCodes>();
-    /**
+
+	/**
      *  Numeric code for this fault.
      */
     private final int code;

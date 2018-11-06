@@ -5,10 +5,7 @@ Bundle-SymbolicName: net.jxta.impl
 Bundle-Version: 1.0.0.qualifier
 Automatic-Module-Name: net.jxta.impl
 Bundle-RequiredExecutionEnvironment: JavaSE-1.7
-Import-Package: 
- org.apache.derby.jdbc,
- org.slf4j;version="1.7.2",
- org.spongycastle.asn1;version="1.47.0.2",
+Import-Package: org.spongycastle.asn1;version="1.47.0.2",
  org.spongycastle.asn1.x509;version="1.47.0.2",
  org.spongycastle.jce;version="1.47.0.2",
  org.spongycastle.jce.provider;version="1.47.0.2",

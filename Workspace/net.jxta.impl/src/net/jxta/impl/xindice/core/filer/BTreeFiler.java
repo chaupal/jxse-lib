@@ -366,7 +366,8 @@ public final class BTreeFiler extends BTree implements Filer {
          * The total number of bytes in use by the file
          * @return the total number of bytes
          */
-        public synchronized long getTotalBytes() {
+        @SuppressWarnings("unused")
+		public synchronized long getTotalBytes() {
             return totalBytes;
         }
     }
@@ -383,7 +384,8 @@ public final class BTreeFiler extends BTree implements Filer {
 
         public BTreeFilerPageHeader() {}
 
-        public BTreeFilerPageHeader(DataInputStream dis) throws IOException {
+        @SuppressWarnings("unused")
+		public BTreeFilerPageHeader(DataInputStream dis) throws IOException {
             super(dis);
         }
 

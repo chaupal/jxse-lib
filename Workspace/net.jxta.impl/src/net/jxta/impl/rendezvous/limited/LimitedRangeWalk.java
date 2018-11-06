@@ -128,7 +128,7 @@ public class LimitedRangeWalk extends RdvWalk {
         }
 
         try {
-            XMLDocument asDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(el);
+            XMLDocument<?> asDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(el);
 
             return new LimitedRangeRdvMsg(asDoc);
         } catch (Exception ez) {

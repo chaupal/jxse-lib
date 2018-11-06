@@ -161,7 +161,7 @@ public class JxtaMulticastSocket extends MulticastSocket implements PipeMsgListe
     protected boolean bound = false;
     protected BlockingQueue<Message> queue = new LinkedBlockingQueue<Message>(100);
     protected Credential credential = null;
-    protected StructuredDocument credentialDoc = null;
+    protected StructuredDocument<?> credentialDoc = null;
     private int timeout = 60000;
     private byte[] fauxip = new byte[4];
     private boolean jxtamode = false;
@@ -180,7 +180,12 @@ public class JxtaMulticastSocket extends MulticastSocket implements PipeMsgListe
         joinGroup(group, pipeAd);
     }
 
-    /**
+    protected boolean isJxtamode() {
+		return jxtamode;
+	}
+
+
+	/**
      * joins MutlicastSocket to specified pipe within the context of group
      *
      * @param group  group context
@@ -221,10 +226,10 @@ public class JxtaMulticastSocket extends MulticastSocket implements PipeMsgListe
      * @param group group context
      * @return The credDoc value
      */
-    protected static StructuredDocument getCredDoc(PeerGroup group) {
+    protected static StructuredDocument<?> getCredDoc(PeerGroup group) {
         try {
             MembershipService membership = group.getMembershipService();
-            Enumeration each = membership.getCurrentCredentials();
+            Enumeration<Credential> each = membership.getCurrentCredentials();
 
             if (each.hasMoreElements()) {
                 // get the only credential "nobody"

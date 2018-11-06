@@ -112,14 +112,14 @@ public class RendezVousPropagateMessage {
      *
      * @param root The root element of the message.
      */
-    public RendezVousPropagateMessage(Element root) {
+    public RendezVousPropagateMessage(Element<?> root) {
         this();
 
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
         }
 
-        XMLElement doc = (XMLElement) root;
+        XMLElement<?> doc = (XMLElement<?>) root;
 
         String doctype = doc.getName();
 
@@ -135,11 +135,11 @@ public class RendezVousPropagateMessage {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem))
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
@@ -167,9 +167,9 @@ public class RendezVousPropagateMessage {
      * @param raw the document
      * @return true if successful
      */
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (elem.getName().equals(MsgIdTag)) {
             try {
@@ -278,7 +278,8 @@ public class RendezVousPropagateMessage {
         return visited.toArray(new URI[visited.size()]);
     }
 
-    public Document getDocument(MimeMediaType encodeAs) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public Document getDocument(MimeMediaType encodeAs) {
 
         // Sanity Check!!!
 
@@ -305,9 +306,7 @@ public class RendezVousPropagateMessage {
             ((Attributable) doc).addAttribute("xml:space", "preserve");
         }
 
-        Element e = null;
-
-        e = doc.createElement(MsgIdTag, msgId.toString());
+        Element<?> e = doc.createElement(MsgIdTag, msgId.toString());
         doc.appendChild(e);
 
         e = doc.createElement(DestSNameTag, destSName);

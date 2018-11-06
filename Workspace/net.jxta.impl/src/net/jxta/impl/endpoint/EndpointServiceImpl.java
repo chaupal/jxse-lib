@@ -1407,7 +1407,8 @@ public class EndpointServiceImpl implements EndpointService, MessengerEventListe
                 return false;
             }
 
-            InboundMeter incomingMessageListenerMeter = null;
+            @SuppressWarnings("unused")
+			InboundMeter incomingMessageListenerMeter = null;
 
             if (EndpointMeterBuildSettings.ENDPOINT_METERING && (endpointServiceMonitor != null)) {
                 incomingMessageListenerMeter = endpointServiceMonitor.getInboundMeter(serviceName, serviceParam);

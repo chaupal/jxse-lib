@@ -11,22 +11,24 @@
     <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
      <properties>
-        <root>..</root>
+        <root>.</root>
         <workspace>${root}/Workspace</workspace>
         <project-root>${root}/net.jxse</project-root>
-        <releng>${root}/releng</releng>
+        <releng>/releng</releng>
     </properties>
 	<parent>
    		<groupId>net.jxse</groupId>
    		<artifactId>net.jxse.configuration</artifactId>
    		<version>1.0.0-SNAPSHOT</version>
-  		<relativePath>${releng}/</relativePath>
+ 		<relativePath>./releng/net.jxse.configuration</relativePath>
  	</parent>
  
   <modules>
+    <module>${releng}/net.jxse.target</module>
     <module>${workspace}/net.jxta</module>
+    <module>${workspace}/net.jxta.impl</module>
     <module>${workspace}/org.spongycastle.fragment</module>
     <module>${workspace}/net.jxse.feature</module>
-    <module>${workspace} /net.jxse.update</module>
+    <module>${workspace}/net.jxse.update</module>
   </modules>
 </project> 

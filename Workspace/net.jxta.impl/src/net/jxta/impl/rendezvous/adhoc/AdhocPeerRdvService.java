@@ -116,7 +116,7 @@ public class AdhocPeerRdvService extends RendezVousServiceProvider {
             Advertisement adv = null;
 
             try {
-                XMLDocument configDoc = (XMLDocument) confAdv.getServiceParam(rdvService.getAssignedID());
+                XMLDocument<?> configDoc = (XMLDocument<?>) confAdv.getServiceParam(rdvService.getAssignedID());
 
                 if (null != configDoc) {
                     // XXX 20041027 backwards compatibility

@@ -21,3 +21,4 @@ Import-Package: junit.extensions;version="4.11.0",
  org.osgi.framework;version="1.8.0"
 Service-Component: OSGI-INF/jxta.xml
 Automatic-Module-Name: net.jxse.osgi.test
+Bundle-ActivationPolicy: lazy

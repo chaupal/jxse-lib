@@ -140,7 +140,11 @@ public class LightWeightPeerGroup implements PeerGroup {
         this.implAdv = (ModuleImplAdvertisement) implAdv;
     }
 
-    /**
+    protected ID getAssignedID() {
+		return assignedID;
+	}
+
+	/**
      * {@inheritDoc}
      */
     public int startApp(String[] args) {
@@ -282,7 +286,7 @@ public class LightWeightPeerGroup implements PeerGroup {
     /**
      * {@inheritDoc}
      */
-    public Iterator getRoleMap(ID name) {
+    public Iterator<ID> getRoleMap(ID name) {
         if (group != null) {
             return group.getRoleMap(name);
         } else {
@@ -294,7 +298,7 @@ public class LightWeightPeerGroup implements PeerGroup {
     /**
      * {@inheritDoc}
      */
-    public boolean compatible(Element compat) {
+    public boolean compatible(Element<?> compat) {
         return group != null && group.compatible(compat);
     }
 

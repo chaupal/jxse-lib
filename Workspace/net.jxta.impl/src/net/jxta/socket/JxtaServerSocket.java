@@ -707,7 +707,7 @@ public class JxtaServerSocket extends ServerSocket implements PipeMsgListener {
 
         }
 
-        Logging.logCheckedWarning(LOG, "backlog queue full, connect request dropped");
+        Logging.logCheckedWarning(LOG, "backlog queue full, connect request dropped: " + pushed);
 
     }
 
@@ -720,7 +720,8 @@ public class JxtaServerSocket extends ServerSocket implements PipeMsgListener {
      * @param msg The client connection request (assumed not null)
      * @return JxtaSocket Which may be null if an error occurs.
      */
-    private JxtaSocket processMessage(Message msg) {
+    @SuppressWarnings("unchecked")
+	private JxtaSocket processMessage(Message msg) {
 
         PipeAdvertisement remoteEphemeralPipeAdv = null;
         PeerAdvertisement remotePeerAdv = null;
@@ -731,20 +732,20 @@ public class JxtaServerSocket extends ServerSocket implements PipeMsgListener {
         try {
             MessageElement el = msg.getMessageElement(MSG_ELEMENT_NAMESPACE, reqPipeTag);
             if (el != null) {
-                XMLDocument pipeAdvDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(el);
+                XMLDocument<?> pipeAdvDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(el);
                 remoteEphemeralPipeAdv = (PipeAdvertisement) AdvertisementFactory.newAdvertisement(pipeAdvDoc);
             }
 
             el = msg.getMessageElement(MSG_ELEMENT_NAMESPACE, remPeerTag);
             if (el != null) {
-                XMLDocument peerAdvDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(el);
+                XMLDocument<?> peerAdvDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(el);
                 remotePeerAdv = (PeerAdvertisement) AdvertisementFactory.newAdvertisement(peerAdvDoc);
             }
 
             el = msg.getMessageElement(MSG_ELEMENT_NAMESPACE, credTag);
             if (el != null) {
                 try {
-                    XMLDocument credDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(el);
+                    XMLDocument<?> credDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(el);
                     credential = group.getMembershipService().makeCredential(credDoc);
                     if (!checkCred(credential)) {
 
@@ -764,8 +765,8 @@ public class JxtaServerSocket extends ServerSocket implements PipeMsgListener {
                 isReliable = Boolean.valueOf(el.toString());
             }
 
-            Set<EndpointAddress> verifiedAddressSet = (Set)msg.getMessageProperty(EndpointServiceImpl.VERIFIED_ADDRESS_SET);
-            Set<X509Certificate> tempCertSet = (Set)msg.getMessageProperty(EndpointServiceImpl.MESSAGE_SIGNER_SET);
+            Set<EndpointAddress> verifiedAddressSet = (Set<EndpointAddress>) msg.getMessageProperty(EndpointServiceImpl.VERIFIED_ADDRESS_SET);
+            Set<X509Certificate> tempCertSet = (Set<X509Certificate>) msg.getMessageProperty(EndpointServiceImpl.MESSAGE_SIGNER_SET);
 
             if ((null != remoteEphemeralPipeAdv) && (null != remotePeerAdv)) {
 

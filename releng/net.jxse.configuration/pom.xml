@@ -1,4 +1,3 @@
-<?xml version="1.0" encoding="UTF-8"?>
 <project
      xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 
     http://maven.apache.org/xsd/maven-4.0.0.xsd"
@@ -6,6 +5,10 @@
     xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
     
     <modelVersion>4.0.0</modelVersion>
+  	<prerequisites>
+    	<maven>3.0</maven>
+  	</prerequisites>
+
     <groupId>net.jxse</groupId>
     <artifactId>net.jxse.configuration</artifactId>
     <version>1.0.0-SNAPSHOT</version>
@@ -18,6 +21,7 @@
         <eclipse-update-repo.url>http://download.eclipse.org/eclipse/updates/4.7</eclipse-update-repo.url>
     </properties>
 
+<!--
     <repositories>
         <repository>
             <id>eclipse-update</id>
@@ -30,6 +34,7 @@
             <layout>p2</layout>
         </repository>
      </repositories>  
+ -->
     <build>
         <plugins>
             <plugin>
@@ -56,6 +61,14 @@
                 <artifactId>target-platform-configuration</artifactId>
                 <version>${tycho.version}</version>
                 <configuration>
+      				<pomDependencies>consider</pomDependencies>
+      				<target> 
+        			  	<artifact>
+            				<groupId>net.jxse</groupId>
+            			  	<artifactId>net.jxse.target</artifactId>
+            			  	<version>1.0.0-SNAPSHOT</version>
+        			  	</artifact>
+        			  </target>
                       <environments>
                         <environment>
                             <os>linux</os>
@@ -93,6 +106,11 @@
     		<artifactId>org.eclipse.osgi</artifactId>
     		<version>3.6.0.v20100517</version>
     	</dependency>
+     <dependency>
+        <groupId>org.apache.derby</groupId>
+        <artifactId>derbyclient</artifactId>
+        <version>10.10.1.1</version>
+      </dependency>
     </dependencies>
     <name>net.jxse</name>
     <description>Core JXTA libraries provided as OSGI Bundles</description>

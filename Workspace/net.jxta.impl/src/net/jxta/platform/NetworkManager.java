@@ -65,7 +65,6 @@ import net.jxta.credential.AuthenticationCredential;
 import net.jxta.credential.Credential;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.exception.ProtocolNotSupportedException;
-import net.jxta.id.IDFactory;
 import net.jxta.impl.membership.pse.StringAuthenticator;
 import net.jxta.logging.Logging;
 import net.jxta.membership.InteractiveAuthenticator;
@@ -201,7 +200,11 @@ public class NetworkManager implements RendezvousListener {
         return config;
     }
 
-    /**
+    protected boolean isConnected() {
+		return connected;
+	}
+
+	/**
      * Getter for property 'infrastructureID'.
      *
      * @return Value for property 'infrastructureID'.

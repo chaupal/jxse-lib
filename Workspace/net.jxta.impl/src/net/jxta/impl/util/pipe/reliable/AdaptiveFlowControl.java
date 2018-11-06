@@ -74,7 +74,7 @@ public class AdaptiveFlowControl extends FlowControl {
     private int currAckRingOff = 0;
     private int nbSamples = 0;
     private long currAvePeriod = 1;
-    private long prevAvePeriod = 1; // not in use yet.
+    private long prevAvePeriod = 1;
     private long periodRangeSlow = Long.MAX_VALUE; // not in use, yet.
     private long periodRangeFast = (periodRangeSlow / 3) * 2;
 
@@ -121,7 +121,15 @@ public class AdaptiveFlowControl extends FlowControl {
         this.rwindow = rwindow;
     }
 
-    /**
+	protected long getPrevAvePeriod() {
+		return prevAvePeriod;
+	}
+
+	protected int getNumberMissing() {
+		return numberMissing;
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?><?pde version="3.8"?><target name="net.jxse.target" sequenceNumber="36">
+<locations>
+	<location includeAllPlatforms="false" includeConfigurePhase="true" includeMode="planner" includeSource="true" type="InstallableUnit">
+		<unit id="org.eclipse.sdk.feature.group" version="4.7.3.v20180330-0919"/>
+		<repository location="http://download.eclipse.org/releases/oxygen/201804111000"/>
+	</location>
+	<location path="P:\Projects\Target\jxse" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\core" type="Directory"/>
+</locations>
+</target>

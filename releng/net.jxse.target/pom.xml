@@ -1,0 +1,15 @@
+<project>
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>net.jxse</groupId>
+        <artifactId>net.jxse.root</artifactId>
+        <version>1.0.0-SNAPSHOT</version>
+   		<relativePath>../..</relativePath>
+    </parent>
+    <groupId>net.jxse</groupId>
+    <artifactId>net.jxse.target</artifactId>
+    <version>1.0.0-SNAPSHOT</version>
+    <packaging>eclipse-target-definition</packaging>
+
+</project>
+

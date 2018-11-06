@@ -84,8 +84,9 @@ public class QueryHandlerMeter {
     private QueryMetricsTable queryMetricsTable = null;
 
     private class QueryMetricsTable extends Hashtable<Integer,QueryMetric> {
+		private static final long serialVersionUID = 1L;
 
-        void deReference() {
+		void deReference() {
             queryMetricsTable = null;
         }
 
@@ -95,10 +96,11 @@ public class QueryHandlerMeter {
         }
     }
 
+    @SuppressWarnings("unused")
     private class QueryMetric {
-        int queryId;
-        long querySentTime = System.currentTimeMillis();
-        int numResponsesReceived = 0;
+    	int queryId;
+    	long querySentTime = System.currentTimeMillis();
+    	int numResponsesReceived = 0;
         long lastResponseTime = 0;
 
         QueryMetric(int queryId) {
@@ -162,7 +164,13 @@ public class QueryHandlerMeter {
         this.resolverServiceMonitor = resolverServiceMonitor;
     }
 
-    public QueryHandlerMetric getCumulativeMetrics() {
+    
+    protected ResolverServiceMonitor getResolverServiceMonitor() {
+		return resolverServiceMonitor;
+	}
+
+
+	public QueryHandlerMetric getCumulativeMetrics() {
         return cumulativeMetrics;
     }
 
@@ -503,7 +511,7 @@ public class QueryHandlerMeter {
         destinationMeter.errorWhileProcessingQuery();
     }
 
-    public Enumeration getQueryDestinationMeters() {
+    public Enumeration<QueryDestinationMeter> getQueryDestinationMeters() {
         return Collections.enumeration(queryDestinationMeters.values());
     }
 

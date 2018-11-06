@@ -3,9 +3,9 @@
   <modelVersion>4.0.0</modelVersion>
 
   <parent>
-    <artifactId>net.jxse.parent</artifactId>
+    <artifactId>net.jxse.root</artifactId>
     <groupId>net.jxse</groupId>
-    <relativePath>../../net.jxse.project</relativePath>
+    <relativePath>../..</relativePath>
     <version>1.0.0-SNAPSHOT</version>
   </parent>
 

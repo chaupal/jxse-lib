@@ -149,7 +149,11 @@ class JxtaSocketInputStream extends InputStream {
         queue = new LinkedList<MessageElement>();
     }
 
-    /**
+    protected JxtaSocket getSocket() {
+		return socket;
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override

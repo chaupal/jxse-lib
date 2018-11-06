@@ -62,12 +62,12 @@ import java.util.SortedSet;
 /**
  * Random with replacement
  */
-class PeerViewRandomWithReplaceStrategy implements PeerViewStrategy {
+class PeerViewRandomWithReplaceStrategy<P extends Object> implements PeerViewStrategy {
 
     private static Random random = new Random();
-    private SortedSet set = null;
+    private SortedSet<P> set = null;
 
-    PeerViewRandomWithReplaceStrategy(SortedSet set) {
+    PeerViewRandomWithReplaceStrategy(SortedSet<P> set) {
         this.set = set;
     }
 
@@ -90,7 +90,7 @@ class PeerViewRandomWithReplaceStrategy implements PeerViewStrategy {
 
             // return the ith element
             int n = 0;
-            Iterator si = set.iterator();
+            Iterator<P> si = set.iterator();
 
             while (n < i) {
                 si.next();

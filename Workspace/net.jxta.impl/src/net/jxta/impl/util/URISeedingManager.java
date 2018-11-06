@@ -66,7 +66,6 @@ import net.jxta.endpoint.EndpointAddress;
 import net.jxta.impl.endpoint.EndpointUtils;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.protocol.AccessPointAdvertisement;
 import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 import java.io.BufferedReader;
@@ -80,11 +79,11 @@ import java.net.URLConnection;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
-import java.util.ListIterator;
 import java.util.Set;
 import java.util.logging.Logger;
 
@@ -189,8 +188,8 @@ public class URISeedingManager extends RdvAdvSeedingManager {
     public synchronized void addSeed(URI seed) {
         RouteAdvertisement ra = (RouteAdvertisement) 
                 AdvertisementFactory.newAdvertisement(RouteAdvertisement.getAdvertisementType());
-        AccessPointAdvertisement apa = (AccessPointAdvertisement) 
-                AdvertisementFactory.newAdvertisement(AccessPointAdvertisement.getAdvertisementType());
+        //AccessPointAdvertisement apa = (AccessPointAdvertisement) 
+          //      AdvertisementFactory.newAdvertisement(AccessPointAdvertisement.getAdvertisementType());
 
         ra.addDestEndpointAddress(new EndpointAddress(seed));
 
@@ -405,23 +404,15 @@ public class URISeedingManager extends RdvAdvSeedingManager {
      * establish that it an appropriate peer. 
      */
     private boolean isSeedPeer(RouteAdvertisement route) {
-        List<?> addrList = route.getDestEndpointAddresses();
+        List<EndpointAddress> addrList = route.getDestEndpointAddresses();
 
-        ListIterator eachAddr = addrList.listIterator();
-
+        Collection<URI> activeSeeds = Arrays.asList(getActiveSeedURIs());
         // convert each EndpointAddress to a URI to compare with seedHosts
-        while (eachAddr.hasNext()) {
-            EndpointAddress anAddr = (EndpointAddress) eachAddr.next();
-
-            eachAddr.set(anAddr.toURI());
-        }
-
-        addrList.retainAll(Arrays.asList(getActiveSeedURIs()));
-
-        // What's left is the intersection of activeSeeds and the set of
-        // endpoint addresses in the given APA. If it is non-empty, then we
-        // accept the route as that of a seed host.
-        return (!addrList.isEmpty());
+        for( EndpointAddress epa: addrList ) {
+            if( activeSeeds.contains( epa.toURI()))
+            		return true;
+         }
+        return false;
     }
 
     /**
@@ -444,7 +435,8 @@ public class URISeedingManager extends RdvAdvSeedingManager {
      *  @throws IOException Thrown for errors encountered loading the seed
      *  RouteAdvertisements.
      */
-    static RouteAdvertisement[] loadSeeds(URI seedingURI) throws IOException {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	static RouteAdvertisement[] loadSeeds(URI seedingURI) throws IOException {
         boolean isXML;
         URL seedingURL = seedingURI.toURL();
         URLConnection connection = seedingURL.openConnection();
@@ -485,13 +477,13 @@ public class URISeedingManager extends RdvAdvSeedingManager {
 
         if (isXML) {
             // Read in XML format seeds. (a list of Route Advertisements)
-            XMLDocument xmldoc = (XMLDocument) 
+            XMLDocument xmldoc = (XMLDocument<?>) 
                     StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XML_DEFAULTENCODING, seeds);
 
-            Enumeration<XMLElement> eachRA = xmldoc.getChildren(RouteAdvertisement.getAdvertisementType());
+            Enumeration<XMLElement<?>> eachRA = xmldoc.getChildren(RouteAdvertisement.getAdvertisementType());
 
             while (eachRA.hasMoreElements()) {
-                XMLElement anRAElement = eachRA.nextElement();
+                XMLElement<?> anRAElement = eachRA.nextElement();
                 RouteAdvertisement ra = (RouteAdvertisement) AdvertisementFactory.newAdvertisement(anRAElement);
 
                 result.add(ra);

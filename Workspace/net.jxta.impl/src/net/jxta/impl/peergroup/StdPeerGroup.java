@@ -183,7 +183,7 @@ public class StdPeerGroup extends GenericPeerGroup {
      * {@link net.jxta.platform.ModuleSpecID}</li>
      * </ul>
      */
-    private final Map<ModuleClassID, Object> applications = new HashMap<ModuleClassID, Object>();
+    private final Map<ModuleClassID, Object> applications = new HashMap<>();
 
     /**
      * Cache for this group.
@@ -334,8 +334,7 @@ public class StdPeerGroup extends GenericPeerGroup {
      *
      * @return int Status.
      */
-    @SuppressWarnings("unchecked")
-	@Override
+ 	@Override
     public int startApp(String[] arg) {
 
         if (!initComplete) {
@@ -362,7 +361,7 @@ public class StdPeerGroup extends GenericPeerGroup {
 
         loadAllModules(applications, false); // Apps are non-privileged;
 
-        res = startModules((Map) applications);
+        res = startModules( applications);
 
         return res;
     }
@@ -421,7 +420,7 @@ public class StdPeerGroup extends GenericPeerGroup {
      *
      * @param services The services to start.
      */
-    private int startModules(Map<ModuleClassID,Module> services) {
+    private int startModules(Map<ModuleClassID, Object> services) {
         int iterations = 0;
         int maxIterations = services.size() * services.size() + iterations + 1;
 
@@ -434,12 +433,12 @@ public class StdPeerGroup extends GenericPeerGroup {
 
             Logging.logCheckedFine(LOG, MessageFormat.format("Service startApp() round {0} of {1}(max)", iterations, maxIterations));
 
-            Iterator<Map.Entry<ModuleClassID, Module>> eachService = services.entrySet().iterator();
+            Iterator<Map.Entry<ModuleClassID, Object>> eachService = services.entrySet().iterator();
 
             while (eachService.hasNext()) {
-                Map.Entry<ModuleClassID, Module> anEntry = eachService.next();
+                Map.Entry<ModuleClassID, Object> anEntry = eachService.next();
                 ModuleClassID mcid = anEntry.getKey();
-                Module aModule = anEntry.getValue();
+                Module aModule = (Module) anEntry.getValue();
 
                 int res;
 
@@ -513,7 +512,7 @@ public class StdPeerGroup extends GenericPeerGroup {
 
                 failed.append("\nThe following services could not be started : ");
 
-                for (Map.Entry<ModuleClassID, Module> aService : services.entrySet()) {
+                for (Map.Entry<ModuleClassID, Object> aService : services.entrySet()) {
                     failed.append("\n\t");
                     failed.append(aService.getKey());
                     failed.append(" : ");
@@ -641,10 +640,10 @@ public class StdPeerGroup extends GenericPeerGroup {
         }
         else
         {
-            Map<ModuleClassID, Object> tempMsMap = new HashMap<ModuleClassID, Object>();
-            tempMsMap.put(PeerGroup.membershipClassID, tempMsSpec);
+            Map<ModuleClassID, Object> tempMsMap = new HashMap<>();
+            tempMsMap.put(PeerGroup.membershipClassID, (Module) tempMsSpec);
             loadAllModules(tempMsMap,true);
-            int tempRes = startModules((Map)tempMsMap);
+            int tempRes = startModules((Map<ModuleClassID, Object>)tempMsMap);
             if(Module.START_OK ==tempRes)
             {
                 MembershipService tempMs = this.getMembershipService();
@@ -820,7 +819,7 @@ public class StdPeerGroup extends GenericPeerGroup {
         }
         
         // We Applications are shelved until startApp()
-        applications.putAll(paramAdv.getApps());
+        applications.putAll((Map<? extends ModuleClassID, ?>) paramAdv.getApps());
 
         if(null != conf) {
             Iterator<ModuleClassID> eachModule = applications.keySet().iterator();
@@ -842,7 +841,7 @@ public class StdPeerGroup extends GenericPeerGroup {
 
         loadAllModules(initServices, true);
 
-        int res = startModules((Map) initServices);
+        int res = startModules( initServices);
 
         if(Module.START_OK != res) {
             throw new PeerGroupException("Failed to start peer group services. res : " + res);

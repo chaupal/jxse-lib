@@ -489,11 +489,11 @@ public final class PeerView implements EndpointListener, RendezvousListener {
         rdvService.addListener(this);
 
         // initialize strategies
-        replyStrategy = new PeerViewRandomWithReplaceStrategy(localView);
+        replyStrategy = new PeerViewRandomWithReplaceStrategy<PeerViewDestination>(localView);
 
         kickRecipientStrategy = new PeerViewRandomStrategy<>(localView);
 
-        kickAdvertisementStrategy = new PeerViewRandomWithReplaceStrategy(localView);
+        kickAdvertisementStrategy = new PeerViewRandomWithReplaceStrategy<PeerViewDestination>(localView);
 
         refreshRecipientStrategy = new PeerViewSequentialStrategy(localView);
 
@@ -1773,7 +1773,8 @@ public final class PeerView implements EndpointListener, RendezvousListener {
      *
      * @return A SortedSet which is the current local view of the peerview
      */
-    public SortedSet<PeerViewElement> getView() {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public SortedSet<PeerViewElement> getView() {
         synchronized (localView) {
             return new TreeSet<PeerViewElement>((SortedSet)localView);
         }

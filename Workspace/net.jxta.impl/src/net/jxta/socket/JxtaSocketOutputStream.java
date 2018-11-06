@@ -132,7 +132,19 @@ class JxtaSocketOutputStream extends OutputStream {
         this.socket = socket;
     }
 
-    /**
+    protected boolean isEncrypt() {
+		return isEncrypt;
+	}
+
+	protected Cipher getCipher() {
+		return cipher;
+	}
+
+	protected PublicKey getPublicKey() {
+		return publicKey;
+	}
+
+	/**
      * {@inheritDoc}
      */
     @Override

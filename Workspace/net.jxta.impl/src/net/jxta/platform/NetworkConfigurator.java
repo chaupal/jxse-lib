@@ -352,7 +352,7 @@ public class NetworkConfigurator {
      * Proxy Service Document
      */
     @Deprecated
-    protected transient XMLElement proxyConfig;
+    protected transient XMLElement<?> proxyConfig;
 
     /**
      * Personal Security Environment Config Advertisement
@@ -880,7 +880,7 @@ public class NetworkConfigurator {
      * @param description the infrastructure PeerGroup description
      * @see net.jxta.peergroup.PeerGroupFactory#setNetPGDesc
      */
-    public void setInfrastructureDesc(XMLElement description) {
+    public void setInfrastructureDesc(XMLElement<?> description) {
         infraPeerGroupConfig.setDesc(description);
     }
 
@@ -1620,14 +1620,14 @@ public class NetworkConfigurator {
 
         // HTTP
         try {
-            param = (XMLElement) platformConfig.getServiceParam(PeerGroup.httpProtoClassID);
+            param = (XMLElement<?>) platformConfig.getServiceParam(PeerGroup.httpProtoClassID);
             httpEnabled = platformConfig.isSvcEnabled(PeerGroup.httpProtoClassID);
 
-            Enumeration httpChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
+            Enumeration<?> httpChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
 
             // get the TransportAdv from either TransportAdv
             if (httpChilds.hasMoreElements()) {
-                param = (XMLElement) httpChilds.nextElement();
+                param = (XMLElement<?>) httpChilds.nextElement();
             } else {
                 throw new IllegalStateException("Missing HTTP Advertisment");
             }
@@ -1657,7 +1657,7 @@ public class NetworkConfigurator {
 
         // Rendezvous
         try {
-            param = (XMLElement) platformConfig.getServiceParam(PeerGroup.rendezvousClassID);
+            param = (XMLElement<?>) platformConfig.getServiceParam(PeerGroup.rendezvousClassID);
             // backwards compatibility
             param.addAttribute("type", RdvConfigAdv.getAdvertisementType());
             rdvConfig = (RdvConfigAdv) AdvertisementFactory.newAdvertisement(param);
@@ -1676,7 +1676,7 @@ public class NetworkConfigurator {
 
         // Relay
         try {
-            param = (XMLElement) platformConfig.getServiceParam(PeerGroup.relayProtoClassID);
+            param = (XMLElement<?>) platformConfig.getServiceParam(PeerGroup.relayProtoClassID);
             if (param != null && !platformConfig.isSvcEnabled(PeerGroup.relayProtoClassID)) {
                 mode = mode | RELAY_OFF;
             }
@@ -1690,7 +1690,7 @@ public class NetworkConfigurator {
         }
 
         // PSE
-        param = (XMLElement) platformConfig.getServiceParam(PeerGroup.membershipClassID);
+        param = (XMLElement<?>) platformConfig.getServiceParam(PeerGroup.membershipClassID);
         if (param != null) {
 
             Advertisement adv = null;
@@ -1709,7 +1709,7 @@ public class NetworkConfigurator {
                 cert = pseConf.getCertificateChain();
             } else {
                 throw new CertificateException("Error processing the Membership config advertisement. Unexpected membership advertisement "
-                        + adv.getAdvertisementType());
+                        + Advertisement.getAdvertisementType());
             }
         }
 
@@ -1794,7 +1794,7 @@ public class NetworkConfigurator {
                 out = storeHome.resolve("PlatformConfig").toURL().openConnection().getOutputStream();
             }
 
-            XMLDocument aDoc = (XMLDocument) advertisement.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> aDoc = (XMLDocument<?>) advertisement.getDocument(MimeMediaType.XMLUTF8);
             OutputStreamWriter os = new OutputStreamWriter(out, "UTF-8");
             aDoc.sendToWriter(os);
             os.flush();
@@ -1813,9 +1813,10 @@ public class NetworkConfigurator {
      * @param adv     the Advertisement to retrieve the param doc from
      * @return the parmDoc value
      */
-    protected XMLDocument getParmDoc(boolean enabled, Advertisement adv) {
-        XMLDocument parmDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
-        XMLDocument doc = (XMLDocument) adv.getDocument(MimeMediaType.XMLUTF8);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	protected XMLDocument<?> getParmDoc(boolean enabled, Advertisement adv) {
+        XMLDocument parmDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
+        XMLDocument<?> doc = (XMLDocument<?>) adv.getDocument(MimeMediaType.XMLUTF8);
 
         StructuredDocumentUtils.copyElements(parmDoc, parmDoc, doc);
         if (!enabled) {
@@ -1910,8 +1911,8 @@ public class NetworkConfigurator {
      * @return ProxyService configuration advertisement
      */
     @Deprecated
-    protected XMLDocument createProxyAdv() {
-        return (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
+    protected XMLDocument<?> createProxyAdv() {
+        return (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "Parm");
     }
 
     /**
@@ -2019,7 +2020,8 @@ public class NetworkConfigurator {
      *
      * @return the PeerPlatformConfig Advertisement
      */
-    public ConfigParams getPlatformConfig() {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	public ConfigParams getPlatformConfig() {
         PlatformConfig advertisement = (PlatformConfig) AdvertisementFactory.newAdvertisement(
                 PlatformConfig.getAdvertisementType());
 
@@ -2048,7 +2050,7 @@ public class NetworkConfigurator {
 
         if (relayConfig != null) {
             boolean isOff = ((mode & RELAY_OFF) == RELAY_OFF) || (relayConfig.isServerEnabled() && relayConfig.isClientEnabled());
-            XMLDocument relayDoc = (XMLDocument) relayConfig.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument relayDoc = (XMLDocument<?>) relayConfig.getDocument(MimeMediaType.XMLUTF8);
 
             if (isOff) {
                 relayDoc.appendChild(relayDoc.createElement("isOff"));
@@ -2083,7 +2085,7 @@ public class NetworkConfigurator {
                     Logging.logCheckedWarning(LOG, "Keystore location set, but is not absolute: ", keyStoreLocation);
                 }
             }
-            XMLDocument pseDoc = (XMLDocument) pseConf.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> pseDoc = (XMLDocument<?>) pseConf.getDocument(MimeMediaType.XMLUTF8);
             advertisement.putServiceParam(PeerGroup.membershipClassID, pseDoc);
         }
         
@@ -2127,7 +2129,7 @@ public class NetworkConfigurator {
 
         InputStream input = url.openStream();
         try {
-            XMLDocument document = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, input);
+            XMLDocument<?> document = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, input);
             PlatformConfig platformConfig = (PlatformConfig) AdvertisementFactory.newAdvertisement(document);
             return platformConfig;
         } finally {
@@ -2402,7 +2404,7 @@ public class NetworkConfigurator {
 
         final ID id;
         final String name;
-        final XMLElement desc;
+        final XMLElement<?> desc;
 
         /**
          * Constructor for loading the default Net Peer Group construction
@@ -2411,7 +2413,7 @@ public class NetworkConfigurator {
         NetGroupTunables() {
             id = PeerGroupID.defaultNetPeerGroupID;
             name = "NetPeerGroup";
-            desc = (XMLElement) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "desc", "default Net Peer Group");
+            desc = (XMLElement<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "desc", "default Net Peer Group");
         }
 
         /**
@@ -2422,7 +2424,7 @@ public class NetworkConfigurator {
          * @param pgname the group name
          * @param pgdesc the group description
          */
-        NetGroupTunables(ID pgid, String pgname, XMLElement pgdesc) {
+        NetGroupTunables(ID pgid, String pgname, XMLElement<?> pgdesc) {
             id = pgid;
             name = pgname;
             desc = pgdesc;
@@ -2438,7 +2440,7 @@ public class NetworkConfigurator {
         NetGroupTunables(ResourceBundle rsrcs, NetGroupTunables defaults) {
             ID idTmp;
             String nameTmp;
-            XMLElement descTmp;
+            XMLElement<?> descTmp;
 
             try {
                 String idTmpStr = rsrcs.getString("NetPeerGroupID").trim();
@@ -2448,7 +2450,7 @@ public class NetworkConfigurator {
                 }
                 idTmp = IDFactory.fromURI(new URI(ID.URIEncodingName + ":" + ID.URNNamespace + ":" + idTmpStr));
                 nameTmp = rsrcs.getString("NetPeerGroupName").trim();
-                descTmp = (XMLElement) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "desc", rsrcs.getString("NetPeerGroupDesc").trim());
+                descTmp = (XMLElement<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, "desc", rsrcs.getString("NetPeerGroupDesc").trim());
 
             } catch (Exception failed) {
 
