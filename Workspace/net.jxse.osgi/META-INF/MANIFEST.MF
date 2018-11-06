@@ -109,3 +109,4 @@ Import-Package: net.jxta.impl.loader,
  org.spongycastle.jce;version="1.47.0.2",
  org.spongycastle.jce.provider;version="1.47.0.2",
  org.spongycastle.x509;version="1.47.0.2"
+Automatic-Module-Name: net.jxse.osgi

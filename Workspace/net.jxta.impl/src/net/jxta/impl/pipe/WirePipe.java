@@ -119,7 +119,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
      * Set) so that we don't keep pipes unnaturally alive and consuming
      * resources.
      */
-    private final Map<InputPipe, Object> wireinputpipes = new WeakHashMap<InputPipe, Object>();
+    private final Map<InputPipeImpl, Object> wireinputpipes = new WeakHashMap<InputPipeImpl, Object>();
 
     /**
      * The list of message ids we have already seen. The most recently seen
@@ -184,7 +184,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         Logging.logCheckedFine(LOG, "Registering input pipe for ", pipeAdv.getPipeID());
 
-        wireinputpipes.put(wireinputpipe, null);
+        wireinputpipes.put((InputPipeImpl) wireinputpipe, null);
         boolean registered;
 
         if (1 == wireinputpipes.size()) {
@@ -326,7 +326,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         try {
 
-            XMLDocument doc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(elem);
+            XMLDocument<?> doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(elem);
             header = new WireHeader(doc);
 
         } catch (Exception e) {
@@ -374,7 +374,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
      */
     private void callLocalListeners(Message message, EndpointAddress srcAddr, EndpointAddress dstAddr) {
 
-        List<InputPipeImpl> listeners = new ArrayList(wireinputpipes.keySet());
+        List<InputPipeImpl> listeners = new ArrayList<>(wireinputpipes.keySet());
 
         if (listeners.isEmpty()) {
 
@@ -425,7 +425,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         Message msg = message.clone();
         header.setTTL(header.getTTL() - 1);
-        XMLDocument headerDoc = (XMLDocument) header.getDocument(MimeMediaType.XMLUTF8);
+        XMLDocument<?> headerDoc = (XMLDocument<?>) header.getDocument(MimeMediaType.XMLUTF8);
         MessageElement elem = new TextDocumentMessageElement(WirePipeImpl.WIRE_HEADER_ELEMENT_NAME, headerDoc, null);
 
         msg.replaceMessageElement(WirePipeImpl.WIRE_HEADER_ELEMENT_NAMESPACE, elem);
@@ -437,7 +437,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
                 return;
             }
             if (null == repropagater) {
-                repropagater = wireService.createOutputPipe(pipeAdv, Collections.EMPTY_SET);
+                repropagater = wireService.createOutputPipe(pipeAdv, Collections.<ID>emptySet());
             }
         }
 

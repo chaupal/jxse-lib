@@ -16,8 +16,9 @@ import java.util.List;
  * A configurator exception which is generated when intervention
  */
 public class IncompleteConfigurationException extends ConfiguratorException {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * Constucts a {@link IncompleteConfigurationException} with no specified details.
      */
     public IncompleteConfigurationException() {
@@ -60,7 +61,7 @@ public class IncompleteConfigurationException extends ConfiguratorException {
      *
      * @param ex causes
      */
-    public IncompleteConfigurationException(List ex) {
+    public IncompleteConfigurationException(List<Throwable> ex) {
         super(ex);
     }
 }

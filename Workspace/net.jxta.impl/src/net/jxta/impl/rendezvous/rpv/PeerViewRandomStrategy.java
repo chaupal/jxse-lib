@@ -63,12 +63,12 @@ import java.util.SortedSet;
 /**
  * Random without replacement
  */
-final class PeerViewRandomStrategy implements PeerViewStrategy {
+final class PeerViewRandomStrategy<P extends Object> implements PeerViewStrategy {
 
-    private SortedSet set;
-    private List copy = new ArrayList();
+    private SortedSet<P> set;
+    private List<P> copy = new ArrayList<>();
 
-    PeerViewRandomStrategy(SortedSet set) {
+    PeerViewRandomStrategy(SortedSet<P> set) {
         this.set = set;
         reset();
     }
@@ -76,9 +76,9 @@ final class PeerViewRandomStrategy implements PeerViewStrategy {
     /**
      * {@inheritDoc}
      */
-    public void reset() {
+	public void reset() {
         copy.clear();
-        copy.addAll(set);
+        copy.addAll( set);
         Collections.shuffle(copy);
     }
 

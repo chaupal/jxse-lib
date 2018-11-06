@@ -66,7 +66,6 @@ import net.jxta.util.documentSerializable.DocumentSerializableUtilities;
 import net.jxta.util.documentSerializable.DocumentSerializationException;
 
 import java.util.Enumeration;
-import java.util.LinkedList;
 
 public class RemoteMonitorResponse implements DocumentSerializable {
     public static final String MONITOR_REGISTERED = "monitorRegistered";
@@ -101,9 +100,6 @@ public class RemoteMonitorResponse implements DocumentSerializable {
     private long lease = -1;
     private PeerMonitorInfo peerMonitorInfo;
 	
-    private long reportRates[];
-    private LinkedList supportedModuleClassIDs;
-
     public RemoteMonitorResponse() {} // for serialization.
 	
     private RemoteMonitorResponse(String responseType, int requestId) { 
@@ -277,7 +273,7 @@ public class RemoteMonitorResponse implements DocumentSerializable {
         return remoteMonitorResponse;	
     }		
 
-    public void serializeTo(Element element) throws DocumentSerializationException {
+    public void serializeTo(Element<?> element) throws DocumentSerializationException {
         DocumentSerializableUtilities.addString(element, "responseType", responseType);
         DocumentSerializableUtilities.addInt(element, "requestId", requestId);
 		
@@ -306,9 +302,9 @@ public class RemoteMonitorResponse implements DocumentSerializable {
         }
     }
 	
-    public void initializeFrom(Element element) throws DocumentSerializationException {
-        for (Enumeration e = element.getChildren(); e.hasMoreElements();) {
-            Element childElement = (TextElement) e.nextElement();
+    public void initializeFrom(Element<?> element) throws DocumentSerializationException {
+        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+            Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 			
             if (tagName.equals("responseType")) { 

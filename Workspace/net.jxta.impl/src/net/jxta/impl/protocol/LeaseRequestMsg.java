@@ -60,13 +60,10 @@ import net.jxta.document.*;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.logging.Logging;
-import net.jxta.protocol.PeerAdvertisement;
 
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
 import java.util.Enumeration;
-import java.util.List;
 import java.util.UUID;
 import java.util.logging.Logger;
 
@@ -104,17 +101,11 @@ public class LeaseRequestMsg {
      */
     private final static transient Logger LOG = Logger.getLogger(LeaseRequestMsg.class.getName());
 
-    private final static String LEASE_REQUEST_MSG = "LeaseRequestMessage";
     private final static String CLIENT_ID_ATTR = "client_id";
     private final static String REQUESTED_LEASE_ATTR = "requested_lease";
     private final static String SERVER_ADV_GEN_ATTR = "server_adv_gen";
-    private final static String REFERRAL_ADVS_ATTR = "referral_advs";
-
+ 
     private final static String CLIENT_CRED_TAG = "Credential";
-    private final static String CLIENT_ADV_TAG = "ClientAdv";
-    private final static String CLIENT_ADV_EXP_ATTR = "ClientAdv";
-
-    private final static String OPTION_TAG = "Options";
 
     /**
      *  The ID of the client.
@@ -142,23 +133,7 @@ public class LeaseRequestMsg {
     /**
      *  The credential of the client.
      */
-    private XMLElement credential = null;
-
-    /**
-     *  The optional peer advertisement of the client.
-     */
-    private PeerAdvertisement clientAdv = null;
-
-    /**
-     *  Expiration value for client peer advertisement. {@code Long.MIN_VALUE} 
-     *  means that no value has been specified.
-     */
-    private long clientAdvExp = Integer.MIN_VALUE;
-
-    /**
-     *  Options
-     */
-    private List options = new ArrayList();
+    private XMLElement<?> credential = null;
 
     /**
      *  New LeaseRequestMsg
@@ -168,14 +143,12 @@ public class LeaseRequestMsg {
     /**
      * Construct from a XLMElement
      */
-    public LeaseRequestMsg(Element root) {
+    public LeaseRequestMsg(Element<?> root) {
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
         }
 
-        XMLElement doc = (XMLElement) root;
-
-        String doctype = doc.getName();
+        XMLElement<?> doc = (XMLElement<?>) root;
 
         String typedoctype = "";
         Attribute itsType = doc.getAttribute("type");
@@ -190,7 +163,7 @@ public class LeaseRequestMsg {
                     + "'. Should be : " + getMessageType());
         }
 
-        Enumeration eachAttr = doc.getAttributes();
+        Enumeration<Attribute> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -231,11 +204,11 @@ public class LeaseRequestMsg {
             }
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) 
                 Logging.logCheckedWarning(LOG, "Unhandled Element: ", elem);
@@ -361,8 +334,8 @@ public class LeaseRequestMsg {
      *  @return The credential associated with this request if any. May be
      *  {@code null} to indicate that no credential was provided.
      */
-    public XMLElement getCredential() {
-        return (XMLElement) ((null != credential) ? StructuredDocumentUtils.copyAsDocument(credential) : null);
+    public XMLElement<?> getCredential() {
+        return (XMLElement<?>) ((null != credential) ? StructuredDocumentUtils.copyAsDocument(credential) : null);
     }
 
     /**
@@ -371,8 +344,8 @@ public class LeaseRequestMsg {
      *  @param newCred The credential associated with this request if any. May
      *  be {@code null} to indicate that no credential is being provided.
      */
-    public void setCredential(XMLElement newCred) {
-        this.credential = (XMLElement) ((null != newCred) ? StructuredDocumentUtils.copyAsDocument(newCred) : null);
+    public void setCredential(XMLElement<?> newCred) {
+        this.credential = (XMLElement<?>) ((null != newCred) ? StructuredDocumentUtils.copyAsDocument(newCred) : null);
     }
 
     /**
@@ -384,10 +357,10 @@ public class LeaseRequestMsg {
         return "jxta:LeaseRequestMsg";
     }
 
-    protected boolean handleElement(XMLElement elem) {
+    protected boolean handleElement(XMLElement<?> elem) {
 
         if (CLIENT_CRED_TAG.equals(elem.getName())) {
-            credential = (XMLElement) StructuredDocumentUtils.copyAsDocument(elem);
+            credential = (XMLElement<?>) StructuredDocumentUtils.copyAsDocument(elem);
 
             return true;
         }
@@ -430,14 +403,14 @@ public class LeaseRequestMsg {
             throw new IllegalStateException("Invalid referral advertisements request value.");
         }
 
-        StructuredDocument msg = StructuredDocumentFactory.newStructuredDocument(mediaType, getMessageType());
+        StructuredDocument<?> msg = StructuredDocumentFactory.newStructuredDocument(mediaType, getMessageType());
 
         if (!(msg instanceof Attributable)) {
             throw new UnsupportedOperationException("Only 'Attributable' document types are supported.");
         }
 
         if (msg instanceof XMLDocument) {
-            ((XMLDocument) msg).addAttribute("xmlns:jxta", "http://jxta.org");
+            ((XMLDocument<?>) msg).addAttribute("xmlns:jxta", "http://jxta.org");
         }
 
         ((Attributable) msg).addAttribute(CLIENT_ID_ATTR, getClientID().toString());

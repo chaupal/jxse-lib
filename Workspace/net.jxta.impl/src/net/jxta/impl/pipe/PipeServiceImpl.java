@@ -214,7 +214,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 	public PipeServiceImpl() {// What is reason for this constructor???
 		// the same is automatically generated.
 	}
-
+	
 //	/**
 //	 * {@inheritDoc}
 //	 * <p/>
@@ -227,6 +227,12 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 //		}
 //		return myInterface;
 //	}
+
+	protected PipeService getMyInterface() {
+		return myInterface;
+	}
+
+
 
 	/**
 	 * {@inheritDoc}

@@ -33,3 +33,4 @@ Import-Package: net.jxta.document,
 Export-Package: net.jxta.impl.endpoint.netty
 Service-Component: OSGI-INF/module.xml
 Bundle-ClassPath: .
+Automatic-Module-Name: net.jxse.netty

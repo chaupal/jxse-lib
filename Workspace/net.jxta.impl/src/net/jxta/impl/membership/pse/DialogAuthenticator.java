@@ -254,7 +254,13 @@ public final class DialogAuthenticator extends StringAuthenticator implements In
             }
         }
 
-        /**
+        @SuppressWarnings("unused")
+		protected PeerID getSeedPeer() {
+			return seedPeer;
+		}
+
+
+		/**
          * Handler for key events.
          **/
         private class PasswordDialogKeyHandler extends KeyAdapter {
@@ -270,7 +276,8 @@ public final class DialogAuthenticator extends StringAuthenticator implements In
 
         /**
          **/
-        private void setOKState() {
+        @SuppressWarnings("unchecked")
+		private void setOKState() {
             boolean enableOK = false;
 
             if (initKeyStore) {

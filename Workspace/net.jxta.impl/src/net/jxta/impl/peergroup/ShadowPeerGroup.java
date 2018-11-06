@@ -64,7 +64,6 @@ import net.jxta.impl.content.ContentServiceImpl;
 //import net.jxta.impl.membership.none.NoneMembershipService;
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.Application;
 import net.jxta.platform.Module;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
@@ -119,7 +118,7 @@ public class ShadowPeerGroup extends StdPeerGroup {
         paramAdv.addProto(PeerGroup.relayProtoClassID, PeerGroup.refRelayProtoSpecID);
 
         // Pour our newParamAdv in implAdv
-        XMLElement paramElement = (XMLElement) paramAdv.getDocument(MimeMediaType.XMLUTF8);
+        XMLElement<?> paramElement = (XMLElement<?>) paramAdv.getDocument(MimeMediaType.XMLUTF8);
 
         implAdv.setParam(paramElement);
 

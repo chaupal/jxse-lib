@@ -106,6 +106,7 @@ import net.jxta.document.XMLElement;
 import net.jxta.impl.util.BASE64InputStream;
 import net.jxta.impl.util.BASE64OutputStream;
 import net.jxta.logging.Logging;
+import net.jxta.util.IOUtils;
 
 import org.spongycastle.asn1.DERObjectIdentifier;
 import org.spongycastle.asn1.x509.X509NameTokenizer;
@@ -828,20 +829,24 @@ public final class PSEUtils {
      * @return the decoded bytes.
      */
     public static byte[] base64Decode(Reader in) throws IOException {
-        BASE64InputStream b64is = new BASE64InputStream(in);
-        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	BASE64InputStream b64is = new BASE64InputStream(in);
+    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
+    	try {
+    		do {
+    			int c = b64is.read();
 
-        do {
-            int c = b64is.read();
+    			if (c < 0) {
+    				break;
+    			}
 
-            if (c < 0) {
-                break;
-            }
+    			bos.write(c);
+    		} while (true);
+    	}
+    	finally {
+    		IOUtils.closeQuietly(b64is);
+    	}
 
-            bos.write(c);
-        } while (true);
-
-        byte[] result = bos.toByteArray();
+    	byte[] result = bos.toByteArray();
 
         Logging.logCheckedFiner(LOG, "Decoded ", result.length, " bytes.");
 

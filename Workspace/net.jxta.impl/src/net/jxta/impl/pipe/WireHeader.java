@@ -96,7 +96,7 @@ public class WireHeader {
 
     public WireHeader() {}
 
-    public WireHeader(Element root) {
+    public WireHeader(Element<?> root) {
         initialize(root);
     }
 
@@ -138,7 +138,7 @@ public class WireHeader {
      * @param elem Element to parse
      * @return true if element was handled, otherwise false.
      */
-    protected boolean handleElement(XMLElement elem) {
+    protected boolean handleElement(XMLElement<?> elem) {
         if (elem.getName().equals(SrcTag)) {
             try {
                 URI pID = new URI(elem.getTextValue());
@@ -179,12 +179,12 @@ public class WireHeader {
      *
      * @param root where to start.
      */
-    protected void initialize(Element root) {
+    protected void initialize(Element<?> root) {
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
         }
 
-        XMLElement doc = (XMLElement) root;
+        XMLElement<?> doc = (XMLElement<?>) root;
         String doctype = doc.getName();
         String typedoctype = "";
         Attribute itsType = doc.getAttribute("type");
@@ -198,10 +198,10 @@ public class WireHeader {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
         while (elements.hasMoreElements()) {
 
-            XMLElement elem = (XMLElement) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) 
                 Logging.logCheckedFine(LOG, "Unhandled Element: ", elem.getName());
@@ -229,12 +229,13 @@ public class WireHeader {
      * @param encodeAs mime type encoding
      * @return the docment for this header
      */
-    public Document getDocument(MimeMediaType encodeAs) {
-        StructuredTextDocument doc = (StructuredTextDocument)
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public Document getDocument(MimeMediaType encodeAs) {
+        StructuredTextDocument doc = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(encodeAs, Name);
 
         if (doc instanceof XMLDocument) {
-            ((XMLDocument) doc).addAttribute("xmlns:jxta", "http://jxta.org");
+            ((XMLDocument<?>) doc).addAttribute("xmlns:jxta", "http://jxta.org");
         }
 
         if (null == getMsgId()) {

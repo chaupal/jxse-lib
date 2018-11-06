@@ -234,7 +234,7 @@ public class StdPeerGroup extends GenericPeerGroup {
 //        }
 
         // Insert the newParamAdv in implAdv
-        XMLElement paramElement = (XMLElement) paramAdv.getDocument(MimeMediaType.XMLUTF8);
+        XMLElement<?> paramElement = (XMLElement<?>) paramAdv.getDocument(MimeMediaType.XMLUTF8);
 
         implAdv.setParam(paramElement);
 
@@ -252,7 +252,7 @@ public class StdPeerGroup extends GenericPeerGroup {
      * {@inheritDoc}
      */
     // @Override
-    public boolean compatible(Element compat) {
+    public boolean compatible(Element<?> compat) {
         return CompatibilityUtils.isCompatible(compat);
     }
 
@@ -334,7 +334,8 @@ public class StdPeerGroup extends GenericPeerGroup {
      *
      * @return int Status.
      */
-    @Override
+    @SuppressWarnings("unchecked")
+	@Override
     public int startApp(String[] arg) {
 
         if (!initComplete) {
@@ -912,13 +913,13 @@ public class StdPeerGroup extends GenericPeerGroup {
                 }
             }
             configInfo.append(indent);
-            Iterator eachProto = messageTransports.entrySet().iterator();
+            Iterator<Map.Entry<ModuleClassID, Object>> eachProto = messageTransports.entrySet().iterator();
 
             if (eachProto.hasNext()) {
                 configInfo.append("\n\t\tMessage Transports :");
             }
             while (eachProto.hasNext()) {
-                Map.Entry anEntry = (Map.Entry) eachProto.next();
+                Map.Entry<ModuleClassID, Object > anEntry = (Map.Entry<ModuleClassID, Object >) eachProto.next();
                 ModuleClassID aMCID = (ModuleClassID) anEntry.getKey();
                 Module anMT = (Module) anEntry.getValue();
 

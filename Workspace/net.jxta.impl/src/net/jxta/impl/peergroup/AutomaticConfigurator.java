@@ -57,6 +57,7 @@
 package net.jxta.impl.peergroup;
 
 import net.jxta.document.AdvertisementFactory;
+import net.jxta.document.Element;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredDocumentUtils;
@@ -148,7 +149,8 @@ public class AutomaticConfigurator extends NullConfigurator {
      *
      * @return If <tt>true</tt> then manual reconfiguration (of some form) is required.
      */
-    private boolean buildPlatformConfig() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private boolean buildPlatformConfig() {
 
         boolean reconf = false;
 
@@ -172,7 +174,7 @@ public class AutomaticConfigurator extends NullConfigurator {
         }
 
         // Check the HTTP Message Transport parameters.
-        XMLDocument http = (XMLDocument) advertisement.getServiceParam(PeerGroup.httpProtoClassID);
+        XMLDocument http = (XMLDocument<?>) advertisement.getServiceParam(PeerGroup.httpProtoClassID);
         HTTPAdv httpAdv = null;
         boolean httpEnabled = true;
 
@@ -180,13 +182,13 @@ public class AutomaticConfigurator extends NullConfigurator {
             try {
                 httpEnabled = advertisement.isSvcEnabled(PeerGroup.httpProtoClassID);
 
-                XMLElement param = null;
+                XMLElement<?> param = null;
 
-                Enumeration httpChilds = http.getChildren(TransportAdvertisement.getAdvertisementType());
+                Enumeration<? extends Element<?>> httpChilds = http.getChildren(TransportAdvertisement.getAdvertisementType());
 
                 // get the HTTPAdv from TransportAdv
                 if (httpChilds.hasMoreElements()) {
-                    param = (XMLElement) httpChilds.nextElement();
+                    param = (XMLElement<?>) httpChilds.nextElement();
                 }
 
                 if (null != param) {
@@ -487,7 +489,7 @@ public class AutomaticConfigurator extends NullConfigurator {
             return false;
         }
 
-        for (Iterator la = IPUtils.getAllLocalAddresses().iterator(); la.hasNext() && !found;) {
+        for (Iterator<InetAddress> la = IPUtils.getAllLocalAddresses().iterator(); la.hasNext() && !found;) {
             for (InetAddress ia1 : ias) {
                 found |= ia1.equals(la.next());
             }

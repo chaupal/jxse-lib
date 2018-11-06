@@ -42,3 +42,5 @@ Export-Package: net.jxse.configuration,
  net.jxse.osgi.platform.activator,
  net.jxta.impl.platform,
  net.jxta.platform
+Automatic-Module-Name: net.jxse.osgi.platform
+Bundle-ActivationPolicy: lazy

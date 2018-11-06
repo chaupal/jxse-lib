@@ -12,3 +12,4 @@ Import-Package: net.jxta.impl.cm.sql,
  net.jxta.peergroup.core,
  org.apache.derby.jdbc
 Export-Package: net.jxta.impl.cm.sql.derby
+Automatic-Module-Name: net.jxse.derby

@@ -681,7 +681,7 @@ public interface PeerGroup extends Service {
      * @param compat A compatibility statement.
      * @return {@code true} if the compatibility statement is compatible.
      */
-    public boolean compatible(Element compat);
+    public boolean compatible(Element<?> compat);
 
     /**
      * Load a Module from a ModuleImplAdv.

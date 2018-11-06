@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
+8i8 * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
  *
  *  The Sun Project JXTA(TM) Software License
  *
@@ -173,11 +173,11 @@ public class MonitorManager implements Service {
     // Cooperate with the code that loaded this module to replace the strong
     // group interface given by init() with a non-counted one.
     private void setPeerGroup(PeerGroup pg) {
-        PeerGroup tmp = peerGroup;
+        //PeerGroup tmp = peerGroup;
 
         peerGroup = pg;
 //        tmp.unref();
-        tmp = null;
+        //tmp = null;
     }
 
     public PeerMonitorInfo getPeerMonitorInfo() {
@@ -319,7 +319,7 @@ public class MonitorManager implements Service {
     private MonitorReport getMonitorReport(MonitorFilter monitorFilter, long reportRate, long previousDeltaTime, long beginReportTime) {
         MonitorReport monitorReport = new MonitorReport(previousDeltaTime, beginReportTime, false);
 
-        for (Iterator i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
+        for (Iterator<ModuleClassID> i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
             ModuleClassID moduleClassID = (ModuleClassID) i.next();
 
             ServiceMonitorFilter serviceMonitorFilter = monitorFilter.getServiceMonitorFilter(moduleClassID);
@@ -342,7 +342,7 @@ public class MonitorManager implements Service {
     public void validateCumulativeMonitorFilter(MonitorFilter monitorFilter) throws MonitorFilterException {
         boolean isAnyServiceFilters = false;
 
-        for (Iterator i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
+        for (Iterator<ServiceMonitorFilter> i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
             ServiceMonitorFilter serviceMonitorFilter = (ServiceMonitorFilter) i.next();
 
             ModuleClassID moduleClassID = serviceMonitorFilter.getModuleClassID();
@@ -370,7 +370,7 @@ public class MonitorManager implements Service {
 
         boolean isAnyServiceFilters = false;
 
-        for (Iterator i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
+        for (Iterator<ServiceMonitorFilter> i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
             ServiceMonitorFilter serviceMonitorFilter = (ServiceMonitorFilter) i.next();
 
             ModuleClassID moduleClassID = serviceMonitorFilter.getModuleClassID();
@@ -393,7 +393,7 @@ public class MonitorManager implements Service {
         MonitorFilter newMonitorFilter = new MonitorFilter(monitorFilter.getDescription());
         boolean anythingAdded = false;
 
-        for (Iterator i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
+        for (Iterator<ServiceMonitorFilter> i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
             ServiceMonitorFilter serviceMonitorFilter = (ServiceMonitorFilter) i.next();
 
             ModuleClassID moduleClassID = serviceMonitorFilter.getModuleClassID();
@@ -423,7 +423,7 @@ public class MonitorManager implements Service {
         MonitorFilter newMonitorFilter = new MonitorFilter(monitorFilter.getDescription());
         boolean anythingAdded = false;
 
-        for (Iterator i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
+        for (Iterator<ServiceMonitorFilter> i = monitorFilter.getServiceMonitorFilters(); i.hasNext();) {
             ServiceMonitorFilter serviceMonitorFilter = (ServiceMonitorFilter) i.next();
 
             ModuleClassID moduleClassID = serviceMonitorFilter.getModuleClassID();
@@ -477,7 +477,7 @@ public class MonitorManager implements Service {
             previousReportTimes[reportRateIndex] = previousReportTimes[pulseRateIndex];
         }
 
-        for (Iterator i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
+        for (Iterator<ModuleClassID> i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
             ModuleClassID moduleClassID = (ModuleClassID) i.next();
 
             ServiceMonitorFilter serviceMonitorFilter = monitorFilter.getServiceMonitorFilter(moduleClassID);
@@ -519,7 +519,7 @@ public class MonitorManager implements Service {
                 numRemoved++;
                 filtersPerRate[reportRateIndex]--;
 
-                for (Iterator i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
+                for (Iterator<ModuleClassID> i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
                     ModuleClassID moduleClassID = (ModuleClassID) i.next();
 
                     ServiceMonitorFilter serviceMonitorFilter = monitorFilter.getServiceMonitorFilter(moduleClassID);
@@ -542,7 +542,7 @@ public class MonitorManager implements Service {
 
         MonitorReport monitorReport = new MonitorReport(startTime, beginReportTime, true);
 
-        for (Iterator i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
+        for (Iterator<ModuleClassID> i = monitorFilter.getModuleClassIDs(); i.hasNext();) {
             ModuleClassID moduleClassID = (ModuleClassID) i.next();
 
             ServiceMonitorFilter serviceMonitorFilter = monitorFilter.getServiceMonitorFilter(moduleClassID);

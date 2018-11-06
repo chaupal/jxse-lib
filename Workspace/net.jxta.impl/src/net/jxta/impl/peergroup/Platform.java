@@ -260,7 +260,8 @@ public class Platform extends StdPeerGroup {
     /**
      * {@inheritDoc}
      */
-    @Override
+    @SuppressWarnings("unused")
+	@Override
     protected void checkServices() throws ServiceNotFoundException {
         super.checkServices();
         Service ignored;

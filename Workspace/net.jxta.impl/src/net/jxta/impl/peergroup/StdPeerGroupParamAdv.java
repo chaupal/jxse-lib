@@ -152,11 +152,11 @@ public class StdPeerGroupParamAdv {
      *
      * @param root the root element
      */
-    public StdPeerGroupParamAdv(Element root) {
+    public StdPeerGroupParamAdv(Element<?> root) {
         if (!(root instanceof XMLElement)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XMLElement");
         }
-        initialize((XMLElement) root);
+        initialize((XMLElement<?>) root);
     }
 
     /**
@@ -164,7 +164,7 @@ public class StdPeerGroupParamAdv {
      *
      * @param doc The XML serialization of the advertisement.
      */
-    public StdPeerGroupParamAdv(XMLElement doc) {
+    public StdPeerGroupParamAdv(XMLElement<?> doc) {
         initialize(doc);
     }
 
@@ -346,18 +346,19 @@ public class StdPeerGroupParamAdv {
 
     }
 
-    private void initialize(XMLElement doc) {
+    @SuppressWarnings("unchecked")
+	private void initialize(XMLElement<?> doc) {
         if (!doc.getName().equals(PARAM_TAG)) {
             throw new IllegalArgumentException("Can not construct " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
         // set defaults
         int appCount = 0;
-        Enumeration<XMLElement> modules = doc.getChildren();
+        Enumeration<XMLElement<?>> modules = (Enumeration<XMLElement<?>>) doc.getChildren();
 
         while (modules.hasMoreElements()) {
 
-            XMLElement module = modules.nextElement();
+            XMLElement<?> module = modules.nextElement();
             String tagName = module.getName();
 
             Map<ModuleClassID, Object> theTable;
@@ -392,11 +393,11 @@ public class StdPeerGroupParamAdv {
                 }
 
                 // Check for children anyway.
-                Enumeration<XMLElement> fields = module.getChildren();
+                Enumeration<XMLElement<?>> fields = (Enumeration<XMLElement<?>>) module.getChildren();
 
                 while (fields.hasMoreElements()) {
 
-                    XMLElement field = fields.nextElement();
+                    XMLElement<?> field = fields.nextElement();
 
                     String fieldName = field.getName();
 
@@ -468,7 +469,7 @@ public class StdPeerGroupParamAdv {
      * @return document instance
      */
     public Document getDocument(MimeMediaType encodeAs) {
-        StructuredDocument doc = StructuredDocumentFactory.newStructuredDocument(encodeAs, PARAM_TAG);
+        StructuredDocument<?> doc = StructuredDocumentFactory.newStructuredDocument(encodeAs, PARAM_TAG);
 
         outputModules(doc, services, SVC_TAG);
         outputModules(doc, transports, PROTO_TAG);
@@ -477,7 +478,8 @@ public class StdPeerGroupParamAdv {
         return doc;
     }
 
-    private void outputModules(StructuredDocument doc, Map<ModuleClassID, Object> modulesTable, String mainTag) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void outputModules(StructuredDocument doc, Map<ModuleClassID, Object> modulesTable, String mainTag) {
 
         for (Map.Entry<ModuleClassID, Object> entry : modulesTable.entrySet()) {
             ModuleClassID mcid = entry.getKey();

@@ -66,14 +66,6 @@ Import-Package: junit.extensions;version="4.11.0",
  org.junit.runners;version="4.11.0",
  org.junit.runners.model;version="4.11.0",
  org.osgi.framework;version="1.8.0"
-Bundle-ClassPath: .,
- jmock-2.5.1/cglib-2.1_3-src.jar,
- jmock-2.5.1/cglib-nodep-2.1_3.jar,
- jmock-2.5.1/hamcrest-core-1.1.jar,
- jmock-2.5.1/hamcrest-library-1.1.jar,
- jmock-2.5.1/jmock-2.5.1.jar,
- jmock-2.5.1/jmock-junit3-2.5.1.jar,
- jmock-2.5.1/jmock-junit4-2.5.1.jar,
- jmock-2.5.1/jmock-legacy-2.5.1.jar
+Bundle-ClassPath: .
 Bundle-Vendor: Chaupal.org
 Automatic-Module-Name: net.jxse.test

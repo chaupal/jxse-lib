@@ -196,7 +196,7 @@ public final class WorldPeerGroupFactory {
      * @throws PeerGroupException Thrown for problems constructing the World
      * Peer Group.
      */
-    public WorldPeerGroupFactory(Class worldPeerGroupClass, ConfigParams config, URI storeHome) throws PeerGroupException {
+    public WorldPeerGroupFactory(Class<?> worldPeerGroupClass, ConfigParams config, URI storeHome) throws PeerGroupException {
 
         world = newWorldPeerGroup(worldPeerGroupClass, config, storeHome);
     }
@@ -231,7 +231,7 @@ public final class WorldPeerGroupFactory {
      * @throws PeerGroupException Thrown for problems determining the class to
      * be used for the World Peer Group.
      */
-    private static Class getDefaultWorldPeerGroupClass() throws PeerGroupException {
+    private static Class<?> getDefaultWorldPeerGroupClass() throws PeerGroupException {
 
         try {
             JxtaLoader loader = net.jxta.impl.peergroup.GenericPeerGroup.getJxtaLoader();
@@ -264,7 +264,8 @@ public final class WorldPeerGroupFactory {
      * Peer Group.
      * @return the WorldPeerGroup
      */
-    private PeerGroup newWorldPeerGroup(Class worldPeerGroupClass, ConfigParams config, URI storeHome) throws PeerGroupException {
+    @SuppressWarnings("unchecked")
+	private PeerGroup newWorldPeerGroup(Class<?> worldPeerGroupClass, ConfigParams config, URI storeHome) throws PeerGroupException {
         if (!storeHome.isAbsolute()) {
             LOG.severe("storeHome must be an absolute URI.");
             throw new PeerGroupException("storeHome must be an absolute URI.");
@@ -291,7 +292,7 @@ public final class WorldPeerGroupFactory {
 
                 Logging.logCheckedInfo(LOG, "Making a new World Peer Group instance using : ", worldPeerGroupClass.getName());
 
-                Constructor<PeerGroup> twoParams = (Constructor<PeerGroup>) worldPeerGroupClass.getConstructor(ConfigParams.class,URI.class);
+                Constructor<PeerGroup> twoParams =  (Constructor<PeerGroup>) worldPeerGroupClass.getConstructor(ConfigParams.class,URI.class);
 
                 try {
                     result = twoParams.newInstance(config, storeHome);

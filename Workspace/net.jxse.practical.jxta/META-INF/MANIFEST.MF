@@ -52,3 +52,5 @@ Export-Package: Examples.A_JXTA_Connection_And_Local_Configuration,
  Examples.Z_Tools_And_Others,
  net.jxse.practical.jxta
 Service-Component: OSGI-INF/message.xml
+Automatic-Module-Name: net.jxse.practical.jxta
+Bundle-ActivationPolicy: lazy

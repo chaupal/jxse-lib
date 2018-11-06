@@ -74,7 +74,7 @@ public class ConfiguratorException extends JxtaException {
 	private List<Throwable> causes = null;
 
     /**
-     * Constucts a {@link JxtaException} with no specified details.
+     * Constructs a {@link JxtaException} with no specified details.
      */
     public ConfiguratorException() {
         super();
