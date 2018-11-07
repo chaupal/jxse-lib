@@ -16,7 +16,7 @@ import net.jxta.impl.endpoint.EndpointServiceImpl;
 public class CbjxFilter implements MessageFilterListener
 {
 	
-    @SuppressWarnings({ "unchecked", "rawtypes" })
+    @SuppressWarnings("unchecked")
 	public Message filterMessage(Message paramMsg, EndpointAddress paramSrcAddr, EndpointAddress paramDstAddr)
     {
         if(WireFormatMessageFactory.CBJX_DISABLE)
@@ -29,7 +29,7 @@ public class CbjxFilter implements MessageFilterListener
             return paramMsg;
         }
 
-        Set<EndpointAddress> tempSetEA = (Set)paramMsg.getMessageProperty(EndpointServiceImpl.VERIFIED_ADDRESS_SET);
+        Set<EndpointAddress> tempSetEA = (Set<EndpointAddress>)paramMsg.getMessageProperty(EndpointServiceImpl.VERIFIED_ADDRESS_SET);
         if(tempSetEA.contains(paramSrcAddr))
         {
             return paramMsg;

@@ -56,6 +56,7 @@
 package net.jxta.endpoint;
 
 import net.jxta.document.MimeMediaType;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.util.AbstractSimpleSelectable;
 import net.jxta.util.SimpleSelectable;
@@ -78,7 +79,6 @@ import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Logger;
 import net.jxta.annotation.DoNotDelete;
 import net.jxta.annotation.DoNotRelyOnThisCode;
 
@@ -112,7 +112,7 @@ public class Message extends AbstractSimpleSelectable implements Serializable {
     /**
      * Logger
      */
-    private static final transient Logger LOG = Logger.getLogger(Message.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(Message.class.getName());
 
     /**
      * Magic value for this format of serialization version.

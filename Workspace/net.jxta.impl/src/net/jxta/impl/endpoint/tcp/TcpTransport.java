@@ -78,6 +78,7 @@ import net.jxta.impl.endpoint.transportMeter.TransportServiceMonitor;
 import net.jxta.impl.meter.MonitorManager;
 import net.jxta.impl.protocol.TCPAdv;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.meter.MonitorResources;
 import net.jxta.peer.PeerID;
@@ -86,6 +87,7 @@ import net.jxta.platform.Module;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.TransportAdvertisement;
+
 import java.io.IOException;
 import java.io.InterruptedIOException;
 import java.net.InetAddress;
@@ -115,8 +117,6 @@ import java.util.Stack;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executor;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class implements the TCP Message Transport.
@@ -130,10 +130,7 @@ import java.util.logging.Logger;
  */
 public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(TcpTransport.class.getName());
+    private static final Logger LOG = Logging.getLogger(TcpTransport.class.getName());
 
     /**
      * The TCP send buffer size.
@@ -227,7 +224,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
         } catch (IOException ex) {
 
-            Logging.logCheckedSevere(LOG, "Failed adding selector to  write selector pool");
+            Logging.logCheckedError(LOG, "Failed adding selector to  write selector pool");
 
         }
 
@@ -379,8 +376,8 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
-	public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+   public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
 
         this.group = group;
         ModuleImplAdvertisement implAdvertisement = (ModuleImplAdvertisement) impl;
@@ -390,10 +387,10 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         ConfigParams configAdv = group.getConfigAdvertisement();
 
         // Get out invariable parameters from the implAdv
-        XMLElement<?> param = (XMLElement<?>) implAdvertisement.getParam();
+        XMLElement param = (XMLElement<?>) implAdvertisement.getParam();
 
         if (param != null) {
-            Enumeration<XMLElement<?>> list = (Enumeration<XMLElement<?>>) param.getChildren("Proto");
+            Enumeration<XMLElement<?>> list = param.getChildren("Proto");
 
             if (list.hasMoreElements()) {
                 XMLElement<?> pname = list.nextElement();
@@ -407,7 +404,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
             throw new IllegalArgumentException(TransportAdvertisement.getAdvertisementType() + " could not be located.");
         }
 
-        Enumeration<XMLElement<?>> tcpChilds = (Enumeration<XMLElement<?>>) param.getChildren(TransportAdvertisement.getAdvertisementType());
+        Enumeration<XMLElement<?>> tcpChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
 
         // get the TransportAdv
         if (tcpChilds.hasMoreElements()) {
@@ -430,7 +427,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         try {
             paramsAdv = AdvertisementFactory.newAdvertisement(param);
         } catch (NoSuchElementException notThere) {
-            Logging.logCheckedFine(LOG, "Could not find parameter document\n", notThere);
+            Logging.logCheckedDebug(LOG, "Could not find parameter document\n", notThere);
         }
 
         if (!(paramsAdv instanceof TCPAdv)) {
@@ -606,7 +603,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         }
 
         // Tell tell the world about our configuration.
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring TCP Message Transport : " + assignedID);
 
@@ -685,7 +682,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
         if (messengerEventListener == null) {
 
-            Logging.logCheckedSevere(LOG, "Transport registration refused");
+            Logging.logCheckedError(LOG, "Transport registration refused");
             return -1;
 
         }
@@ -696,7 +693,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         if (unicastServer != null) {
             if (!unicastServer.start()) {
 
-                Logging.logCheckedSevere(LOG, "Unable to start TCP Unicast Server");
+                Logging.logCheckedError(LOG, "Unable to start TCP Unicast Server");
                 return -1;
 
             }
@@ -746,7 +743,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
             } catch (IOException failed) {
 
-                Logging.logCheckedSevere(LOG, "IO error occured while closing server socket\n", failed);
+                Logging.logCheckedError(LOG, "IO error occured while closing server socket\n", failed);
 
             }
 
@@ -762,13 +759,13 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         endpoint = null;
         group = null;
 
-        if (Logging.SHOW_INFO && LOG.isLoggable(Level.INFO)) {
+        if (Logging.SHOW_INFO && LOG.isInfoEnabled()) {
 
-            LOG.info(MessageFormat.format("Total bytes sent : {0}", getBytesSent()));
-            LOG.info(MessageFormat.format("Total Messages sent : {0}", getMessagesSent()));
-            LOG.info(MessageFormat.format("Total bytes received : {0}", getBytesReceived()));
-            LOG.info(MessageFormat.format("Total Messages received : {0}", getMessagesReceived()));
-            LOG.info(MessageFormat.format("Total connections accepted : {0}", getConnectionsAccepted()));
+            LOG.infoParams("Total bytes sent : {}", getBytesSent());
+            LOG.infoParams("Total Messages sent : {}", getMessagesSent());
+            LOG.infoParams("Total bytes received : {}", getBytesReceived());
+            LOG.infoParams("Total Messages received : {}", getMessagesReceived());
+            LOG.infoParams("Total connections accepted : {}", getConnectionsAccepted());
 
             LOG.info("TCP Message Transport shut down.");
 
@@ -851,7 +848,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
         // return a loopback messenger.
         if (publicAddresses.contains(plainAddr)) {
 
-            Logging.logCheckedFine(LOG, "return LoopbackMessenger for addr : ", dst);
+            Logging.logCheckedDebug(LOG, "return LoopbackMessenger for addr : ", dst);
 
             return new LoopbackMessenger(group, endpoint, getPublicAddress(), dst,
                     new EndpointAddress("jxta", group.getPeerID().getUniqueValue().toString(), null, null));
@@ -921,7 +918,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
             try {
                 if (!writeSelectorCache.isEmpty()) selector = writeSelectorCache.pop();
             } catch (EmptyStackException ese) {
-                Logging.logCheckedFine(LOG, "No write selector available, waiting for one");
+                Logging.logCheckedDebug(LOG, "No write selector available, waiting for one");
             }
 
             int attempts = 0;
@@ -932,7 +929,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
                         selector = writeSelectorCache.pop();
                     }
                 } catch (EmptyStackException ese) {
-                    Logging.logCheckedFine(LOG, "Failed to get a write selector available, waiting for one\n", ese);
+                    Logging.logCheckedDebug(LOG, "Failed to get a write selector available, waiting for one\n", ese);
                 }
                 attempts++;
             }
@@ -985,10 +982,10 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
                             // this can be interrupted through wakeup
                             selectedKeys = messengerSelector.select();
                         } catch (CancelledKeyException cke) {
-                            Logging.logCheckedFine(LOG, "Key was cancelled\n", cke);
+                            Logging.logCheckedDebug(LOG, "Key was cancelled\n", cke);
                         }
 
-                        Logging.logCheckedFine(LOG, MessageFormat.format("MessengerSelector has {0} selected keys", selectedKeys));
+                        Logging.logCheckedDebug(LOG, MessageFormat.format("MessengerSelector has {0} selected keys", selectedKeys));
 
                         if (selectedKeys == 0 && messengerSelector.selectNow() == 0) {
                             // We were probably just woken.
@@ -997,7 +994,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
                         Set<SelectionKey> keySet = messengerSelector.selectedKeys();
 
-                        Logging.logCheckedFine(LOG, MessageFormat.format("KeySet has {0} selected keys", keySet.size()));
+                        Logging.logCheckedDebug(LOG, MessageFormat.format("KeySet has {0} selected keys", keySet.size()));
 
                         Iterator<SelectionKey> it = keySet.iterator();
 
@@ -1023,7 +1020,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
                                         try {
                                             executor.execute(msgr);
                                         } catch (RejectedExecutionException re) {
-                                            Logging.logCheckedFine(LOG, MessageFormat.format("Executor rejected task for messenger :{0}", msgr.toString()),
+                                            Logging.logCheckedDebug(LOG, MessageFormat.format("Executor rejected task for messenger :{0}", msgr.toString()),
                                                 "\n", re);
                                         }
                                     }
@@ -1044,11 +1041,11 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
                     } catch (ClosedSelectorException cse) {
 
-                        Logging.logCheckedFine(LOG, "IO Selector closed");
+                        Logging.logCheckedDebug(LOG, "IO Selector closed");
 
                     } catch (InterruptedIOException woken) {
 
-                        Logging.logCheckedFine(LOG, "Thread inturrupted\n", woken);
+                        Logging.logCheckedDebug(LOG, "Thread inturrupted\n", woken);
 
                     } catch (IOException e1) {
 
@@ -1067,7 +1064,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable\n", all);
 
             } finally {
 
@@ -1106,7 +1103,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
     private synchronized void updateChannelRegisterations() {
 
         if (!regisMap.isEmpty() ) {
-            Logging.logCheckedFine(LOG, MessageFormat.format("Registering {0} channels with MessengerSelectorThread", regisMap.size()));
+            Logging.logCheckedDebug(LOG, MessageFormat.format("Registering {0} channels with MessengerSelectorThread", regisMap.size()));
         }
 
         if (!regisMap.isEmpty()) {
@@ -1126,7 +1123,8 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
                     key.interestOps(key.interestOps() | SelectionKey.OP_READ);
 
-                    Logging.logCheckedFiner(LOG, MessageFormat.format("Key interestOps on channel {0}, bit set :{1}", channel, key.interestOps()));
+                    // LOGGING: was Finer
+                    Logging.logCheckedDebug(LOG, MessageFormat.format("Key interestOps on channel {0}, bit set :{1}", channel, key.interestOps()));
 
                 } catch (ClosedChannelException e) {
 
@@ -1137,11 +1135,11 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
                 } catch (CancelledKeyException e) {
 
-                    Logging.logCheckedFine(LOG, "Key is already cancelled, removing key from registeration map\n", e);
+                    Logging.logCheckedDebug(LOG, "Key is already cancelled, removing key from registeration map\n", e);
 
                 } catch (IllegalBlockingModeException e) {
 
-                    Logging.logCheckedFine(LOG, "Invalid blocking channel mode, closing messenger\n", e);
+                    Logging.logCheckedDebug(LOG, "Invalid blocking channel mode, closing messenger\n", e);
                     // messenger state is unknown
                     msgr.close();
 
@@ -1155,7 +1153,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
 
         // Unregister and close channels.
         if (!unregisMap.isEmpty()) {
-            Logging.logCheckedFine(LOG, MessageFormat.format("Unregistering {0} channels with MessengerSelectorThread", unregisMap.size()));
+            Logging.logCheckedDebug(LOG, MessageFormat.format("Unregistering {0} channels with MessengerSelectorThread", unregisMap.size()));
         }
 
         if (!unregisMap.isEmpty()) {
@@ -1176,7 +1174,7 @@ public class TcpTransport implements Module, MessageSender, MessageReceiver {
                     try {
                         key.cancel();
                     } catch (CancelledKeyException e) {
-                        Logging.logCheckedFine(LOG, "Key is already cancelled, removing key from registeration map\n", e);
+                        Logging.logCheckedDebug(LOG, "Key is already cancelled, removing key from registeration map\n", e);
                     }
                 }
             }

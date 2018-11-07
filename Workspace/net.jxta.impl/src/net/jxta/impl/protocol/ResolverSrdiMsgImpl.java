@@ -63,19 +63,19 @@ import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.StructuredTextDocument;
 import net.jxta.document.XMLElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
 import net.jxta.protocol.ResolverSrdiMsg;
 
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * ResolverQuery provides the binding for the message to query other nodes
  */
 public class ResolverSrdiMsgImpl extends ResolverSrdiMsg {
 
-    private final static Logger LOG = Logger.getLogger(ResolverSrdiMsgImpl.class.getName());
+    private final static Logger LOG = Logging.getLogger(ResolverSrdiMsgImpl.class.getName());
 
     /**
      * Description of the Field
@@ -151,8 +151,8 @@ public class ResolverSrdiMsgImpl extends ResolverSrdiMsg {
      * @param asMimeType type of message
      * @return document
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType asMimeType) {
         StructuredTextDocument adv = (StructuredTextDocument<?>) StructuredDocumentFactory.newStructuredDocument(asMimeType
                 ,
@@ -190,7 +190,7 @@ public class ResolverSrdiMsgImpl extends ResolverSrdiMsg {
      * @param membership used to parse credentails if any
      */
     private void readIt(XMLElement<?> doc, MembershipService membership) {
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();

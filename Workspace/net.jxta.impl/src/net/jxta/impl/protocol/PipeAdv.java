@@ -67,6 +67,7 @@ import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.pipe.PipeService;
 import net.jxta.protocol.PipeAdvertisement;
@@ -74,7 +75,6 @@ import net.jxta.protocol.PipeAdvertisement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * This class implements the Pipe Advertisement according to the schema used by
@@ -97,10 +97,7 @@ import java.util.logging.Logger;
  */
 public class PipeAdv extends PipeAdvertisement {
 
-    /**
-     *  Logger
-     */
-    private final static Logger LOG = Logger.getLogger(PipeAdv.class.getName());
+    private final static Logger LOG = Logging.getLogger(PipeAdv.class.getName());
 
     /**
      *  Fields which will be returned by {@link #getIndexFields()}
@@ -163,14 +160,14 @@ public class PipeAdv extends PipeAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
 
         }
@@ -247,8 +244,8 @@ public class PipeAdv extends PipeAdvertisement {
     /**
      *  {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 

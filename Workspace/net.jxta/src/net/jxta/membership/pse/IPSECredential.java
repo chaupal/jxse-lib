@@ -5,33 +5,17 @@ import java.io.IOException;
 import java.security.InvalidKeyException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
+import java.security.PrivateKey;
 import java.security.Signature;
 import java.security.SignatureException;
 import java.security.cert.X509Certificate;
 
-import net.jxta.document.MimeMediaType;
-import net.jxta.document.StructuredDocument;
+import net.jxta.credential.Credential;
 import net.jxta.endpoint.tls.IPSECredentialBridge;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
-import net.jxta.service.Service;
 
-public interface IPSECredential {
-
-	/**
-	 * {@inheritDoc}
-	 */
-	boolean equals(Object target);
-
-	/**
-	 * {@inheritDoc}
-	 */
-	int hashCode();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	String toString();
+public interface IPSECredential extends Credential{
 
 	/**
 	 * Add a listener
@@ -62,47 +46,6 @@ public interface IPSECredential {
 	 * @param listener     the listener
 	 */
 	void removePropertyChangeListener(String propertyName, PropertyChangeListener listener);
-
-	/**
-	 * {@inheritDoc}
-	 */
-	ID getPeerGroupID();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	ID getPeerID();
-
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * A PSE Credential is valid as long as the associated certificate is
-	 * valid.
-	 */
-	boolean isExpired();
-
-	/**
-	 * {@inheritDoc}
-	 * <p/>
-	 * A PSE Credential is valid as long as the associated certificate is
-	 * valid and as long as the membership service still has the credential.
-	 */
-	boolean isValid();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	Object getSubject();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	Service getSourceService();
-
-	/**
-	 * {@inheritDoc}
-	 */
-	StructuredDocument<?> getDocument(MimeMediaType encodeAs) throws Exception;
 
 	/**
 	 * Returns the certificate associated with this credential.
@@ -163,5 +106,7 @@ public interface IPSECredential {
 
 	IPSECredential getServiceCredential(ID assignedID)
 			throws IOException, PeerGroupException, InvalidKeyException, SignatureException;
+
+	PrivateKey getPrivateKey();
 
 }

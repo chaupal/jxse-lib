@@ -9,7 +9,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
 import java.util.concurrent.Executors;
-import java.util.logging.Logger;
 
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
@@ -23,6 +22,7 @@ import net.jxta.id.ID;
 import net.jxta.impl.endpoint.IPUtils;
 import net.jxta.impl.endpoint.TransportUtils;
 import net.jxta.impl.protocol.TCPAdv;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
@@ -50,7 +50,7 @@ import org.jboss.netty.channel.socket.nio.NioServerSocketChannelFactory;
  */
 public class NettyTransport implements Module {
     
-    private static final Logger LOG = Logger.getLogger(NettyTransport.class.getName());
+    private static final Logger LOG = Logging.getLogger(NettyTransport.class.getName());
 
     public static final int MODULE_STARTUP_FAILED = -1;
     
@@ -261,7 +261,9 @@ public class NettyTransport implements Module {
 
             port = Math.max(min, Math.min(port, max));
 
-            LOG.warning("{} port was outside legal range ({}-{}), changed to {}" + new Object[] { portName, min, max, port });
+            if(Logging.SHOW_WARNING && LOG.isWarnEnabled()) {
+                LOG.warnParams("{} port was outside legal range ({}-{}), changed to {}", new Object[] { portName, min, max, port });
+            }
             
         }
         
@@ -270,7 +272,7 @@ public class NettyTransport implements Module {
 
     public int startApp(String[] args) {
         if(!serverEnabled && !clientEnabled) {
-            LOG.info("Both client and server of transport for {} are disabled - module not starting" + getProtocolName());
+            LOG.infoParams("Both client and server of transport for {} are disabled - module not starting", getProtocolName());
             return Module.START_DISABLED;
         }
         

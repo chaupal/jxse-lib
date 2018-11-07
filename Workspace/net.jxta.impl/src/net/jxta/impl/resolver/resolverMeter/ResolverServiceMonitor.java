@@ -225,22 +225,4 @@ public class ResolverServiceMonitor extends GenericServiceMonitor {
 
         return origMetric.deepCopy(resolverServiceMonitorFilter);
     }
-
-    /*
-     private ResolverServiceMetric copy(ResolverServiceMetric origMetric) {
-     ResolverServiceMetric resolverServiceMetric = new ResolverServiceMetric();
-
-     for (Iterator i = origMetric.getQueryHandlerMetrics(); i.hasNext(); ) {
-     QueryHandlerMetric queryHandlerMetric = (QueryHandlerMetric)i.next();
-     resolverServiceMetric.addQueryHandlerMetric(queryHandlerMetric);
-     }
-
-     for (Iterator i = origMetric.getSrdiHandlerMetrics(); i.hasNext(); ) {
-     SrdiHandlerMetric srdiHandlerMetric = (SrdiHandlerMetric)i.next();
-     resolverServiceMetric.addSrdiHandlerMetric(srdiHandlerMetric);
-     }
-
-     return resolverServiceMetric;	
-     }
-     */			
 }

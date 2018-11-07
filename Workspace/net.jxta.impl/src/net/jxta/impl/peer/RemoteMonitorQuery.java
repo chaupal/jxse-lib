@@ -93,8 +93,7 @@ public class RemoteMonitorQuery implements DocumentSerializable {
         return monitorFilter;
     }
 
-    @SuppressWarnings("unused")
-	private String getRequestType() {
+    private String getRequestType() {
         return requestType;
     }
 
@@ -205,7 +204,7 @@ public class RemoteMonitorQuery implements DocumentSerializable {
     }
 
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 			

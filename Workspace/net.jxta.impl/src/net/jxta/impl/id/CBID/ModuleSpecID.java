@@ -61,12 +61,12 @@ import net.jxta.impl.id.UUID.UUID;
 import net.jxta.impl.id.UUID.UUIDFactory;
 
 /**
- * An implementation of the {@link net.jxta.platform.ModuleSpecID} ID Type.
+ * An implementation of the {@link net.jxta.platform.net.jxta.peergroup.core.ModuleSpecID} ID Type.
  */
 public final class ModuleSpecID extends net.jxta.impl.id.UUID.ModuleSpecID {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * Constructor. Used only internally.
      */
     protected ModuleSpecID() {
@@ -95,7 +95,7 @@ public final class ModuleSpecID extends net.jxta.impl.id.UUID.ModuleSpecID {
     }
 
     /**
-     * See {@link net.jxta.id.IDFactory.Instantiator#newModuleSpecID(net.jxta.platform.ModuleClassID)}.
+     * See {@link net.jxta.id.IDFactory.Instantiator#newModuleSpecID(net.jxta.platform.net.jxta.peergroup.core.ModuleClassID)}.
      * @param classID the ModuleClassID
      */
     public ModuleSpecID(ModuleClassID classID) {

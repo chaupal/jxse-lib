@@ -55,6 +55,19 @@
  */
 package net.jxta.impl.endpoint.servlethttp;
 
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.Enumeration;
+import java.util.NoSuchElementException;
+
+import javax.servlet.ServletConfig;
+import javax.servlet.ServletException;
+import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServlet;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
 import net.jxta.document.MimeMediaType;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
@@ -66,21 +79,9 @@ import net.jxta.impl.endpoint.EndpointServiceImpl;
 import net.jxta.impl.endpoint.transportMeter.TransportBindingMeter;
 import net.jxta.impl.endpoint.transportMeter.TransportMeterBuildSettings;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-
-import javax.servlet.ServletConfig;
-import javax.servlet.ServletException;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.util.Enumeration;
-import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import net.jxta.peergroup.PeerGroup;
 
 /**
  *  This is a simple servlet that accepts JXTA Messages from clients using HTTP
@@ -91,12 +92,9 @@ import java.util.logging.Logger;
  *  response consists of the unique value portion of the local peer id.
  */
 public class HttpMessageServlet extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = -8416087370481058687L;
 
-	/**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(HttpMessageServlet.class.getName());
+	private final static transient Logger LOG = Logging.getLogger(HttpMessageServlet.class.getName());
 
     /**
      *  The maximum duration in milliseconds we will keep a connection alive
@@ -144,7 +142,7 @@ public class HttpMessageServlet extends HttpServlet {
             throw new ServletException("'HttpMessageReceiver' attribute was not of the proper type in the Servlet Context");
         }
 
-        servletHttpTransport = owner.servletHttpTransport;
+        servletHttpTransport = owner.getServletHttpTransport();
         endpoint = owner.getEndpointService();
 
         String peerId = endpoint.getGroup().getPeerID().getUniqueValue().toString();
@@ -164,10 +162,10 @@ public class HttpMessageServlet extends HttpServlet {
     @Override
     public void doGet(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        Logging.logCheckedFine(LOG, "GET ", req.getRequestURI(), " thread = ", Thread.currentThread());
+        Logging.logCheckedDebug(LOG, "GET ", req.getRequestURI(), " thread = ", Thread.currentThread());
         processRequest(req, res);
 
-        Logging.logCheckedFine(LOG, "GET done for thread = ", Thread.currentThread());
+        Logging.logCheckedDebug(LOG, "GET done for thread = ", Thread.currentThread());
 
     }
 
@@ -177,9 +175,9 @@ public class HttpMessageServlet extends HttpServlet {
     @Override
     public void doPost(HttpServletRequest req, HttpServletResponse res) throws ServletException, IOException {
 
-        Logging.logCheckedFine(LOG, "POST ", req.getRequestURI(), " thread = ", Thread.currentThread());
+        Logging.logCheckedDebug(LOG, "POST ", req.getRequestURI(), " thread = ", Thread.currentThread());
         processRequest(req, res);
-        Logging.logCheckedFine(LOG, "POST done for thread = ", Thread.currentThread());
+        Logging.logCheckedDebug(LOG, "POST done for thread = ", Thread.currentThread());
 
     }
 
@@ -189,7 +187,7 @@ public class HttpMessageServlet extends HttpServlet {
     @Override
     public synchronized void destroy() {
 
-        // All we need to do is wakeup the threads that are waiting. (In truth
+        // All we need to do is wake up the threads that are waiting. (In truth
         // we'll miss those that are waiting on a messenger, but that'll do for
         // now, because we do that only when shutting down the group and then
         // the relay will be shutdown as well, which will take care of the
@@ -212,7 +210,8 @@ public class HttpMessageServlet extends HttpServlet {
         int requestSize = 0;
         TransportBindingMeter transportBindingMeter = null;
 
-        if (Logging.SHOW_FINEST && LOG.isLoggable(Level.FINEST)) {
+        // LOGGING: was FINEST
+        if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
             printRequest(req);
         }
 
@@ -240,7 +239,7 @@ public class HttpMessageServlet extends HttpServlet {
 
             if (TransportMeterBuildSettings.TRANSPORT_METERING) {
                 long connectionTime = TimeUtils.toRelativeTimeMillis(TimeUtils.timeNow(), currentRequest.requestStartTime);
-                EndpointAddress sourceAddress = new EndpointAddress("http", req.getRemoteHost(), null, null); //
+                EndpointAddress sourceAddress = new EndpointAddress("http", req.getRemoteHost(), null, null);
 
                 transportBindingMeter = servletHttpTransport.getTransportBindingMeter(null, sourceAddress);
                 if (transportBindingMeter != null) {
@@ -258,7 +257,7 @@ public class HttpMessageServlet extends HttpServlet {
         if (TransportMeterBuildSettings.TRANSPORT_METERING) {
             lastReadWriteTime = TimeUtils.timeNow();
             long connectTime = TimeUtils.toRelativeTimeMillis(TimeUtils.timeNow(), currentRequest.requestStartTime);
-            EndpointAddress sourceAddress = new EndpointAddress("http", req.getRemoteHost(), null, null); //
+            EndpointAddress sourceAddress = new EndpointAddress("http", req.getRemoteHost(), null, null);
 
             if (null != currentRequest.requestorAddr) {
                 transportBindingMeter = servletHttpTransport.getTransportBindingMeter(currentRequest.requestorAddr.toString(),
@@ -278,7 +277,7 @@ public class HttpMessageServlet extends HttpServlet {
         if ((null != currentRequest.requestorAddr) && (currentRequest.responseTimeout >= 0) && (null != currentRequest.destAddr)) {
 
             // create the back channel messenger
-            Logging.logCheckedFine(LOG, "Creating back channel messenger for ", currentRequest.requestorAddr, " (", currentRequest.destAddr, ")");
+            Logging.logCheckedDebug(LOG, "Responding to \'poll\': creating back channel messenger for ", currentRequest.requestorAddr, " (", currentRequest.destAddr, ")");
 
             long messengerAliveFor;
 
@@ -288,14 +287,15 @@ public class HttpMessageServlet extends HttpServlet {
                 messengerAliveFor = Math.max(currentRequest.responseTimeout, currentRequest.extraResponsesTimeout);
             }
 
-            messenger = new HttpServletMessenger(owner.servletHttpTransport.group.getPeerGroupID(), 
-                                                 owner.servletHttpTransport.group.getTaskManager(),
+            final PeerGroup peerGroup = owner.getServletHttpTransport().getPeerGroup();
+			messenger = new HttpServletMessenger(peerGroup.getPeerGroupID(), 
+			                                     peerGroup.getTaskManager(),
                                                  localAddress,
                                                  currentRequest.requestorAddr, 
                                                  messengerAliveFor);
             boolean taken = owner.messengerReadyEvent(messenger, currentRequest.destAddr);
 
-            Logging.logCheckedFine(LOG, "Incoming messenger to: ", currentRequest.requestorAddr, " taken=", taken);
+            Logging.logCheckedDebug(LOG, "Incoming messenger to: ", currentRequest.requestorAddr, " taken=", taken);
 
             if (!taken) {
                 // nobody cares. Just destroy it.
@@ -325,7 +325,7 @@ public class HttpMessageServlet extends HttpServlet {
 
                     String contentType = req.getContentType();
 
-                    Logging.logCheckedFine(LOG, "Reading message from request : ", contentType);
+                    Logging.logCheckedDebug(LOG, "Reading message from request : ", contentType);
 
                     MimeMediaType contentMimeType = EndpointServiceImpl.DEFAULT_MESSAGE_TYPE;
 
@@ -335,7 +335,7 @@ public class HttpMessageServlet extends HttpServlet {
 
                     // FIXME 20040927 bondolo Should get message encoding from http header.
                     try {
-                        incomingMessage = WireFormatMessageFactory.fromWireExternal(in, contentMimeType, null, this.servletHttpTransport.group);
+                        incomingMessage = WireFormatMessageFactory.fromWireExternal(in, contentMimeType, null, this.servletHttpTransport.getPeerGroup());
                     } catch (NoSuchElementException noValidWireFormat) {
                         IOException failure = new IOException("Unrecognized content type MIME type : " + contentType);
 
@@ -364,7 +364,7 @@ public class HttpMessageServlet extends HttpServlet {
                 }
 
                 // post the incoming message to the endpoint demux
-                Logging.logCheckedFine(LOG, "Handing ", incomingMessage, " to the endpoint.");
+                Logging.logCheckedDebug(LOG, "Handing ", incomingMessage, " to the endpoint.");
 
                 try {
 
@@ -382,7 +382,7 @@ public class HttpMessageServlet extends HttpServlet {
             // Check if the back channel is to be used for sending messages.
             if ((currentRequest.responseTimeout >= 0) && (null != messenger)) {
 
-                Logging.logCheckedFine(LOG, "Wait for message from the messenger. timeout = ", currentRequest.responseTimeout);
+                Logging.logCheckedDebug(LOG, "Wait for message from the messenger. timeout = ", currentRequest.responseTimeout, " destroyed = ", destroyed);
 
                 long quitAt = (currentRequest.responseTimeout == 0)
                         ? Long.MAX_VALUE
@@ -394,7 +394,7 @@ public class HttpMessageServlet extends HttpServlet {
                     if ((remaining <= 0)) {
 
                         // done processing the request
-                        Logging.logCheckedFine(LOG, "Terminating expired request.");
+                        Logging.logCheckedDebug(LOG, "Terminating expired request.");
 
                         // We know we did not respond anything.
                         // In general it's better if jetty closes the connection
@@ -420,7 +420,7 @@ public class HttpMessageServlet extends HttpServlet {
                     if (outMsg == null) {
 
                         // done processing the request
-                        Logging.logCheckedFine(LOG, "Terminating request with no message to send.");
+                        Logging.logCheckedDebug(LOG, "Terminating request with no message to send.");
 
                         if (TransportMeterBuildSettings.TRANSPORT_METERING && (transportBindingMeter != null)) {
                             transportBindingMeter.connectionClosed(false,
@@ -439,12 +439,12 @@ public class HttpMessageServlet extends HttpServlet {
 
                     long startMessageSend = TimeUtils.timeNow();
 
-                    Logging.logCheckedFine(LOG, "Sending ", outMsg, " on back channel to ", req.getRemoteHost());
+                    Logging.logCheckedDebug(LOG, "Sending ", outMsg, " on back channel to ", req.getRemoteHost());
 
                     if (!beganResponse) {
 
                         // valid request, send back OK response
-                        Logging.logCheckedFine(LOG, "Sending OK in response to request");
+                        Logging.logCheckedDebug(LOG, "Sending OK in response to request");
 
                         beganResponse = true;
                         res.setStatus(HttpServletResponse.SC_OK);
@@ -453,7 +453,7 @@ public class HttpMessageServlet extends HttpServlet {
                     }
 
                     // send the message
-                    WireFormatMessage serialed = WireFormatMessageFactory.toWireExternal(outMsg, EndpointServiceImpl.DEFAULT_MESSAGE_TYPE, null, this.servletHttpTransport.group);
+                    WireFormatMessage serialed = WireFormatMessageFactory.toWireExternal(outMsg, EndpointServiceImpl.DEFAULT_MESSAGE_TYPE, null, this.servletHttpTransport.getPeerGroup());
 
                     // if only one message is being returned, set the content
                     // length, otherwise try to use chunked encoding.
@@ -475,7 +475,7 @@ public class HttpMessageServlet extends HttpServlet {
 
                         messenger.messageSent(true);
 
-                        Logging.logCheckedFine(LOG, "Successfully sent ", outMsg, " on back channel to ", req.getRemoteHost());
+                        Logging.logCheckedDebug(LOG, "Successfully sent ", outMsg, " on back channel to ", req.getRemoteHost());
 
                         if (TransportMeterBuildSettings.TRANSPORT_METERING && (transportBindingMeter != null)) {
                             lastReadWriteTime = TimeUtils.timeNow();
@@ -487,7 +487,7 @@ public class HttpMessageServlet extends HttpServlet {
 
                     } catch (IOException ex) {
 
-                        Logging.logCheckedFine(LOG, "Failed sending Message on back channel to ", req.getRemoteHost());
+                        Logging.logCheckedDebug(LOG, "Failed sending Message on back channel to ", req.getRemoteHost());
                         messenger.messageSent(false);
 
                         if (TransportMeterBuildSettings.TRANSPORT_METERING && (transportBindingMeter != null)) {
@@ -537,7 +537,7 @@ public class HttpMessageServlet extends HttpServlet {
         res.flushBuffer();
 
         // done processing the request
-        Logging.logCheckedFine(LOG, "Finished processing the request from ", req.getRemoteHost());
+        Logging.logCheckedDebug(LOG, "Finished processing the request from ", req.getRemoteHost());
 
         if (TransportMeterBuildSettings.TRANSPORT_METERING && (transportBindingMeter != null)) {
             transportBindingMeter.connectionClosed(false,
@@ -554,7 +554,7 @@ public class HttpMessageServlet extends HttpServlet {
      */
     private void pingResponse(HttpServletResponse res) throws IOException {
 
-        Logging.logCheckedFine(LOG, "Responding to \'ping\' request with 200 and peerID");
+        Logging.logCheckedDebug(LOG, "Responding to \'ping\' request with 200 and peerID");
 
         res.setStatus(HttpServletResponse.SC_OK);
         res.setContentLength(pingResponseBytes.length);
@@ -639,7 +639,8 @@ public class HttpMessageServlet extends HttpServlet {
         builder.append("  SERVER_PORT: ").append(req.getServerPort()).append(nl);
         builder.append("  isSecure: ").append(req.isSecure());
 
-        LOG.finest(builder.toString());
+        // LOGGING: was FINEST
+        LOG.debug(builder.toString());
     }
 
     /**
@@ -743,7 +744,8 @@ public class HttpMessageServlet extends HttpServlet {
             // check for incoming message
             messageContent = hasMessageContent(req);
 
-            Logging.logCheckedFiner(LOG,
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG,
                         "New JXTA Request for Requestor=", requestorAddr, "\n\tResponse Timeout=", responseTimeout,
                         "\tAdditional Response Timeout=", extraResponsesTimeout, "\tRequest Destination Address=", destAddr,
                         "\tHas Message Content=", Boolean.toString(messageContent));
@@ -780,7 +782,8 @@ public class HttpMessageServlet extends HttpServlet {
                 }
             }
 
-            Logging.logCheckedFiner(LOG, "requestorPeerId = ", requestorPeerId);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "requestorPeerId = ", requestorPeerId);
 
             return requestorPeerId;
         }
@@ -795,7 +798,7 @@ public class HttpMessageServlet extends HttpServlet {
             try {
                 timeout = Long.parseLong(requestTimeoutString);
 
-                // Protect agains clients that will try top have us keep
+                // Protect against clients that will try to have us keep
                 // connections for ever. If they re-establish all the time it's
                 // fine, but until we have a more sophisticated mechanism, we
                 // want to make sure we quit timely if the client's gone.
@@ -808,7 +811,8 @@ public class HttpMessageServlet extends HttpServlet {
 
             }
 
-            Logging.logCheckedFiner(LOG, "requestTimeout = ", timeout);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "requestTimeout = ", timeout);
 
             return timeout;
         }
@@ -823,7 +827,7 @@ public class HttpMessageServlet extends HttpServlet {
             try {
                 timeout = Long.parseLong(extraResponseTimeoutString);
 
-                // Protect agains clients that will try top have us keep
+                // Protect against clients that will try to have us keep
                 // connections for ever. If they re-establish all the time it's
                 // fine, but until we have a more sophisticated mechanism, we
                 // want to make sure we quit timely if the client's gone.
@@ -836,7 +840,7 @@ public class HttpMessageServlet extends HttpServlet {
 
             }
 
-            Logging.logCheckedFine(LOG, "extraResponseTimeout = ", timeout);
+            Logging.logCheckedDebug(LOG, "extraResponseTimeout = ", timeout);
 
             return timeout;
         }
@@ -868,7 +872,8 @@ public class HttpMessageServlet extends HttpServlet {
 
             }
 
-            Logging.logCheckedFiner(LOG, "hasMessageContent = ", hasContent);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "hasMessageContent = ", hasContent);
 
             return hasContent;
         }

@@ -63,6 +63,7 @@ import net.jxta.document.*;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -71,8 +72,6 @@ import net.jxta.service.Service;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A minimal {@link net.jxta.access.AccessService} implementation.
@@ -87,10 +86,7 @@ import java.util.logging.Logger;
  */
 public class AlwaysAccessService implements AccessService {
 
-    /**
-     *  Logger.
-     */
-    private final static Logger LOG = Logger.getLogger(AlwaysAccessService.class.getName());
+    private final static Logger LOG = Logging.getLogger(AlwaysAccessService.class.getName());
 
     /**
      *  Operation for the Always Access Service.
@@ -163,8 +159,8 @@ public class AlwaysAccessService implements AccessService {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings({ "unchecked", "rawtypes" })
-		public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
+        @SuppressWarnings({ "rawtypes", "unchecked" })
+        public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
             StructuredDocument doc = StructuredDocumentFactory.newStructuredDocument(as, "jxta:Cred");
 
             if (doc instanceof Attributable) {
@@ -262,7 +258,7 @@ public class AlwaysAccessService implements AccessService {
                         "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
             }
 
-            Enumeration<? extends Element<?>> elements = doc.getChildren();
+            Enumeration<?> elements = doc.getChildren();
 
             while (elements.hasMoreElements()) {
 
@@ -303,7 +299,7 @@ public class AlwaysAccessService implements AccessService {
         implAdvertisement = (ModuleImplAdvertisement) implAdv;
         this.group = group;
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
             StringBuilder configInfo = new StringBuilder("Configuring Always Access Service : " + assignedID);
 
             configInfo.append("\n\tImplementation:");

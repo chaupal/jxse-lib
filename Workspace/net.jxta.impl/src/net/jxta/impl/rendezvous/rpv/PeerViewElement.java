@@ -61,11 +61,11 @@ import net.jxta.endpoint.Messenger;
 import net.jxta.endpoint.OutgoingMessageEvent;
 import net.jxta.endpoint.OutgoingMessageEventListener;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.RdvAdvertisement;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * An element of the PeerView.
@@ -76,10 +76,7 @@ import java.util.logging.Logger;
  */
 public final class PeerViewElement extends PeerViewDestination implements OutgoingMessageEventListener {
 
-    /**
-     *  Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(PeerViewElement.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(PeerViewElement.class.getName());
 
     /**
      * EndpointService that this PeerViewElement must use.
@@ -329,7 +326,7 @@ public final class PeerViewElement extends PeerViewDestination implements Outgoi
 
         if (!radv.getPeerID().equals(adv.getPeerID())) {
 
-            Logging.logCheckedSevere(LOG, "adv refers to a different peer");
+            Logging.logCheckedError(LOG, "adv refers to a different peer");
             throw new IllegalArgumentException("adv refers to a different peer");
 
         }
@@ -359,7 +356,7 @@ public final class PeerViewElement extends PeerViewDestination implements Outgoi
 
                 cachedMessenger = null;
 
-                Logging.logCheckedFine(LOG, "Getting cached Messenger for ", radv.getName());
+                Logging.logCheckedDebug(LOG, "Getting cached Messenger for ", radv.getName());
                 cachedMessenger = endpoint.getMessengerImmediate(getDestAddress(), radv.getRouteAdv());
 
                 if (null == cachedMessenger) {

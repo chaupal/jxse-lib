@@ -63,7 +63,8 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
+
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.content.ContentID;
 import net.jxta.document.Document;
@@ -93,7 +94,7 @@ import net.jxta.util.LimitInputStream;
  */
 public class ContentRequest {
     private static Logger LOG =
-            Logger.getLogger(ContentRequest.class.getName());
+            Logging.getLogger(ContentRequest.class.getName());
     private static final String tagRoot = "ContentRequest";
     private static final String tagID = "ContentID";
 
@@ -174,12 +175,12 @@ public class ContentRequest {
                     "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
         while (elements.hasMoreElements()) {
             Element<?> elem = (Element<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element : ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element : ", elem);
             }
         }
     }

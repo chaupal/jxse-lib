@@ -61,14 +61,16 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.Messenger;
 import net.jxta.endpoint.WireFormatMessage;
 import net.jxta.endpoint.WireFormatMessageFactory;
+import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-import net.jxta.membership.pse.IPSECredential;
 import net.jxta.util.IgnoreFlushFilterOutputStream;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.SSLSocket;
+
 import java.io.BufferedOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -86,8 +88,6 @@ import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class implements the TLS connection between two peers.
@@ -98,12 +98,9 @@ import java.util.logging.Logger;
  * <p/>net.jxta.impl.endpoint.tls.TMFAlgorithm - if defined provides the name of
  * the trust manager factory algorithm to use.
  */
-class TlsConn implements ITlsConn {
+class TlsConn {
 
-    /**
-     * Logger
-     */
-    private static final transient Logger LOG = Logger.getLogger(TlsConn.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(TlsConn.class.getName());
     static final int BOSIZE = 16000;
     /**
      * TLS transport this connection is working for.
@@ -235,7 +232,7 @@ class TlsConn implements ITlsConn {
         // XXX 20040830 bondolo Other solutions go here!
         if (!choseTMF) {
             tmf = javax.net.ssl.TrustManagerFactory.getInstance(javax.net.ssl.TrustManagerFactory.getDefaultAlgorithm());
-            LOG.warning("Using defeualt Trust Manager Factory algorithm. This may not work as expected.");
+            LOG.warn("Using defeualt Trust Manager Factory algorithm. This may not work as expected.");
         }
 
         KeyStore trusted = transport.membership.getPSEConfig().getKeyStore();
@@ -266,22 +263,10 @@ class TlsConn implements ITlsConn {
         // handshake mode.
         tlsSocket = newConnect;
     }
-    
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.endpoint.tls.ITlsConn#isClosing()
-	 */
-    @Override
-	public boolean isClosing() {
-		return closing;
-	}
 
-	protected PlaintextMessageReader getReaderThread() {
-		return readerThread;
-	}
-
-	/* (non-Javadoc)
-	 * @see net.jxta.impl.endpoint.tls.ITlsConn#toString()
-	 */
+    /**
+     * @inheritDoc <p/>An implementation which is useful for debugging.
+     */
     @Override
     public String toString() {
         return super.toString() + "/" + getHandshakeState() + ":" + (client ? "Client" : "Server") + " for " + destAddr;
@@ -422,7 +407,7 @@ class TlsConn implements ITlsConn {
 
             if ((null == outBoundMessenger) || outBoundMessenger.isClosed()) {
 
-                Logging.logCheckedFine(LOG, "Getting messenger for ", destAddr);
+                Logging.logCheckedDebug(LOG, "Getting messenger for ", destAddr);
 
                 EndpointAddress realAddr = new EndpointAddress(destAddr, JTlsDefs.ServiceName, null);
 
@@ -438,7 +423,7 @@ class TlsConn implements ITlsConn {
             }
         }
 
-        Logging.logCheckedFine(LOG, "Sending ", msg, " to ", destAddr);
+        Logging.logCheckedDebug(LOG, "Sending ", msg, " to ", destAddr);
 
         // Good we have a messenger. Send the message.
         return outBoundMessenger.sendMessage(msg);
@@ -508,7 +493,7 @@ class TlsConn implements ITlsConn {
                         }
 
                         // dispatch it to TlsTransport for demuxing
-                        Logging.logCheckedFine(LOG, "Dispatching ", msg, " to TlsTransport");
+                        Logging.logCheckedDebug(LOG, "Dispatching ", msg, " to TlsTransport");
                         TlsConn.this.transport.processReceivedMessage(msg);
 
                         synchronized (TlsConn.this.lastAccessedLock) {
@@ -525,7 +510,7 @@ class TlsConn implements ITlsConn {
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
 
             } finally {
 
@@ -549,10 +534,10 @@ class TlsConn implements ITlsConn {
     private static class PSECredentialKeyManager implements javax.net.ssl.X509KeyManager {
 
         java.security.PrivateKey privateKey;
-        IPSECredential cred;
+        PSECredential cred;
         KeyStore trusted;
 
-        public PSECredentialKeyManager(IPSECredential useCred, KeyStore trusted, java.security.PrivateKey privateKey) {
+        public PSECredentialKeyManager(PSECredential useCred, KeyStore trusted, java.security.PrivateKey privateKey) {
             this.cred = useCred;
             this.trusted = trusted;
             this.privateKey = privateKey;
@@ -592,7 +577,7 @@ class TlsConn implements ITlsConn {
                     continue;
                 }
 
-                Logging.logCheckedFine(LOG, "CHECKING: ", certificate.getIssuerX500Principal(), " in ", allIssuers);
+                Logging.logCheckedDebug(LOG, "CHECKING: ", certificate.getIssuerX500Principal(), " in ", allIssuers);
 
                 if (allIssuers.contains(certificate.getIssuerX500Principal())) {
                     return "theone";
@@ -703,18 +688,18 @@ class TlsConn implements ITlsConn {
 
                     Collection<Principal> allIssuers = Arrays.asList(issuers);
 
-                    if (Logging.SHOW_FINE && LOG.isLoggable(Level.FINE)) {
+                    if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
 
-                        Logging.logCheckedFine(LOG, "Looking for : ", cred.getCertificate().getIssuerX500Principal());
-                        Logging.logCheckedFine(LOG, "Issuers : ", allIssuers);
+                        Logging.logCheckedDebug(LOG, "Looking for : ", cred.getCertificate().getIssuerX500Principal());
+                        Logging.logCheckedDebug(LOG, "Issuers : ", allIssuers);
 
                         java.security.Principal prin = cred.getCertificate().getIssuerX500Principal();
-                        Logging.logCheckedFine(LOG, "  Principal Type :", prin.getClass().getName());
+                        Logging.logCheckedDebug(LOG, "  Principal Type :", prin.getClass().getName());
 
                         for (Principal issuer : allIssuers) {
-                            Logging.logCheckedFine(LOG, "Issuer Type : ", issuer.getClass().getName());
-                            Logging.logCheckedFine(LOG, "Issuer value : ", issuer);
-                            Logging.logCheckedFine(LOG, "tmp.equals(prin) : ", issuer.equals(prin));
+                            Logging.logCheckedDebug(LOG, "Issuer Type : ", issuer.getClass().getName());
+                            Logging.logCheckedDebug(LOG, "Issuer value : ", issuer);
+                            Logging.logCheckedDebug(LOG, "tmp.equals(prin) : ", issuer.equals(prin));
                         }
 
                     }

@@ -65,6 +65,7 @@ import net.jxta.document.StructuredDocument;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.DiscoveryQueryMsg;
 import net.jxta.protocol.PeerAdvertisement;
@@ -72,7 +73,6 @@ import net.jxta.protocol.PeerAdvertisement;
 import java.io.IOException;
 import java.io.StringReader;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Implements the Discovery Query Message according to the schema defined by the
@@ -110,7 +110,7 @@ import java.util.logging.Logger;
  */
 public class DiscoveryQuery extends DiscoveryQueryMsg {
 
-    private static final Logger LOG = Logger.getLogger(DiscoveryQuery.class.getName());
+    private static final Logger LOG = Logging.getLogger(DiscoveryQuery.class.getName());
 
     private static final String typeTag = "Type";
     private static final String peerAdvTag = "PeerAdv";
@@ -208,8 +208,8 @@ public class DiscoveryQuery extends DiscoveryQueryMsg {
      *
      * @param root document to intialize from
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	protected void initialize(Element<?> root) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+    protected void initialize(Element<?> root) {
 
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XMLElement");
@@ -231,7 +231,7 @@ public class DiscoveryQuery extends DiscoveryQueryMsg {
             XMLElement<?> elem = elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element : ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element : ", elem);
             }
 
         }
@@ -256,19 +256,19 @@ public class DiscoveryQuery extends DiscoveryQueryMsg {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType asMimeType) {
         StructuredDocument adv = StructuredDocumentFactory.newStructuredDocument(asMimeType, getAdvertisementType());
 
         if (adv instanceof XMLDocument) {
-            XMLDocument<?> xmlDoc = (XMLDocument<?>) adv;
+            XMLDocument<?>xmlDoc = (XMLDocument<?>) adv;
 
             xmlDoc.addAttribute("xmlns:jxta", "http://jxta.org");
             xmlDoc.addAttribute("xml:space", "preserve");
         }
 
-        Element<?> e;
+        Element e;
 
         e = adv.createElement(typeTag, Integer.toString(getDiscoveryType()));
         adv.appendChild(e);

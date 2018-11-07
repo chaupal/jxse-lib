@@ -57,12 +57,12 @@
 package net.jxta.impl.id.UUID;
 
 /**
- *  An implementation of the {@link net.jxta.platform.ModuleClassID} ID Type.
+ *  An implementation of the {@link net.jxta.platform.net.jxta.peergroup.core.ModuleClassID} ID Type.
  */
 public class ModuleClassID extends net.jxta.platform.ModuleClassID {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      *  Location of the class id
      */
     private final static int moduleClassIdOffset = 0;
@@ -71,6 +71,16 @@ public class ModuleClassID extends net.jxta.platform.ModuleClassID {
      *  Location of the role id
      */
     private final static int moduleRoleIdOffset = moduleClassIdOffset + IDFormat.uuidSize;
+
+    /**
+     *  location of the start of the pad space
+     */
+    private final static int padOffset = ModuleClassID.moduleRoleIdOffset + IDFormat.uuidSize;
+
+    /**
+     *  size of the unused space
+     */
+    private final static int padSize = IDFormat.flagsOffset - ModuleClassID.padOffset;
 
     /**
      *  The id data
@@ -122,13 +132,18 @@ public class ModuleClassID extends net.jxta.platform.ModuleClassID {
     }
 
     /**
-     *  See {@link net.jxta.id.IDFactory.Instantiator#newModuleClassID(net.jxta.platform.ModuleClassID)}.
+     *  See {@link net.jxta.id.IDFactory.Instantiator#newModuleClassID(net.jxta.platform.net.jxta.peergroup.core.ModuleClassID)}.
      */
     public ModuleClassID(ModuleClassID classID) {
         this(classID.getClassUUID(), UUIDFactory.newUUID());
     }
 
-    /**
+  
+    protected static int getPadsize() {
+		return padSize;
+	}
+
+	/**
      *  {@inheritDoc}
      */
     @Override
@@ -191,7 +206,11 @@ public class ModuleClassID extends net.jxta.platform.ModuleClassID {
      */
     @Override
     public boolean isOfSameBaseClass(net.jxta.platform.ModuleSpecID specId) {
-        return getClassUUID().equals(((ModuleSpecID) specId).getClassUUID());
+    	net.jxta.platform.ModuleClassID mci= specId.getBaseClass();
+    	if(!( mci instanceof ModuleClassID))
+    		return false;
+    	ModuleClassID mcid = (ModuleClassID) mci;
+    	return getClassUUID().equals(mcid.getClassUUID());
     }
 
     /**

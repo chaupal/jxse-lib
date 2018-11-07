@@ -25,7 +25,7 @@ public class FakeTimer implements Timer {
             t.expire();
         }
 
-        timeouts.remove(currentTimeouts);
+        timeouts.removeAll(currentTimeouts);
     }
 
     public Set<Timeout> stop() {

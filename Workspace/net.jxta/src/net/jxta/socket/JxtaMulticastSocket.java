@@ -64,6 +64,7 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
 import net.jxta.peer.PeerID;
@@ -89,7 +90,6 @@ import java.util.Enumeration;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
  * The JxtaMulticastSocket class is useful for sending and receiving
@@ -146,7 +146,7 @@ import java.util.logging.Logger;
  */
 
 public class JxtaMulticastSocket extends MulticastSocket implements PipeMsgListener {
-    private final static Logger LOG = Logger.getLogger(JxtaMulticastSocket.class.getName());
+    private final static Logger LOG = Logging.getLogger(JxtaMulticastSocket.class.getName());
     public static final String NAMESPACE = "JXTAMCAST";
     public static final String DATATAG = "DATAGRAM";
     public static final String SRCIDTAG = "SRCID";
@@ -293,7 +293,7 @@ public class JxtaMulticastSocket extends MulticastSocket implements PipeMsgListe
             Logging.logCheckedFine(LOG, "Pushing a message onto queue");
 
             if(!queue.offer(message, -1, TimeUnit.MILLISECONDS))
-            	LOG.fine("Failed to push the message onto queue due to no available space");
+            	LOG.debug("Failed to push the message onto queue due to no available space");
 
         } catch (InterruptedException e) {
 

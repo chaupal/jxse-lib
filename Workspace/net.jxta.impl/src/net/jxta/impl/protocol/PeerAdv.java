@@ -67,6 +67,7 @@ import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
@@ -77,7 +78,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Hashtable;
-import java.util.logging.Logger;
 
 /**
  * Implementation of {@link PeerAdvertisement} matching the standard JXTA
@@ -102,10 +102,7 @@ import java.util.logging.Logger;
  **/
 public class PeerAdv extends PeerAdvertisement {
 
-    /**
-     *  Logger
-     **/
-    private static final Logger LOG = Logger.getLogger(PeerAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(PeerAdv.class.getName());
 
     private static final String pidTag = "PID";
     private static final String gidTag = "GID";
@@ -172,14 +169,14 @@ public class PeerAdv extends PeerAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
-                    Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                    Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
 
         }
@@ -253,7 +250,7 @@ public class PeerAdv extends PeerAdvertisement {
         }
 
         if (elem.getName().equals(svcTag)) {
-            Enumeration<? extends Element<?>> elems = elem.getChildren();
+            Enumeration<?> elems = elem.getChildren();
             ModuleClassID classID = null;
             Element<?> param = null;
 
@@ -292,8 +289,8 @@ public class PeerAdv extends PeerAdvertisement {
     /**
      *  {@inheritDoc}
      **/
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 

@@ -65,15 +65,16 @@ import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
-import net.jxta.membership.pse.IPSECredential;
 import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.service.Service;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.security.InvalidAlgorithmParameterException;
@@ -87,8 +88,6 @@ import java.security.cert.CertPathValidatorException;
 import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implements the {@link net.jxta.access.AccessService} using PKIX validation.
@@ -102,10 +101,7 @@ import java.util.logging.Logger;
  */
 public class PSEAccessService implements AccessService {
 
-    /**
-     *  Logger.
-     */
-    private final static Logger LOG = Logger.getLogger(PSEAccessService.class.getName());
+    private final static Logger LOG = Logging.getLogger(PSEAccessService.class);
 
     /**
      * Well known access specification identifier: the pse access service
@@ -120,9 +116,9 @@ public class PSEAccessService implements AccessService {
 
         final PSEAccessService source;
 
-        IPSECredential op;
+        PSECredential op;
 
-        protected PSEOperation(PSEAccessService source, IPSECredential op) {
+        protected PSEOperation(PSEAccessService source, PSECredential op) {
             this.source = source;
             this.op = op;
         }
@@ -167,7 +163,7 @@ public class PSEAccessService implements AccessService {
         /**
          * {@inheritDoc}
          */
-        public IPSECredential getSubject() {
+        public PSECredential getSubject() {
             return op;
         }
 
@@ -184,7 +180,7 @@ public class PSEAccessService implements AccessService {
          *  FIXME 20060317 bondolo This implementation is not secure. The
          *  operation should be signed by the offerer.
          */
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings({ "unchecked", "rawtypes" })
 		public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
             StructuredDocument doc = StructuredDocumentFactory.newStructuredDocument(as, "jxta:Cred");
 
@@ -236,7 +232,7 @@ public class PSEAccessService implements AccessService {
             }
 
             if (elem.getName().equals("Operation")) {
-                op = (IPSECredential) source.pseMembership.makeCredential(elem);
+                op = (PSECredential) source.pseMembership.makeCredential(elem);
 
                 return true;
             }
@@ -273,7 +269,7 @@ public class PSEAccessService implements AccessService {
                         "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
             }
 
-            Enumeration<? extends Element<?>> elements = doc.getChildren();
+            Enumeration<?> elements = doc.getChildren();
 
             while (elements.hasMoreElements()) {
 
@@ -328,7 +324,7 @@ public class PSEAccessService implements AccessService {
         this.group = group;
         implAdvertisement = (ModuleImplAdvertisement) implAdv;
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
             StringBuilder configInfo = new StringBuilder("Configuring PSE Access Service : " + assignedID);
 
             configInfo.append("\n\tImplementation :");
@@ -370,7 +366,7 @@ public class PSEAccessService implements AccessService {
 
         } else {
 
-            Logging.logCheckedSevere(LOG, "PSE Access Service requires a PSE Membership Service.");
+            Logging.logCheckedError(LOG, "PSE Access Service requires a PSE Membership Service.");
             return -1;
 
         }
@@ -431,11 +427,11 @@ public class PSEAccessService implements AccessService {
             return AccessResult.DISALLOWED;
         }
 
-        IPSECredential offerer = ((PSEOperation) op).getOfferer();
+        PSECredential offerer = ((PSEOperation) op).getOfferer();
 
         X509Certificate opCerts[] = offerer.getCertificateChain();
 
-        X509Certificate credCerts[] = ((IPSECredential) cred).getCertificateChain();
+        X509Certificate credCerts[] = ((PSECredential) cred).getCertificateChain();
 
         // FIXME 20060409 bondolo THIS IS NOT A VALID TEST. It is a shortcut for
         // PKIX validation and assumes that all presented certificates chains 
@@ -464,19 +460,19 @@ public class PSEAccessService implements AccessService {
             pathValidator.validate(certPath, params);
 
         } catch (CertPathValidatorException ex) {
-            LOG.log(Level.WARNING, null, ex);
+            LOG.warn(null, ex);
             return AccessResult.DISALLOWED;
         } catch (NoSuchProviderException ex) {
-            LOG.log(Level.WARNING, null, ex);
+            LOG.warn(null, ex);
             return AccessResult.DISALLOWED;
         } catch(CertificateException certExp) {
-            LOG.log(Level.WARNING, certExp.getMessage(), certExp);
+            LOG.warn(certExp.getMessage(), certExp);
             return AccessResult.DISALLOWED;
         } catch(NoSuchAlgorithmException noAlgExp) {
-            LOG.log(Level.WARNING, noAlgExp.getMessage(), noAlgExp);
+            LOG.warn(noAlgExp.getMessage(), noAlgExp);
             return AccessResult.DISALLOWED;
         } catch(InvalidAlgorithmParameterException paramExp) {
-            LOG.log(Level.WARNING, paramExp.getMessage(), paramExp);
+            LOG.warn(paramExp.getMessage(), paramExp);
             return AccessResult.DISALLOWED;
         }
 
@@ -504,16 +500,16 @@ public class PSEAccessService implements AccessService {
             return AccessResult.DISALLOWED;
         }
 
-        IPSECredential offerer = ((PSEOperation) op).getOfferer();
+        PSECredential offerer = ((PSEOperation) op).getOfferer();
         try {
             pseMembership.validateOffererCredential(offerer);
         } catch (CertPathValidatorException ex) {
-            Logger.getLogger(PSEAccessService.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.error(null, ex);
             return AccessResult.DISALLOWED;
         }
 
-                    return AccessResult.PERMITTED;
-                }
+        return AccessResult.PERMITTED;
+    }
 
     /**
      * {@inheritDoc}
@@ -534,19 +530,19 @@ public class PSEAccessService implements AccessService {
 
         if (op.getSourceService() != this) {
             return AccessResult.DISALLOWED;
-            }
+        }
 
         if (!op.isValid()) {
             return AccessResult.DISALLOWED;
         }
 
-        IPSECredential offerer = ((PSEOperation) op).getOfferer();
+        PSECredential offerer = ((PSEOperation) op).getOfferer();
         try {
             pseMembership.validateOffererCredential(offerer, aliases);
         } catch (CertPathValidatorException ex) {
-            Logger.getLogger(PSEAccessService.class.getName()).log(Level.SEVERE, null, ex);
-        return AccessResult.DISALLOWED;
-    }
+            LOG.error(null, ex);
+	        return AccessResult.DISALLOWED;
+	    }
 
         return AccessResult.PERMITTED;
     }
@@ -567,7 +563,7 @@ public class PSEAccessService implements AccessService {
             throw new IllegalArgumentException("offerer is not a valid credential");
         }
 
-        return new PSEOperation((PSEAccessService) getInterface(), (IPSECredential) offerer);
+        return new PSEOperation((PSEAccessService) getInterface(), (PSECredential) offerer);
     }
 
     /**

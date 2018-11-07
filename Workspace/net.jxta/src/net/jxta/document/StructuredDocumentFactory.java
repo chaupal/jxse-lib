@@ -58,6 +58,7 @@ package net.jxta.document;
 
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.TextMessageElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.util.ClassFactory;
 
@@ -66,7 +67,6 @@ import java.io.InputStream;
 import java.io.Reader;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * A factory for constructing instances of {@link StructuredDocument}.
@@ -84,7 +84,7 @@ public final class StructuredDocumentFactory extends ClassFactory<MimeMediaType,
     /**
      * Log4J Logger
      */
-    private static final Logger LOG = Logger.getLogger(StructuredDocumentFactory.class.getName());
+    private static final Logger LOG = Logging.getLogger(StructuredDocumentFactory.class.getName());
 
     /**
      * Interface for instantiators of StructuredDocuments
@@ -362,7 +362,7 @@ public final class StructuredDocumentFactory extends ClassFactory<MimeMediaType,
     protected boolean registerAssoc(String className) {
         boolean registeredSomething = false;
 
-        LOG.finer("Registering : " + className);
+        LOG.debug("Registering : " + className);
 
         try {
             Class<?> docClass = Class.forName(className);
@@ -372,7 +372,7 @@ public final class StructuredDocumentFactory extends ClassFactory<MimeMediaType,
             MimeMediaType[] mimeTypes = instantiator.getSupportedMimeTypes();
 
             for (MimeMediaType mimeType : mimeTypes) {
-                LOG.finer("   Registering Type : " + mimeType.getMimeMediaType());
+                LOG.debug("   Registering Type : " + mimeType.getMimeMediaType());
                 registeredSomething |= registerInstantiator(mimeType, instantiator);
             }
 

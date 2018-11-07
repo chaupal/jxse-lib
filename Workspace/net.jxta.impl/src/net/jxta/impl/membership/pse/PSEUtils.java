@@ -88,7 +88,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.EncryptedPrivateKeyInfo;
@@ -101,12 +100,11 @@ import javax.crypto.spec.PBEParameterSpec;
 import javax.security.auth.x500.X500Principal;
 
 import net.jxta.document.Attribute;
-import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
 import net.jxta.impl.util.BASE64InputStream;
 import net.jxta.impl.util.BASE64OutputStream;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-import net.jxta.util.IOUtils;
 
 import org.spongycastle.asn1.DERObjectIdentifier;
 import org.spongycastle.asn1.x509.X509NameTokenizer;
@@ -119,10 +117,7 @@ import org.spongycastle.x509.X509V3CertificateGenerator;
  */
 public final class PSEUtils {
 
-    /**
-     * Logger
-     */
-    private static final transient Logger LOG = Logger.getLogger(PSEUtils.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(PSEUtils.class.getName());
 
     /**
      * Singleton instance.
@@ -216,7 +211,7 @@ public final class PSEUtils {
 
             if (null == issuerinfo) {
 
-                Logging.logCheckedFine(LOG, "Generating Self Signed Cert ...");
+                Logging.logCheckedDebug(LOG, "Generating Self Signed Cert ...");
 
                 if (!cn.endsWith("-CA")) {
                     useCN = cn + "-CA";
@@ -226,7 +221,7 @@ public final class PSEUtils {
 
             } else {
 
-                Logging.logCheckedFine(LOG, "Generating Client Cert ...");
+                Logging.logCheckedDebug(LOG, "Generating Client Cert ...");
                 useCN = cn;
 
             }
@@ -258,7 +253,7 @@ public final class PSEUtils {
 
         } catch (NoSuchAlgorithmException e) {
 
-            Logging.logCheckedSevere(LOG, "Could not generate certificate\n\n", e);
+            Logging.logCheckedError(LOG, "Could not generate certificate\n\n", e);
 
             SecurityException failure = new SecurityException("Could not generate certificate");
             failure.initCause(e);
@@ -329,17 +324,17 @@ public final class PSEUtils {
             info.issuerPkey = signer;
 
             // dump the certificate?
-            if (null == issuer) {
-                Logging.logCheckedFine(LOG, "Root Cert : \n", info.cert);
+            if (null == info.issuer) {
+                Logging.logCheckedDebug(LOG, "Root Cert : \n", info.cert);
             } else {
-                Logging.logCheckedFine(LOG, "Client Cert : \n", info.cert);
+                Logging.logCheckedDebug(LOG, "Client Cert : \n", info.cert);
             }
 
             return info;
 
         } catch (SignatureException e) {
 
-            Logging.logCheckedSevere(LOG, "Could not generate certificate\n\n", e);
+            Logging.logCheckedError(LOG, "Could not generate certificate\n\n", e);
 
             SecurityException failure = new SecurityException("Could not generate certificate");
             failure.initCause(e);
@@ -347,7 +342,7 @@ public final class PSEUtils {
 
         } catch (InvalidKeyException e) {
 
-            Logging.logCheckedSevere(LOG, "Could not generate certificate\n\n", e);
+            Logging.logCheckedError(LOG, "Could not generate certificate\n\n", e);
 
             SecurityException failure = new SecurityException("Could not generate certificate");
             failure.initCause(e);
@@ -355,7 +350,7 @@ public final class PSEUtils {
 
         } catch (IOException e) {
 
-            Logging.logCheckedSevere(LOG, "Could not generate certificate\n\n", e);
+            Logging.logCheckedError(LOG, "Could not generate certificate\n\n", e);
 
             SecurityException failure = new SecurityException("Could not generate certificate");
             failure.initCause(e);
@@ -805,19 +800,24 @@ public final class PSEUtils {
     public static String base64Encode(byte[] in, boolean wrap) throws IOException {
         StringWriter base64 = new StringWriter();
 
-        BASE64OutputStream b64os;
-
-        if (wrap) {
-            b64os = new BASE64OutputStream(base64, 72);
-        } else {
-            b64os = new BASE64OutputStream(base64);
+        BASE64OutputStream b64os = null;
+        try{
+        	if (wrap) {
+        		b64os = new BASE64OutputStream(base64, 72);
+        	} else {
+        		b64os = new BASE64OutputStream(base64);
+        	}
+        	b64os.write(in);
         }
-        b64os.write(in);
-        b64os.close();
+        finally{
+        	if( b64os != null )
+        		b64os.close();
+        }
 
         String encoded = base64.toString();
 
-        Logging.logCheckedFiner(LOG, "Encoded ", in.length, " bytes -> ", encoded.length(), " characters.");
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, "Encoded ", in.length, " bytes -> ", encoded.length(), " characters.");
 
         return encoded;
     }
@@ -829,26 +829,27 @@ public final class PSEUtils {
      * @return the decoded bytes.
      */
     public static byte[] base64Decode(Reader in) throws IOException {
-    	BASE64InputStream b64is = new BASE64InputStream(in);
-    	ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    	try {
-    		do {
-    			int c = b64is.read();
+        BASE64InputStream b64is = new BASE64InputStream(in);
+        ByteArrayOutputStream bos = new ByteArrayOutputStream();
+        try{
+        do {
+            int c = b64is.read();
 
-    			if (c < 0) {
-    				break;
-    			}
+            if (c < 0) {
+                break;
+            }
 
-    			bos.write(c);
-    		} while (true);
-    	}
-    	finally {
-    		IOUtils.closeQuietly(b64is);
-    	}
+            bos.write(c);
+        } while (true);
+        }
+        finally{
+        	b64is.close();
+        }
 
-    	byte[] result = bos.toByteArray();
+        byte[] result = bos.toByteArray();
 
-        Logging.logCheckedFiner(LOG, "Decoded ", result.length, " bytes.");
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, "Decoded ", result.length, " bytes.");
 
         return result;
     }
@@ -888,9 +889,9 @@ public final class PSEUtils {
      * @param messageDigest   The messageDigest to which .
      * @return An encrypted private key info or null if the key could not be
      */
-    public static void xmlElementDigest(XMLElement<?> xmlElement, List<?> ignoreXmlElementNames, MessageDigest messageDigest) {
+    public static void xmlElementDigest(XMLElement<?> xmlElement, List<String> ignoreXmlElementNames, MessageDigest messageDigest) {
         PSEUtils.writeStringToDigest(xmlElement.getName(), messageDigest);
-        Enumeration<?> attributes = xmlElement.getAttributes();
+        Enumeration<Attribute> attributes = xmlElement.getAttributes();
         while(attributes.hasMoreElements()) {
             Attribute attribute = (Attribute)attributes.nextElement();
             PSEUtils.writeStringToDigest(attribute.getName(), messageDigest);
@@ -912,16 +913,16 @@ public final class PSEUtils {
      * @param messageDigest   The messageDigest to which .
      * @return An encrypted private key info or null if the key could not be
      */
- 	public static void xmlElementDigest(XMLElement<?> xmlElement, MessageDigest messageDigest) {
+    public static void xmlElementDigest(XMLElement<?> xmlElement, MessageDigest messageDigest) {
         PSEUtils.writeStringToDigest(xmlElement.getName(), messageDigest);
-        Enumeration<?> attributes = xmlElement.getAttributes();
+        Enumeration<Attribute> attributes = xmlElement.getAttributes();
         while(attributes.hasMoreElements()) {
             Attribute attribute = (Attribute)attributes.nextElement();
             PSEUtils.writeStringToDigest(attribute.getName(), messageDigest);
             PSEUtils.writeStringToDigest(attribute.getValue(), messageDigest);
         }
         PSEUtils.writeStringToDigest(xmlElement.getValue(), messageDigest);
-        Enumeration<? extends Element<?>> children = xmlElement.getChildren();
+        Enumeration<?> children = xmlElement.getChildren();
         while(children.hasMoreElements()) {
             XMLElement<?> xmlElementChild = (XMLElement<?>)children.nextElement();
             PSEUtils.xmlElementDigest(xmlElementChild, messageDigest);

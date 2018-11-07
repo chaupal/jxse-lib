@@ -76,11 +76,11 @@ import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
-import net.jxta.impl.peergroup.IModuleDefinitions;
 import net.jxta.impl.peergroup.StdPeerGroupParamAdv;
 import net.jxta.impl.peergroup.WorldPeerGroupFactory;
 import net.jxta.membership.MembershipService;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
 import net.jxta.platform.ModuleClassID;
 import net.jxta.platform.ModuleSpecID;
 // import net.jxta.peergroup.PeerGroupFactory;
@@ -95,7 +95,8 @@ public class SimpleACLAccessServiceTest extends TestCase {
     static PeerGroup npg = null;
     static PeerGroup pg = null;
 
-    public SimpleACLAccessServiceTest(java.lang.String testName) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public SimpleACLAccessServiceTest(java.lang.String testName) {
         super(testName);
 
         synchronized (SimpleACLAccessServiceTest.class) {

@@ -63,6 +63,7 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.protocol.PeerGroupConfigAdv;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
@@ -75,7 +76,6 @@ import java.net.URI;
 import java.util.MissingResourceException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
-import java.util.logging.Logger;
 
 /**
  * A factory for instantiating a Network Peer Group instances. The Network Peer
@@ -99,7 +99,7 @@ public final class NetPeerGroupFactory {
     /**
      * Logger
      */
-    private final static transient Logger LOG = Logger.getLogger(NetPeerGroupFactory.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(NetPeerGroupFactory.class.getName());
 
     /**
      * Our strong reference to the net peer group.
@@ -139,7 +139,7 @@ public final class NetPeerGroupFactory {
                         ResourceBundle rsrcs = new PropertyResourceBundle(new FileInputStream(configProperties));
 
                         tunables = new NetGroupTunables(rsrcs, tunables);
-                        Logging.logCheckedFine(LOG, "Loaded defaults from ", rsrcs);
+                        Logging.logCheckedFine(LOG, "Loaded defaults from " + rsrcs);
 
                     } catch (MissingResourceException ignored) {
                         // ingnored

@@ -83,7 +83,7 @@ public class SrdiHandlerMetric implements DocumentSerializable {
     private int numErrorsSendingMessages = 0;
     private int numErrorsPropagatingMessages = 0;
 	
-    private HashMap<PeerID, SrdiDestinationMetric> destinationMetrics = new HashMap<>();
+    private HashMap<PeerID, SrdiDestinationMetric> destinationMetrics = new HashMap<PeerID, SrdiDestinationMetric>();
 		
     public SrdiHandlerMetric(String handlerName) {
         this.handlerName = handlerName;
@@ -245,7 +245,7 @@ public class SrdiHandlerMetric implements DocumentSerializable {
     }
 
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 

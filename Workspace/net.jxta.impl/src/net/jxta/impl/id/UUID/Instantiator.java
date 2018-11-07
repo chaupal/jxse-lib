@@ -89,9 +89,14 @@ public class Instantiator implements IDFactory.Instantiator {
      */
     public net.jxta.codat.CodatID newCodatID(net.jxta.peergroup.PeerGroupID groupID) {
         PeerGroupID  peerGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
-
         return new CodatID(peerGroupID);
     }
+
+	@Override
+	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID) {
+        PeerGroupID  peerGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
+        return new ContentID(peerGroupID);
+	}
 
     /**
      * {@inheritDoc}
@@ -102,6 +107,13 @@ public class Instantiator implements IDFactory.Instantiator {
         return new CodatID(peerGroupID, seed);
     }
 
+	@Override
+	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, byte[] seed) {
+        PeerGroupID  peerGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
+        return new ContentID(peerGroupID, true, seed);
+	}
+
+
     /**
      * {@inheritDoc}
      */
@@ -110,6 +122,31 @@ public class Instantiator implements IDFactory.Instantiator {
 
         return new CodatID(peerGroupID, in);
     }
+
+	@Override
+	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, InputStream in)
+			throws IOException {
+		PeerGroupID  peerGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
+		try {
+			return new ContentID(peerGroupID, true, in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
+	@Override
+	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, byte[] seed, InputStream in){
+		PeerGroupID  peerGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
+
+		try {
+			return new ContentID(peerGroupID, true, in);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+
 
     /**
      * {@inheritDoc}
@@ -414,30 +451,4 @@ public class Instantiator implements IDFactory.Instantiator {
 
         return result;
     }
-
-	@Override
-	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, byte[] seed) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, InputStream in)
-			throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, byte[] seed, InputStream in)
-			throws IOException {
-		// TODO Auto-generated method stub
-		return null;
-	}
 }

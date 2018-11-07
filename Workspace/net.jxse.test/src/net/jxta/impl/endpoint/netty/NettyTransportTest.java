@@ -9,10 +9,10 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.impl.document.DOMXMLDocument;
 import net.jxta.impl.document.DOMXMLElement;
-import net.jxta.impl.peergroup.IModuleDefinitions;
-import net.jxta.impl.protocol.GroupConfig;
 import net.jxta.impl.protocol.ModuleImplAdv;
 import net.jxta.impl.protocol.TCPAdv;
+import net.jxta.platform.GroupConfig;
+import net.jxta.platform.IModuleDefinitions;
 import net.jxta.platform.Module;
 import net.jxta.protocol.TransportAdvertisement;
 

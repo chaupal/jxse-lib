@@ -62,8 +62,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArraySet;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.content.Content;
 import net.jxta.content.ContentID;
@@ -93,11 +93,8 @@ import static net.jxta.content.ContentTransferState.*;
  */
 public class TransferAggregator
         implements ContentTransferAggregator, ContentTransferListener {
-    /**
-     * Log4J logger.
-     */
-    private static final Logger LOG = Logger.getLogger(
-            TransferAggregator.class.getName());
+
+	private static final Logger LOG = Logging.getLogger(TransferAggregator.class.getName());
 
     /**
      * The number of transfer instances that will be held "in standby",
@@ -233,12 +230,12 @@ public class TransferAggregator
                 }
                 if (transfer == null) {
 
-                    Logging.logCheckedFine(LOG, hashHex(),
+                    Logging.logCheckedDebug(LOG, hashHex(),
                                 ": Provider returned null transfer: ", prov);
 
                 } else {
-
-                    Logging.logCheckedFiner(LOG, hashHex(),
+                	// LOGGING: was Finer
+                    Logging.logCheckedDebug(LOG, hashHex(),
                                 ": Provider '", prov, "' returned transfer: ",
                                 transfer);
                     idle.add(transfer);
@@ -247,7 +244,7 @@ public class TransferAggregator
 
                 if (content != null) {
 
-                    Logging.logCheckedFiner(LOG, hashHex(), ": Provider '", prov,
+                    Logging.logCheckedDebug(LOG, hashHex(), ": Provider '", prov,
                                 "' found the Content.  Skipping remaining ",
                                 "providers.");
                     break;
@@ -256,7 +253,7 @@ public class TransferAggregator
 
             } catch (UnsupportedOperationException unsupx) {
 
-                Logging.logCheckedFine(LOG, hashHex(),
+                Logging.logCheckedDebug(LOG, hashHex(),
                             ": Provider does not support operation: ", prov);
 
             }
@@ -368,7 +365,8 @@ public class TransferAggregator
 
         } catch (TransferException transx) {
 
-            Logging.logCheckedFinest(LOG, hashHex(), ": Ignoring exception\n", transx);
+            // LOGGING: was Finest
+            Logging.logCheckedDebug(LOG, hashHex(), ": Ignoring exception\n", transx);
 
         }
 
@@ -432,7 +430,7 @@ public class TransferAggregator
      * {@inheritDoc}
      */
     public void cancel() {
-        LOG.fine(hashHex() + ": Cancelling transfer");
+        LOG.debug(hashHex() + ": Cancelling transfer");
         cancelAll(null, false);
         synchronized(this) {
             if (!transferState.isFinished()) {
@@ -556,13 +554,14 @@ public class TransferAggregator
                 // Try to send events only when useful
                 if (oldState != locationState || locationCount != null) {
 
-                    if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                        Logging.logCheckedFiner(LOG, hashHex(),
+                	// LOGGING: was FINER
+                    if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                        Logging.logCheckedDebug(LOG, hashHex(),
                                 ": Location update (location count: ",
                                 locationCount, ")");
-                        Logging.logCheckedFiner(LOG, "    Was  : ", oldState);
-                        Logging.logCheckedFiner(LOG, "    Is   : ", locationState);
-                        Logging.logCheckedFiner(LOG, "    Cause: ", state);
+                        Logging.logCheckedDebug(LOG, "    Was  : ", oldState);
+                        Logging.logCheckedDebug(LOG, "    Is   : ", locationState);
+                        Logging.logCheckedDebug(LOG, "    Cause: ", state);
                     }
 
                     toFire = new ContentTransferEvent.Builder(this)
@@ -601,7 +600,7 @@ public class TransferAggregator
         boolean terminateTransfer = false;
         boolean doTransferStart = false;
 
-        Logging.logCheckedFine(LOG, hashHex(), ": Transfer state updated: ", transfer,
+        Logging.logCheckedDebug(LOG, hashHex(), ": Transfer state updated: ", transfer,
                     " (", state, ")");
 
         if (state.isSuccessful()) {
@@ -648,7 +647,8 @@ public class TransferAggregator
                 // Only go crazy if this is the first provider to succeed
                 if (eureka) {
 
-                    Logging.logCheckedFiner(LOG, hashHex(), ": Eureka!");
+                	// LOGGING: was Finer
+                    Logging.logCheckedDebug(LOG, hashHex(), ": Eureka!");
 
                     if (newSelected) {
                         fireSelectedContentTransfer(transfer);
@@ -682,7 +682,7 @@ public class TransferAggregator
                     }
                 }
             } catch (TransferException transx) {
-                transx.printStackTrace();
+                Logging.logCheckedError(LOG, transx);
             }
             terminateTransfer = true;
         } else if (!state.isRetrieving()) {
@@ -695,8 +695,8 @@ public class TransferAggregator
             synchronized(this) {
 
                 if (transferState.isFinished()) {
-
-                    Logging.logCheckedFiner(LOG, hashHex(), " Ignoring event due to being ",
+                	// LOGGING: was Finer
+                    Logging.logCheckedDebug(LOG, hashHex(), " Ignoring event due to being ",
                                 "in a finished state");
 
                 } else if (transfer == selected) {
@@ -710,8 +710,8 @@ public class TransferAggregator
             synchronized(this) {
 
                 if (transferState.isFinished()) {
-
-                    Logging.logCheckedFiner(LOG, hashHex(), " Ignoring event due to being ",
+                	// LOGGING: was Finer
+                    Logging.logCheckedDebug(LOG, hashHex(), " Ignoring event due to being ",
                                 "in a finished state");
 
                 } else if (transfer == selected && transferState != state) {
@@ -770,8 +770,8 @@ public class TransferAggregator
         }
 
         if (doTransferStart) {
-
-            Logging.logCheckedFiner(LOG, hashHex(), ": Starting transfer: ", transfer);
+        	// LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, hashHex(), ": Starting transfer: ", transfer);
             transfer.startTransfer(destFile);
 
         }
@@ -918,14 +918,14 @@ public class TransferAggregator
          */
         if (doStart) {
 
-            Logging.logCheckedFine(LOG, hashHex(), ": Starting source location for transfer: ",
+            Logging.logCheckedDebug(LOG, hashHex(), ": Starting source location for transfer: ",
                         transfer);
 
             transfer.startSourceLocation();
 
         } else if (doStop) {
 
-            Logging.logCheckedFine(LOG, hashHex(), ": Stopping source location for transfer: ",
+            Logging.logCheckedDebug(LOG, hashHex(), ": Stopping source location for transfer: ",
                         transfer);
 
             transfer.stopSourceLocation();
@@ -971,7 +971,8 @@ public class TransferAggregator
             } else if (!transferState.isRetrieving() && selected != null) {
 
                 // Make sure the transfer has started
-                Logging.logCheckedFiner(LOG, hashHex(), ": Starting transfer: ", selected);
+            	// LOGGING: was Finer
+                Logging.logCheckedDebug(LOG, hashHex(), ": Starting transfer: ", selected);
                 selected.startTransfer(destFile);
 
             }
@@ -1011,7 +1012,8 @@ public class TransferAggregator
      */
     private void fireLocationStateUpdated(ContentTransferEvent event) {
 
-        Logging.logCheckedFiner(LOG, hashHex(), ": Firing event: ", event);
+    	// LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, hashHex(), ": Firing event: ", event);
 
         for (ContentTransferListener listener : ctListeners) {
 
@@ -1031,7 +1033,8 @@ public class TransferAggregator
      */
     private void fireTransferStateUpdated(ContentTransferEvent event) {
 
-        Logging.logCheckedFiner(LOG, hashHex(), ": Firing event: ", event);
+    	// LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, hashHex(), ": Firing event: ", event);
 
         for (ContentTransferListener listener : ctListeners) {
 
@@ -1057,7 +1060,8 @@ public class TransferAggregator
 
         ContentTransferAggregatorEvent event = null;
 
-        Logging.logCheckedFiner(LOG, hashHex(), ": Firing new selected: ", newSelected);
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, hashHex(), ": Firing new selected: ", newSelected);
 
         for (ContentTransferAggregatorListener listener : ctaListeners) {
             try {

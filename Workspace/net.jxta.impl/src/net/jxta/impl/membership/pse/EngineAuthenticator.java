@@ -61,9 +61,10 @@ import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.membership.Authenticator;
 import net.jxta.membership.MembershipService;
-import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.peer.PeerID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -73,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * An authenticator associated with the PSE membership service.
@@ -83,15 +83,12 @@ import java.util.logging.Logger;
  **/
 public class EngineAuthenticator implements Authenticator {
 
-    /**
-     *  Log4J Logger
-     */
-    private static final Logger LOG = Logger.getLogger(EngineAuthenticator.class.getName());
+    private static final Logger LOG = Logging.getLogger(EngineAuthenticator.class.getName());
 
     /**
      * The Membership Service which generated this authenticator.
      **/
-    transient IPSEMembershipService source;
+    transient PSEMembershipService source;
 
     /**
      * The Authentication which was provided to the Apply operation of the
@@ -139,7 +136,7 @@ public class EngineAuthenticator implements Authenticator {
      *  @param application Anything entered into the identity info section of
      *  the Authentication credential is ignored.
      **/
-    EngineAuthenticator(IPSEMembershipService source, AuthenticationCredential application, PSEAuthenticatorEngine authenticatorEngine) {
+    EngineAuthenticator(PSEMembershipService source, AuthenticationCredential application, PSEAuthenticatorEngine authenticatorEngine) {
         // this( source, application );
 
         this.source = source;
@@ -158,7 +155,7 @@ public class EngineAuthenticator implements Authenticator {
      *  @param application Anything entered into the identity info section of
      *  the Authentication credential is ignored.
      **/
-    EngineAuthenticator(IPSEMembershipService source, AuthenticationCredential application) {
+    EngineAuthenticator(PSEMembershipService source, AuthenticationCredential application) {
         this.source = source;
         this.application = application;
 
@@ -208,7 +205,7 @@ public class EngineAuthenticator implements Authenticator {
      **/
     synchronized public boolean isReadyForJoin() {
         if (null != seedCert) {
-            Logging.logCheckedFine(LOG, "null seed certificate");
+            Logging.logCheckedDebug(LOG, "null seed certificate");
             return authenticatorEngine.isEnginePresent();
         } else {
 
@@ -264,7 +261,7 @@ public class EngineAuthenticator implements Authenticator {
 
                 // XXX bondolo 20040329 it may be appropriate to login
                 // something other than a peer id.
-                List<ID> peersOnly = new ArrayList<>();
+                List<ID> peersOnly = new ArrayList<ID>();
 
                 Iterator<ID> eachKey = Arrays.asList(allkeys).iterator();
 

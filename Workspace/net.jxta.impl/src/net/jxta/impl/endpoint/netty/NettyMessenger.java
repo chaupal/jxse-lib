@@ -2,7 +2,6 @@ package net.jxta.impl.endpoint.netty;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutorService;
-import java.util.logging.Logger;
 
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
@@ -11,6 +10,7 @@ import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.impl.endpoint.BlockingMessenger;
 import net.jxta.impl.endpoint.EndpointServiceImpl;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
@@ -28,7 +28,7 @@ import org.jboss.netty.channel.ChannelFuture;
  */
 public class NettyMessenger extends BlockingMessenger implements MessageArrivalListener {
 
-    private static final Logger LOG = Logger.getLogger(NettyMessenger.class.getName());
+    private static final Logger LOG = Logging.getLogger(NettyMessenger.class.getName());
 
     private Channel channel;
     private EndpointAddress logicalDestinationAddr;
@@ -56,7 +56,7 @@ public class NettyMessenger extends BlockingMessenger implements MessageArrivalL
     @Override
     protected void closeImpl() {
         // TODO: do we need to wait for this?
-    	LOG.info("Closing netty channel for messenger to {}" + logicalDestinationAddr);
+    	LOG.debugParams("Closing netty channel for messenger to {}", logicalDestinationAddr);
     	if(channel.isOpen()) {
     		channel.close();
     	}
@@ -149,7 +149,7 @@ public class NettyMessenger extends BlockingMessenger implements MessageArrivalL
 	}
 	
 	public void connectionDied() {
-		LOG.info("Underlying channel for messenger to {} has died - closing messenger" + logicalDestinationAddr);
+		LOG.infoParams("Underlying channel for messenger to {} has died - closing messenger", logicalDestinationAddr);
 	    close();
 	}
 	
@@ -166,7 +166,7 @@ public class NettyMessenger extends BlockingMessenger implements MessageArrivalL
 
 	private boolean isLoopback(EndpointAddress srcAddr) {
             if (localAddress.equals(srcAddr)) {
-                Logging.logCheckedFine(LOG, "Loopback message detected");
+                Logging.logCheckedDebug(LOG, "Loopback message detected");
                 return true;
             }
 
@@ -179,7 +179,7 @@ public class NettyMessenger extends BlockingMessenger implements MessageArrivalL
             MessageElement element = msg.getMessageElement(elementNamespace, elementName);
 	
             if(element == null) {
-		Logging.logCheckedFine(LOG, "Message with no ", addrType, " address detected: ", msg);
+		Logging.logCheckedDebug(LOG, "Message with no ", addrType, " address detected: ", msg);
             } else {
 	        msg.removeMessageElement(element);
             }

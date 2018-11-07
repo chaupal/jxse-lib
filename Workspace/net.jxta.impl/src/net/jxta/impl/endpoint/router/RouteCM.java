@@ -59,13 +59,13 @@ package net.jxta.impl.endpoint.router;
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
-import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.impl.endpoint.EndpointUtils;
 import net.jxta.impl.util.LRUCache;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
@@ -75,6 +75,7 @@ import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -82,8 +83,6 @@ import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This class is used to manage a persistent CM cache  of route
@@ -91,10 +90,7 @@ import java.util.logging.Logger;
  */
 class RouteCM implements Module {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(RouteCM.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(RouteCM.class.getName());
 
     /**
      * Default expiration time for Route advertisements. This is the amount
@@ -154,7 +150,7 @@ class RouteCM implements Module {
 
         if (paramBlock != null) {
             // get our tunable router parameter
-            Enumeration<? extends Element<?>> param;
+            Enumeration<?> param;
 
             param = paramBlock.getChildren("useCM");
             if (param.hasMoreElements()) {
@@ -164,7 +160,7 @@ class RouteCM implements Module {
 
         this.group = group;
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring Router Transport Resolver : " + assignedID);
 
@@ -348,7 +344,7 @@ class RouteCM implements Module {
             }
         }
 
-        Logging.logCheckedFine(LOG, "try to publish route ");
+        Logging.logCheckedDebug(LOG, "try to publish route ");
 
         // we need to retrieve the current adv to get all the known
         // endpoint addresses
@@ -365,7 +361,7 @@ class RouteCM implements Module {
 
             if (!advs.hasMoreElements()) {
                 // No route, sorry
-                Logging.logCheckedFine(LOG, "could not find a route advertisement ", realPeerID);
+                Logging.logCheckedDebug(LOG, "could not find a route advertisement ", realPeerID);
                 return;
             }
 
@@ -393,7 +389,7 @@ class RouteCM implements Module {
                 advs = discovery.getLocalAdvertisements(DiscoveryService.ADV, RouteAdvertisement.DEST_PID_TAG, realPeerID);
                 if (!advs.hasMoreElements()) {
                     // No route, sorry
-                    Logging.logCheckedFine(LOG, "could not find a route advertisement for hop ", realPeerID);
+                    Logging.logCheckedDebug(LOG, "could not find a route advertisement for hop ", realPeerID);
                     return;
                 }
                 adv = advs.nextElement();
@@ -410,7 +406,7 @@ class RouteCM implements Module {
 
             newRoute.setHops(newHops);
 
-            Logging.logCheckedFine(LOG, "publishing new route \n", newRoute.display());
+            Logging.logCheckedDebug(LOG, "publishing new route \n", newRoute.display());
 
             lruCache.put(route.getDestPeerID(), route);
 
@@ -448,7 +444,7 @@ class RouteCM implements Module {
             }
         }
 
-        Logging.logCheckedFine(LOG, "Publishing route for ", route.getDestPeerID());
+        Logging.logCheckedDebug(LOG, "Publishing route for ", route.getDestPeerID());
 
         // publish route adv
         if (!lruCache.contains(route.getDestPeerID())) {
@@ -461,7 +457,7 @@ class RouteCM implements Module {
 
             } catch (Exception ex) {
 
-                Logging.logCheckedSevere(LOG, "error publishing route adv \n", route, "\n", ex);
+                Logging.logCheckedError(LOG, "error publishing route adv \n", route, "\n", ex);
 
             }
         }
@@ -515,7 +511,7 @@ class RouteCM implements Module {
             try {
 
                 discovery.flushAdvertisement(adv);
-                Logging.logCheckedFine(LOG, "removed RouteAdvertisement for ", peerIDStr);
+                Logging.logCheckedDebug(LOG, "removed RouteAdvertisement for ", peerIDStr);
 
             } catch (IOException ex) {// protect against flush IOException when the entry is not there
 
@@ -545,7 +541,7 @@ class RouteCM implements Module {
             // ok so let's delete the advertisement
             try {
                 discovery.flushAdvertisement(adv);
-                Logging.logCheckedFine(LOG, "removed PeerAdvertisement for ", peerIDStr);
+                Logging.logCheckedDebug(LOG, "removed PeerAdvertisement for ", peerIDStr);
             } catch (IOException ex) {// protect against flush IOException when the entry is not there
             }
         }
@@ -601,7 +597,7 @@ class RouteCM implements Module {
                 return true;
             }
         } catch (Exception e) {
-            Logging.logCheckedFine(LOG, "  failure to publish route advertisement response\n", e);
+            Logging.logCheckedDebug(LOG, "  failure to publish route advertisement response\n", e);
         }
         return false;
     }

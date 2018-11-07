@@ -64,7 +64,7 @@ import net.jxta.impl.xindice.core.FaultCodes;
  * in the managing of the Filer.
  */
 public class FilerException extends DBException {
-  	private static final long serialVersionUID = 1L;
+ 	private static final long serialVersionUID = 1L;
 
 	public FilerException(int faultCode) {
         super(faultCode);

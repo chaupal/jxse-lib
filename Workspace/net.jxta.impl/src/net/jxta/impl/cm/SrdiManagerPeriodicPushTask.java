@@ -59,13 +59,14 @@ package net.jxta.impl.cm;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
 import net.jxta.impl.cm.SrdiManager.SrdiPushEntriesInterface;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 public class SrdiManagerPeriodicPushTask implements Runnable {
 
-    private static final Logger LOG = Logger.getLogger(SrdiManagerPeriodicPushTask.class.getName());
+    private static final Logger LOG = Logging.getLogger(SrdiManagerPeriodicPushTask.class.getName());
     
     private SrdiPushEntriesInterface pushNotifier;
     
@@ -90,7 +91,7 @@ public class SrdiManagerPeriodicPushTask implements Runnable {
 
         if(!stopped) return;
         
-        Logging.logCheckedFine(LOG, handlerName, ": Periodic Srdi delta push starting, delay = ", pushIntervalInMs, "ms");
+        Logging.logCheckedDebug(LOG, handlerName, ": Periodic Srdi delta push starting, delay = ", pushIntervalInMs, "ms");
         
         stopped = false;
         publishAll = true;
@@ -102,7 +103,7 @@ public class SrdiManagerPeriodicPushTask implements Runnable {
         
         if(stopped) return;
 
-        Logging.logCheckedFine(LOG, handlerName, ": Periodic Srdi delta push stopping");
+        Logging.logCheckedDebug(LOG, handlerName, ": Periodic Srdi delta push stopping");
 
         stopped = true;
         selfHandle.cancel(false);
@@ -113,13 +114,14 @@ public class SrdiManagerPeriodicPushTask implements Runnable {
 
         try {
 
-            Logging.logCheckedFiner(LOG, handlerName, ": Pushing ", (publishAll ? "all entries" : "deltas"));
+        	// LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, handlerName, ": Pushing ", (publishAll ? "all entries" : "deltas"));
             pushNotifier.pushEntries(publishAll);
             publishAll = false;
 
         } catch (Throwable all) {
 
-            Logging.logCheckedSevere(LOG, "Uncaught Throwable in SrdiPushTask",all);
+            Logging.logCheckedError(LOG, "Uncaught Throwable in SrdiPushTask",all);
             
         }
     }

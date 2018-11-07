@@ -109,7 +109,8 @@ public class Message {
         return (i.hasNext() ? (String) i.next() : null);
     }
 
-    public Iterator<String> getHeaders(String key) {
+    @SuppressWarnings("unchecked")
+	public Iterator<String> getHeaders(String key) {
         List<String> values = new ArrayList<String>();
         String k = null;
         Object o = null;
@@ -131,7 +132,8 @@ public class Message {
         return values.iterator();
     }
 
-    public Iterator<String> getHeaderKeys() {
+    @SuppressWarnings("unchecked")
+	public Iterator<String> getHeaderKeys() {
         return ((this.headers != null) ? this.headers.keySet().iterator() : Collections.EMPTY_LIST.iterator());
     }
 

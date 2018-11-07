@@ -64,6 +64,7 @@ import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.id.ID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.InputPipe;
@@ -79,17 +80,13 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * The Wire (Propagated) Pipe Service.
  */
 public class WirePipeImpl implements EndpointListener {
 
-    /**
-     * Logger
-     */
-    private final static Logger LOG = Logger.getLogger(WirePipeImpl.class.getName());
+    private final static Logger LOG = Logging.getLogger(WirePipeImpl.class.getName());
 
     /**
      * Service name we register our listener with.
@@ -250,7 +247,7 @@ public class WirePipeImpl implements EndpointListener {
             if (null == wirePipe) {
 
                 // No.. There is none. Create a new one.
-                Logging.logCheckedFine(LOG, "Creating new wire pipe for ", adv.getPipeID());
+                Logging.logCheckedDebug(LOG, "Creating new wire pipe for ", adv.getPipeID());
 
                 wirePipe = new WirePipe(group, pipeResolver, this, adv);
                 wirePipes.put(adv.getPipeID(), wirePipe);
@@ -283,7 +280,7 @@ public class WirePipeImpl implements EndpointListener {
                 adv.setPipeID(pipeID);
                 adv.setType(PipeService.PropagateType);
 
-                Logging.logCheckedFine(LOG, "Creating new wire pipe for ", adv.getPipeID());
+                Logging.logCheckedDebug(LOG, "Creating new wire pipe for ", adv.getPipeID());
 
                 wirePipe = new WirePipe(group, pipeResolver, this, adv);
                 wirePipes.put(pipeID, wirePipe);
@@ -303,7 +300,7 @@ public class WirePipeImpl implements EndpointListener {
 
         synchronized (wirePipes) {
 
-            Logging.logCheckedFine(LOG, "Removing wire pipe for ", pipeID);
+            Logging.logCheckedDebug(LOG, "Removing wire pipe for ", pipeID);
             return null != wirePipes.remove(pipeID);
 
         }
@@ -322,7 +319,7 @@ public class WirePipeImpl implements EndpointListener {
 
         if (null == elem) {
 
-            Logging.logCheckedFine(LOG, "No JxtaWireHeader element. Discarding ", message);
+            Logging.logCheckedDebug(LOG, "No JxtaWireHeader element. Discarding ", message);
             return;
 
         }
@@ -348,7 +345,7 @@ public class WirePipeImpl implements EndpointListener {
         if (null != wirePipe) {
             wirePipe.processIncomingMessage(message, header, srcAddr, dstAddr);
         } else {
-            Logging.logCheckedFine(LOG, "Ignoring message ", message, " for id ", header.getPipeID());
+            Logging.logCheckedDebug(LOG, "Ignoring message ", message, " for id ", header.getPipeID());
         }
 
     }

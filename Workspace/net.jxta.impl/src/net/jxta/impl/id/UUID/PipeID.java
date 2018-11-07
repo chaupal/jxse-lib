@@ -61,7 +61,7 @@ package net.jxta.impl.id.UUID;
  */
 public class PipeID extends net.jxta.pipe.PipeID {
 	private static final long serialVersionUID = 1L;
-
+ 
 	protected final static int groupIdOffset = 0;
     protected final static int idOffset = PipeID.groupIdOffset + IDFormat.uuidSize;
     protected final static int padOffset = PipeID.idOffset + IDFormat.uuidSize;

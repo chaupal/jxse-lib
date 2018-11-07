@@ -59,7 +59,8 @@ package net.jxta.impl.protocol;
 import java.util.Enumeration;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.util.logging.Logger;
+
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.content.ContentID;
 import net.jxta.document.Advertisement;
@@ -82,11 +83,8 @@ import net.jxta.protocol.ContentAdvertisement;
  * data set.
  */
 public class ContentAdvertisementImpl extends ContentAdvertisement {
-    /**
-     * Logger.
-     */
     private static final Logger LOG =
-            Logger.getLogger(ContentAdvertisementImpl.class.getName());
+            Logging.getLogger(ContentAdvertisementImpl.class.getName());
 
     /**
      * ContentID field.
@@ -164,12 +162,12 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
                     + doc.getName() );
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
         while (elements.hasMoreElements()) {
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if ( !handleElement(elem) ) {
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
         }
 
@@ -226,10 +224,10 @@ public class ContentAdvertisementImpl extends ContentAdvertisement {
     /**
      *  {@inheritDoc}
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Document getDocument( MimeMediaType encodeAs ) {
-        StructuredDocument adv = (StructuredDocument<?>) super.getDocument( encodeAs );
+        StructuredDocument adv = (StructuredDocument) super.getDocument( encodeAs );
         Element<?> e;
 
         e = adv.createElement(contentIDTag, getContentID().toString());

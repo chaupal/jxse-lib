@@ -2,6 +2,7 @@ package net.jxta.util;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.ServerSocket;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -36,6 +37,19 @@ public class IOUtils {
 		
 		  try{
 		    loader.close();
+		  }
+		  catch( IOException ioex ){
+		    logger.log( Level.SEVERE, ioex.getMessage(), ioex );
+		  }
+	}
+
+	public static void closeQuietly( ServerSocket socket) {
+		  Logger logger = Logger.getLogger( IOUtils.class.getName() );
+		  if( socket == null )
+		    return;
+		
+		  try{
+		    socket.close();
 		  }
 		  catch( IOException ioex ){
 		    logger.log( Level.SEVERE, ioex.getMessage(), ioex );

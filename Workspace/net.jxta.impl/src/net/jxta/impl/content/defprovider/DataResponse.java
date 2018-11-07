@@ -59,7 +59,8 @@ package net.jxta.impl.content.defprovider;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
+
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.content.ContentID;
 import net.jxta.document.Attribute;
@@ -101,7 +102,7 @@ import net.jxta.id.IDFactory;
  */
 public class DataResponse {
     private static Logger LOG =
-            Logger.getLogger(DataResponse.class.getName());
+            Logging.getLogger(DataResponse.class.getName());
     private static final String tagRoot = "DataResponse";
     private static final String tagID = "ContentID";
     private static final String tagOffs = "Offs";
@@ -240,11 +241,11 @@ public class DataResponse {
                     "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
         while (elements.hasMoreElements()) {
             Element<?> elem = (Element<?>) elements.nextElement();
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element : ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element : ", elem);
             }
         }
     }
@@ -253,7 +254,7 @@ public class DataResponse {
      * Read in an XML document.
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public Document getDocument(MimeMediaType asMimeType) {
+    public Document getDocument(MimeMediaType asMimeType) {
         StructuredDocument doc = (StructuredTextDocument<?>)
         StructuredDocumentFactory.newStructuredDocument(asMimeType, tagRoot);
         Attribute attr;
@@ -280,7 +281,7 @@ public class DataResponse {
             e = doc.createElement(tagEOF);
             doc.appendChild(e);
             attr = new Attribute(attrReached, Boolean.toString(getEOF()));
-            ((XMLElement) e).addAttribute(attr);
+            ((XMLElement<?>) e).addAttribute(attr);
         }
 
         return doc;

@@ -57,6 +57,8 @@
 package net.jxta.impl.id.binaryID;
 
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.platform.ModuleClassID;
+import net.jxta.platform.ModuleSpecID;
 
 /**
  * This interface defines a Module Class Identifier.
@@ -116,8 +118,8 @@ import net.jxta.peergroup.PeerGroupID;
  *
  * @author Daniel Brookshier <a HREF="mailto:turbogeek@cluck.com">turbogeek@cluck.com</a>
  * @see net.jxta.peergroup.PeerGroup
- * @see net.jxta.platform.Module
- * @see net.jxta.platform.ModuleClassID
+ * @see net.jxta.platform.net.jxta.peergroup.core.Module
+ * @see net.jxta.platform.net.jxta.peergroup.core.ModuleClassID
  * @see net.jxta.protocol.PeerAdvertisement
  * @see net.jxta.protocol.ModuleSpecAdvertisement
  * @see net.jxta.protocol.ModuleClassAdvertisement
@@ -125,10 +127,10 @@ import net.jxta.peergroup.PeerGroupID;
  * @see net.jxta.id.ID
  */
 
-public final class ModuleClassBinaryID extends net.jxta.platform.ModuleClassID {
+public final class ModuleClassBinaryID extends ModuleClassID {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * The id data
      */
     protected BinaryID classID;
@@ -266,7 +268,7 @@ public final class ModuleClassBinaryID extends net.jxta.platform.ModuleClassID {
      * {@inheritDoc}
      */
     @Override
-    public net.jxta.platform.ModuleClassID getBaseClass() {
+    public ModuleClassID getBaseClass() {
         return new ModuleClassBinaryID(parentClassID, new BinaryID(), new BinaryID(), new BinaryID());
     }
 
@@ -274,7 +276,7 @@ public final class ModuleClassBinaryID extends net.jxta.platform.ModuleClassID {
      * {@inheritDoc}
      */
     @Override
-    public boolean isOfSameBaseClass(net.jxta.platform.ModuleClassID classId) {
+    public boolean isOfSameBaseClass(ModuleClassID classId) {
         return getClass().equals(((ModuleClassBinaryID) classId).getClass());
     }
 
@@ -282,7 +284,7 @@ public final class ModuleClassBinaryID extends net.jxta.platform.ModuleClassID {
      * {@inheritDoc}
      */
     @Override
-    public boolean isOfSameBaseClass(net.jxta.platform.ModuleSpecID specId) {
+    public boolean isOfSameBaseClass(ModuleSpecID specId) {
         return getBaseClassID().equals(((ModuleSpecBinaryID) specId).getBaseClassID());
     }
 

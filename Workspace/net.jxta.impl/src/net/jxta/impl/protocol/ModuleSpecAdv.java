@@ -58,6 +58,7 @@ package net.jxta.impl.protocol;
 
 import net.jxta.document.*;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleSpecAdvertisement;
@@ -66,7 +67,6 @@ import net.jxta.protocol.PipeAdvertisement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Provides XML serialization support for ModuleSpecAdvertisement matching the
@@ -95,10 +95,7 @@ import java.util.logging.Logger;
  */
 public class ModuleSpecAdv extends ModuleSpecAdvertisement {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(ModuleSpecAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(ModuleSpecAdv.class.getName());
 
     private static final String idTag = "MSID";
     private static final String nameTag = "Name";
@@ -167,14 +164,14 @@ public class ModuleSpecAdv extends ModuleSpecAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
 
         }
@@ -298,8 +295,8 @@ public class ModuleSpecAdv extends ModuleSpecAdvertisement {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Document getDocument(MimeMediaType encodeAs) {
         if (null == getModuleSpecID()) {
             throw new IllegalStateException("Module Spec Advertisement did not contain a module spec id.");
@@ -318,7 +315,7 @@ public class ModuleSpecAdv extends ModuleSpecAdvertisement {
         }
 
         // desc is optional
-        StructuredDocument desc = getDesc();
+        StructuredDocument<?> desc = getDesc();
 
         if (desc != null) {
             StructuredDocumentUtils.copyElements(adv, adv, desc);
@@ -336,7 +333,7 @@ public class ModuleSpecAdv extends ModuleSpecAdvertisement {
         PipeAdvertisement pipeAdv = getPipeAdvertisement();
 
         if (pipeAdv != null) {
-            StructuredTextDocument advDoc = (StructuredTextDocument)
+            StructuredTextDocument<?> advDoc = (StructuredTextDocument<?>)
                     pipeAdv.getDocument(encodeAs);
 
             StructuredDocumentUtils.copyElements(adv, adv, advDoc);

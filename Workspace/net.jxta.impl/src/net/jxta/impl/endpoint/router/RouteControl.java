@@ -1,5 +1,5 @@
 /*
-  * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
  *
  *  The Sun Project JXTA(TM) Software License
  *
@@ -63,27 +63,25 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.Messenger;
 import net.jxta.endpoint.MessengerEvent;
 import net.jxta.id.ID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.protocol.AccessPointAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 /**
  * Provides an "IOCTL" style interface to the JXTA router transport
  */
 public class RouteControl implements RouteController {
 
-    /**
-     * Logger
-     */
-    private static transient final Logger LOG = Logger.getLogger(RouteControl.class.getName());
+    private static transient final Logger LOG = Logging.getLogger(RouteControl.class.getName());
 
     /**
      * Endpoint Router pointer
@@ -153,7 +151,7 @@ public class RouteControl implements RouteController {
 
         // check if the destination is not ourself
         if (route.getDestPeerID().equals(localPeerId)) {
-            Logging.logCheckedFine(LOG, "Skipping Local peer addRoute");
+            Logging.logCheckedDebug(LOG, "Skipping Local peer addRoute");
             return ALREADY_EXIST;
         }
 
@@ -182,8 +180,8 @@ public class RouteControl implements RouteController {
             }
 
             if (router.isLocalRoute(destAddress) || router.isRoutedRoute(route.getDestPeerID())) {
-                Logging.logCheckedFine(LOG, "Skipping add Route ", destAddress, " already exists");
-                Logging.logCheckedFine(LOG, "isLocalRoute() ", router.isLocalRoute(destAddress),
+                Logging.logCheckedDebug(LOG, "Skipping add Route ", destAddress, " already exists");
+                Logging.logCheckedDebug(LOG, "isLocalRoute() ", router.isLocalRoute(destAddress),
                         " isRoutedRoute() : ", router.isRoutedRoute(route.getDestPeerID()));
                 return ALREADY_EXIST;
             }
@@ -200,7 +198,7 @@ public class RouteControl implements RouteController {
             // which may make good use of ourselves as a first and only hop. (Normally routes are discovered
             // via route discovery, which automatically stiches routes to the respondant ahead of the
             // discovered route. But a discovered route adv is sometimes used as well).
-            Logging.logCheckedFine(LOG, "Publishing route :", newRoute);
+            Logging.logCheckedDebug(LOG, "Publishing route :", newRoute);
 
             routeCM.publishRoute(newRoute);
             return OK;

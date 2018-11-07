@@ -56,11 +56,10 @@
 
 package net.jxta.impl.id.binaryID;
 
+import java.io.IOException;
 import java.security.MessageDigest;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import net.jxta.util.IOUtils;
 
 /**
  * This is a utility class used to create pipe advertisement named and BinaryID for the pipeID to create
@@ -342,9 +341,11 @@ public class DigestTool {
 
         byte[] digest1 = generateHash(clearTextID);
         byte[] digest2;
+
+        java.io.ByteArrayOutputStream bos = null;
         net.jxta.impl.util.BASE64InputStream decoder = null;
         try {
-            java.io.ByteArrayOutputStream bos = new java.io.ByteArrayOutputStream();
+            bos = new java.io.ByteArrayOutputStream();
             decoder = new net.jxta.impl.util.BASE64InputStream(
                     new java.io.StringReader(testHash));
 
@@ -363,8 +364,19 @@ public class DigestTool {
             LOG.log(Level.SEVERE, "Failed to create a digest.\n", e);
             return false;
         }
-        finally {
-        	IOUtils.closeQuietly(decoder);
+        finally{
+        	try {
+        		if( bos != null )
+        			bos.close();
+        	} catch (IOException e) {
+        		e.printStackTrace();
+        	}
+        	try {
+        		if( decoder != null )
+        			decoder.close();
+        	} catch (IOException e) {
+        		e.printStackTrace();
+        	}
         }
 
         if (digest1.length != digest2.length) {

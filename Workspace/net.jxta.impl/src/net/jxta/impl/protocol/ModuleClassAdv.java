@@ -66,6 +66,7 @@ import net.jxta.document.StructuredDocument;
 import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLElement;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.platform.ModuleClassID;
 import net.jxta.protocol.ModuleClassAdvertisement;
@@ -73,7 +74,6 @@ import net.jxta.protocol.ModuleClassAdvertisement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Provides XML serialization support for ModuleClassAdvertisement matching the
@@ -95,10 +95,7 @@ import java.util.logging.Logger;
  */
 public class ModuleClassAdv extends ModuleClassAdvertisement {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(ModuleClassAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(ModuleClassAdv.class.getName());
 
     private static final String nameTag = "Name";
     private static final String idTag = "MCID";
@@ -144,7 +141,7 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
      *  @param doc The XML serialization of the advertisement.
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	private ModuleClassAdv(XMLElement doc) {
+   private ModuleClassAdv(XMLElement doc) {
 
         String doctype = doc.getName();
 
@@ -167,7 +164,7 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
             XMLElement<?> elem = elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
 
         }
@@ -228,8 +225,8 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
-	@Override
+    @Override
+    @SuppressWarnings({ "unchecked", "rawtypes" })
     public Document getDocument(MimeMediaType encodeAs) {
         if (null == getModuleClassID()) {
             throw new IllegalStateException("Module Class ID was not specified.");
@@ -251,7 +248,7 @@ public class ModuleClassAdv extends ModuleClassAdvertisement {
         }
 
         // desc is optional
-        StructuredDocument desc = getDesc();
+        StructuredDocument<?> desc = getDesc();
 
         if (desc != null) {
             StructuredDocumentUtils.copyElements(adv, adv, desc);

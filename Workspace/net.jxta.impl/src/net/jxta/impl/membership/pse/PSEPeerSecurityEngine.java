@@ -78,7 +78,7 @@ public interface PSEPeerSecurityEngine {
      *  @param bis  The input stream to be signed.
      *  @return The resulting signature.
      **/
-    public byte[] sign(String algorithm, PSECredential credential, InputStream bis) throws InvalidKeyException, SignatureException, IOException;
+    public byte[] sign(String algorithm, IPSECredential credential, InputStream bis) throws InvalidKeyException, SignatureException, IOException;
 
     /**
      *  Cryptographically verify a signature against an input stream using the 
@@ -97,7 +97,7 @@ public interface PSEPeerSecurityEngine {
      *
      *   @param credential The credential which will be the issuer of the service certificate.
      **/
-    public IssuerInfo generateCertificate(PSECredential credential) throws SecurityException;
+    public IssuerInfo generateCertificate(IPSECredential credential) throws SecurityException;
 
     /**
      *   Returns the default signature algorithm for this security engine.

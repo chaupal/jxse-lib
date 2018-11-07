@@ -84,7 +84,8 @@ public class AdvertisementSerializableTest {
     	return peergroupAdv;
     }
     
-    private Element<?> buildDesc() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+   private Element<?> buildDesc() {
         StructuredTextDocument desc = (StructuredTextDocument<?>) StructuredDocumentFactory.newStructuredDocument(
                 MimeMediaType.XMLUTF8, "Desc");
 

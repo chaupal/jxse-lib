@@ -57,6 +57,7 @@ package net.jxta.impl.endpoint.relay;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
@@ -69,19 +70,20 @@ import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.StringMessageElement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.Module;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
+
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.jxta.id.IDFactory;
 import net.jxta.impl.util.TimeUtils;
 import net.jxta.impl.protocol.RelayConfigAdv;
 import net.jxta.peer.PeerID;
 import net.jxta.pipe.PipeService;
+import net.jxta.platform.Module;
 
 /**
  * The Relay Server supports the following commands:
@@ -93,10 +95,7 @@ import net.jxta.pipe.PipeService;
 
 public final class RelayTransport implements EndpointListener, Module {
 
-    /**
-     * Logger
-     */
-    private final static Logger LOG = Logger.getLogger(RelayTransport.class.getName());
+    private final static Logger LOG = Logging.getLogger(RelayTransport.class.getName());
 
     // // constants ////
     static final String protocolName = "relay";
@@ -174,7 +173,7 @@ public final class RelayTransport implements EndpointListener, Module {
 
             } catch (IllegalArgumentException failed) {
 
-                Logging.logCheckedSevere(LOG, "Error in relay advertisement\n", failed);
+                Logging.logCheckedError(LOG, "Error in relay advertisement\n", failed);
                 throw failed;
 
             }
@@ -199,7 +198,7 @@ public final class RelayTransport implements EndpointListener, Module {
             relayClient = new RelayClient(group, serviceName, relayConfigAdv);
         }
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring Relay Message Transport : " + assignedID);
 
@@ -260,7 +259,7 @@ public final class RelayTransport implements EndpointListener, Module {
 
         endpoint.addIncomingMessageListener(this, serviceName, null);
 
-        Logging.logCheckedFine(LOG, "Message Listener added ", serviceName);
+        Logging.logCheckedDebug(LOG, "Message Listener added ", serviceName);
 
         if (relayServer != null) {
             if (!relayServer.startServer()) {
@@ -294,7 +293,7 @@ public final class RelayTransport implements EndpointListener, Module {
         } else {
 
             endpoint.removeIncomingMessageListener(serviceName, null);
-            Logging.logCheckedFine(LOG, "Message Listener removed ", serviceName);
+            Logging.logCheckedDebug(LOG, "Message Listener removed ", serviceName);
 
         }
 
@@ -311,7 +310,7 @@ public final class RelayTransport implements EndpointListener, Module {
      */
     public void processIncomingMessage(Message message, EndpointAddress srcAddr, EndpointAddress dstAddr) {
 
-        Logging.logCheckedFine(LOG, "Started for ", message, "\tsrc=", srcAddr);
+        Logging.logCheckedDebug(LOG, "Started for ", message, "\tsrc=", srcAddr);
 
         MessageElement element;
 

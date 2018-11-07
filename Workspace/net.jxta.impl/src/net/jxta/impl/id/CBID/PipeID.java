@@ -69,7 +69,7 @@ import java.security.ProviderException;
 public class PipeID extends net.jxta.impl.id.UUID.PipeID {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * Used only internally
      */
     protected PipeID() {

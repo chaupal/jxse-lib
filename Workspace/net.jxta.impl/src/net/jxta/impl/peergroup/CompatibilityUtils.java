@@ -56,7 +56,7 @@
 package net.jxta.impl.peergroup;
 
 import java.util.Enumeration;
-import java.util.logging.Logger;
+
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.Element;
 import net.jxta.document.MimeMediaType;
@@ -64,6 +64,7 @@ import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.TextElement;
 import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -77,11 +78,8 @@ import net.jxta.protocol.ModuleImplAdvertisement;
  */
 public final class CompatibilityUtils {
 
-    /**
-     * Logger.
-     */
     private static final Logger LOG =
-            Logger.getLogger(CompatibilityUtils.class.getName());
+            Logging.getLogger(CompatibilityUtils.class.getName());
 
     /**
      * Package URI to use in the default ModuleImplAdvertisement.
@@ -108,30 +106,6 @@ public final class CompatibilityUtils {
     private CompatibilityUtils() {
         // Empty
     }
-
-//    /**
-//     * This method exists only to support the deprecated StdPeerGroup
-//     * MODULE_IMPL_STD_URI field.  Do not use.
-//     *
-//     * @return default module impl package URI
-//     * @deprecated will be removed in 2.8
-//     */
-//    @Deprecated
-//    public static String getDefaultPackageURI() {
-//        return MODULE_IMPL_STD_URI;
-//    }
-
-//    /**
-//     * This method exists only to support the deprecated StdPeerGroup
-//     * MODULE_IMPL_STD_PROVIDER field.  Do not use.
-//     *
-//     * @return default module impl provider
-//     * @deprecated will be removed in 2.8
-//     */
-//    @Deprecated
-//    public static String getDefaultProvider() {
-//        return MODULE_IMPL_STD_PROVIDER;
-//    }
 
     /**
      * Given all the required information, constructs and returns a
@@ -208,7 +182,7 @@ public final class CompatibilityUtils {
                     return false;
                 }
 
-                TextElement e = hisChildren.nextElement();
+                TextElement<?> e = hisChildren.nextElement();
                 String key = e.getKey();
                 String val = e.getValue().trim();
 

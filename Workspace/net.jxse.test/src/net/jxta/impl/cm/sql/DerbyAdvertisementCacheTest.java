@@ -2,6 +2,7 @@ package net.jxta.impl.cm.sql;
 
 import net.jxta.impl.cm.AbstractCmTest;
 import net.jxta.impl.cm.AdvertisementCache;
+import net.jxta.impl.cm.sql.derby.DerbyAdvertisementCache;
 
 import org.junit.Ignore;
 

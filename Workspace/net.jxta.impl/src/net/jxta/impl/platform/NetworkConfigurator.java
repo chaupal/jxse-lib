@@ -72,16 +72,17 @@ import net.jxta.impl.peergroup.StdPeerGroup;
 import net.jxta.impl.protocol.HTTPAdv;
 import net.jxta.impl.protocol.PSEConfigAdv;
 import net.jxta.impl.protocol.PeerGroupConfigAdv;
-import net.jxta.impl.protocol.PlatformConfig;
 import net.jxta.impl.protocol.RdvConfigAdv;
 import net.jxta.impl.protocol.RdvConfigAdv.RendezVousConfiguration;
 import net.jxta.impl.protocol.RelayConfigAdv;
 import net.jxta.impl.protocol.TCPAdv;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.ModuleClassID;
+import net.jxta.platform.PlatformConfig;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.TransportAdvertisement;
 import javax.security.cert.CertificateException;
@@ -103,7 +104,6 @@ import java.util.NoSuchElementException;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 import java.util.Set;
-import java.util.logging.Logger;
 import net.jxta.impl.protocol.MulticastAdv;
 
 /**
@@ -180,7 +180,7 @@ public class NetworkConfigurator {
     /**
      * Logger
      */
-    private final static transient Logger LOG = Logger.getLogger(NetworkConfigurator.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(NetworkConfigurator.class.getName());
 
     // begin configuration modes
 
@@ -2093,7 +2093,7 @@ public class NetworkConfigurator {
         if (authenticationType == null) {
             authenticationType = System.getProperty("impl.membership.pse.authentication.type", "StringAuthentication");
         }
-        StdPeerGroup.setPSEMembershipServiceKeystoreInfoFactory(new StdPeerGroup.DefaultPSEMembershipServiceKeystoreInfoFactory(authenticationType, password));
+        //TODO CP: StdPeerGroup.setPSEMembershipServiceKeystoreInfoFactory(new StdPeerGroup.Defaul tPSEMembershipServiceKeystoreInfoFactory(authenticationType, password));
         
         if (peerid == null) {
             peerid = IDFactory.newPeerID(PeerGroupID.worldPeerGroupID, cert[0].getPublicKey().getEncoded());

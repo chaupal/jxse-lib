@@ -67,6 +67,7 @@ import net.jxta.id.ID;
 import net.jxta.impl.cm.Srdi;
 import net.jxta.impl.id.UUID.UUID;
 import net.jxta.impl.id.UUID.UUIDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
@@ -82,7 +83,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.WeakHashMap;
-import java.util.logging.Logger;
 
 /**
  * WirePipe (aka Propagated pipe) is very similar to IGMP, where a creation of an
@@ -92,10 +92,7 @@ import java.util.logging.Logger;
  */
 public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(WirePipe.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(WirePipe.class.getName());
 
     /**
      * The number of message ID we track to eliminate duplicate messages.
@@ -119,7 +116,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
      * Set) so that we don't keep pipes unnaturally alive and consuming
      * resources.
      */
-    private final Map<InputPipeImpl, Object> wireinputpipes = new WeakHashMap<InputPipeImpl, Object>();
+    private final Map<InputPipe, Object> wireinputpipes = new WeakHashMap<InputPipe, Object>();
 
     /**
      * The list of message ids we have already seen. The most recently seen
@@ -182,9 +179,9 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         if (closed) return false;
 
-        Logging.logCheckedFine(LOG, "Registering input pipe for ", pipeAdv.getPipeID());
+        Logging.logCheckedDebug(LOG, "Registering input pipe for ", pipeAdv.getPipeID());
 
-        wireinputpipes.put((InputPipeImpl) wireinputpipe, null);
+        wireinputpipes.put(wireinputpipe, null);
         boolean registered;
 
         if (1 == wireinputpipes.size()) {
@@ -217,7 +214,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
         }
 
         if (removed) {
-            Logging.logCheckedFine(LOG, "Removed input pipe for ", pipeAdv.getPipeID());
+            Logging.logCheckedDebug(LOG, "Removed input pipe for ", pipeAdv.getPipeID());
         }
 
         return removed;
@@ -232,7 +229,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
      */
     public Message waitForMessage() throws InterruptedException {
 
-        Logging.logCheckedFine(LOG, "This method is not really supported.");
+        Logging.logCheckedDebug(LOG, "This method is not really supported.");
         return null;
 
     }
@@ -242,7 +239,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
      */
     public Message poll(int timeout) throws InterruptedException {
 
-        Logging.logCheckedFine(LOG, "This method is not really supported.");
+        Logging.logCheckedDebug(LOG, "This method is not really supported.");
         return null;
 
     }
@@ -317,7 +314,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         if (null == elem) {
 
-            Logging.logCheckedFine(LOG, "No JxtaWireHeader element. Discarding ", message);
+            Logging.logCheckedDebug(LOG, "No JxtaWireHeader element. Discarding ", message);
             return;
 
         }
@@ -353,12 +350,12 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         if (recordSeenMessage(header.getMsgId())) {
 
-            Logging.logCheckedFine(LOG, "Discarding duplicate ", message);
+            Logging.logCheckedDebug(LOG, "Discarding duplicate ", message);
             return;
 
         }
 
-        Logging.logCheckedFine(LOG, "Processing ", message, " from ", srcAddr, " on ", pipeAdv.getPipeID());
+        Logging.logCheckedDebug(LOG, "Processing ", message, " from ", srcAddr, " on ", pipeAdv.getPipeID());
         callLocalListeners(message, srcAddr, dstAddr);
 
         if (peerGroup.isRendezvous()) repropagate(message, header);
@@ -374,31 +371,31 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
      */
     private void callLocalListeners(Message message, EndpointAddress srcAddr, EndpointAddress dstAddr) {
 
-        List<InputPipeImpl> listeners = new ArrayList<>(wireinputpipes.keySet());
+        List<InputPipe> listeners = new ArrayList<InputPipe>(wireinputpipes.keySet());
 
         if (listeners.isEmpty()) {
 
-            Logging.logCheckedFine(LOG, "No local listeners for ", pipeAdv.getPipeID());
+            Logging.logCheckedDebug(LOG, "No local listeners for ", pipeAdv.getPipeID());
 
         } else {
 
             int listenersCalled = 0;
 
-            for (InputPipeImpl anInputPipe : listeners) {
+            for (InputPipe anInputPipe : listeners) {
 
                 try {
 
-                    anInputPipe.processIncomingMessage(message.clone(), srcAddr, dstAddr);
+                    ((EndpointListener) anInputPipe).processIncomingMessage(message.clone(), srcAddr, dstAddr);
                     listenersCalled++;
 
                 } catch (Throwable ignored) {
 
-                    Logging.logCheckedSevere(LOG, "Uncaught Throwable during callback (", anInputPipe, ") for ", anInputPipe.getPipeID(), ignored);
+                    Logging.logCheckedError(LOG, "Uncaught Throwable during callback (", anInputPipe, ") for ", anInputPipe.getPipeID(), ignored);
 
                 }
             }
 
-            Logging.logCheckedFine(LOG, "Called ", listenersCalled, " of ", listeners.size(), " local listeners for ", pipeAdv.getPipeID());
+            Logging.logCheckedDebug(LOG, "Called ", listenersCalled, " of ", listeners.size(), " local listeners for ", pipeAdv.getPipeID());
 
         }
     }
@@ -418,7 +415,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
         if ((header.getTTL() <= 1)) {
 
             // This message has run out of fuel.
-            Logging.logCheckedFine(LOG, "No TTL remaining - discarding ", message, " on ", header.getPipeID());
+            Logging.logCheckedDebug(LOG, "No TTL remaining - discarding ", message, " on ", header.getPipeID());
             return;
 
         }
@@ -430,14 +427,14 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         msg.replaceMessageElement(WirePipeImpl.WIRE_HEADER_ELEMENT_NAMESPACE, elem);
 
-        Logging.logCheckedFine(LOG, "Repropagating ", msg, " on ", header.getPipeID());
+        Logging.logCheckedDebug(LOG, "Repropagating ", msg, " on ", header.getPipeID());
 
         synchronized (this) {
             if (closed) {
                 return;
             }
             if (null == repropagater) {
-                repropagater = wireService.createOutputPipe(pipeAdv, Collections.<ID>emptySet());
+                repropagater = wireService.createOutputPipe(pipeAdv, Collections.EMPTY_SET);
             }
         }
 
@@ -492,14 +489,14 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
                 peerids.retainAll(rendezvous.getLocalEdgeView());
 
-                Logging.logCheckedFine(LOG, "Propagating ", message, " to ", peerids.size(), " subscriber peers.");
+                Logging.logCheckedDebug(LOG, "Propagating ", message, " to ", peerids.size(), " subscriber peers.");
 
                 rendezvous.propagate(Collections.enumeration(peerids), message, WirePipeImpl.WIRE_SERVICE_NAME,
                         wireService.getServiceParameter(), 1);
 
             } else {
 
-                Logging.logCheckedFine(LOG, "Propagating ", message, " to whole network.");
+                Logging.logCheckedDebug(LOG, "Propagating ", message, " to whole network.");
 
                 // propagate to local sub-net
                 rendezvous.propagateToNeighbors(message, WirePipeImpl.WIRE_SERVICE_NAME, wireService.getServiceParameter(),
@@ -507,7 +504,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
             }
 
-            Logging.logCheckedFine(LOG, "Walking ", message, " through peerview.");
+            Logging.logCheckedDebug(LOG, "Walking ", message, " through peerview.");
 
             // walk the message through rdv network (edge, or rendezvous)
             rendezvous.walk(message, WirePipeImpl.WIRE_SERVICE_NAME, wireService.getServiceParameter(),
@@ -516,7 +513,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
         } else {
 
             // Send to specific peers
-            Logging.logCheckedFine(LOG, "Propagating ", message, " to ", peers.size(), " peers.");
+            Logging.logCheckedDebug(LOG, "Propagating ", message, " to ", peers.size(), " peers.");
 
             rendezvous.propagate(Collections.enumeration(peers), message, WirePipeImpl.WIRE_SERVICE_NAME,
                     wireService.getServiceParameter(), 1);
@@ -558,7 +555,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
             if (msgIds.contains(msgid)) {
 
                 // Already there. Nothing to do
-                Logging.logCheckedFine(LOG, "duplicate ", msgid);
+                Logging.logCheckedDebug(LOG, "duplicate ", msgid);
                 return true;
 
             }
@@ -573,7 +570,7 @@ public class WirePipe implements EndpointListener, InputPipe, PipeRegistrar {
 
         }
 
-        Logging.logCheckedFine(LOG, "added ", msgid);
+        Logging.logCheckedDebug(LOG, "added ", msgid);
         return false;
 
     }

@@ -71,6 +71,7 @@ import net.jxta.impl.protocol.PeerInfoQueryMsg;
 import net.jxta.impl.protocol.PeerInfoResponseMsg;
 import net.jxta.impl.protocol.ResolverQuery;
 import net.jxta.impl.protocol.ResolverResponse;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.meter.MonitorException;
 import net.jxta.meter.MonitorFilter;
@@ -91,12 +92,11 @@ import net.jxta.protocol.ResolverResponseMsg;
 import net.jxta.resolver.QueryHandler;
 import net.jxta.resolver.ResolverService;
 import net.jxta.util.documentSerializable.DocumentSerializable;
+
 import java.io.StringReader;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.Random;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  Peer Info provides a mechanism to obtain  information about peers.
@@ -105,7 +105,7 @@ import java.util.logging.Logger;
 
 public class PeerInfoServiceImpl implements PeerInfoService {
 
-    private final static Logger LOG = Logger.getLogger(PeerInfoServiceImpl.class.getName());
+    private final static Logger LOG = Logging.getLogger(PeerInfoServiceImpl.class.getName());
 
     /**
      *  Time in milli seconds since midnight, January 1, 1970 UTC and when this
@@ -115,22 +115,26 @@ public class PeerInfoServiceImpl implements PeerInfoService {
 
     private ResolverService resolver = null;
     private PeerGroup group = null;
+    //private EndpointService endpoint = null;
     private PeerID localPeerId = null;
     private ModuleImplAdvertisement implAdvertisement = null;
     private String resolverHandlerName = null;
+    //private MembershipService membership = null;
+    //private Credential credential = null;
     private StructuredDocument<?> credentialDoc = null;
     private MonitorManager monitorManager;
-    private final Map<String, PeerInfoHandler> peerInfoHandlers = new Hashtable<>();
+    private final Map<String, PeerInfoHandler> peerInfoHandlers = new Hashtable<String, PeerInfoHandler>();
     private PipQueryHandler pipQueryHandler = new PipQueryHandler();
     private RemoteMonitorPeerInfoHandler remoteMonitorPeerInfoHandler;
     private PeerInfoMessenger resolverServicePeerInfoMessenger = new ResolverServicePeerInfoMessenger();
 
+    //private int nextQueryId = 1000;
     private static final Random rand = new Random();
 
     // This static package public hashtable of registered PeerInfoServiceImpls
     // allows us to do Peergroup Monitoring via an IP Bridge to the PIP
     // See the documentation on the JXTA Monitor
-    static Hashtable<PeerGroup, PeerInfoService> peerInfoServices = new Hashtable<>();
+    static Hashtable<PeerGroup, PeerInfoService> peerInfoServices = new Hashtable<PeerGroup, PeerInfoService>();
 
     /**
      * {@inheritDoc}
@@ -155,7 +159,7 @@ public class PeerInfoServiceImpl implements PeerInfoService {
         // record start time at end of successful init
         startTime = System.currentTimeMillis();
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring PeerInfo Service : " + assignedID);
 
@@ -387,7 +391,7 @@ public class PeerInfoServiceImpl implements PeerInfoService {
             try {
                 requestSourceID = (PeerID) query.getSrcPeer();
             } catch (Exception e) {
-                Logging.logCheckedFine(LOG, "PeerInfoService.processQuery got a bad query, not valid src\n", e);
+                Logging.logCheckedDebug(LOG, "PeerInfoService.processQuery got a bad query, not valid src\n", e);
                 return ResolverService.OK;
             }
 
@@ -417,11 +421,11 @@ public class PeerInfoServiceImpl implements PeerInfoService {
                     peerInfoHandler.processRequest(queryId, requestSourceID, pipquery,
                         requestElement, resolverServicePeerInfoMessenger);
                 } else {
-                    Logging.logCheckedFine(LOG, "No registered PeerInfoHandler for this type of request");
+                    Logging.logCheckedDebug(LOG, "No registered PeerInfoHandler for this type of request");
                 }
 
             } else {
-                Logging.logCheckedFine(LOG, "No request PeerInfoQueryMessage Request Element found");
+                Logging.logCheckedDebug(LOG, "No request PeerInfoQueryMessage Request Element found");
             }
 
             return ResolverService.OK;
@@ -444,7 +448,7 @@ public class PeerInfoServiceImpl implements PeerInfoService {
 
             } catch (Exception e) {
 
-                Logging.logCheckedFine(LOG, "PeerInfoService.processResponse got a bad adv\n", e);
+                Logging.logCheckedDebug(LOG, "PeerInfoService.processResponse got a bad adv\n", e);
                 return;
 
             }
@@ -458,11 +462,11 @@ public class PeerInfoServiceImpl implements PeerInfoService {
                 if (peerInfoHandler != null) {
                     peerInfoHandler.processResponse(queryId, resp, responseElement, resolverServicePeerInfoMessenger);
                 } else {
-                    Logging.logCheckedFine(LOG, "No registered PeerInfoHandler for this type of response");
+                    Logging.logCheckedDebug(LOG, "No registered PeerInfoHandler for this type of response");
                 }
 
             } else {
-                Logging.logCheckedFine(LOG, "No request PeerInfoResponseMessage Response Element found");
+                Logging.logCheckedDebug(LOG, "No request PeerInfoResponseMessage Response Element found");
             }
         }
     }

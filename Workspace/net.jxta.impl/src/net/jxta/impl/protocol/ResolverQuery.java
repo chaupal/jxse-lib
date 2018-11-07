@@ -58,14 +58,15 @@ package net.jxta.impl.protocol;
 
 import net.jxta.document.*;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.ResolverQueryMsg;
 import net.jxta.protocol.ResolverResponseMsg;
 import net.jxta.protocol.RouteAdvertisement;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Implements the Resolver Query Message according to the
@@ -99,10 +100,7 @@ import java.util.logging.Logger;
  */
 public class ResolverQuery extends ResolverQueryMsg implements Cloneable {
 
-    /**
-     * The logger
-     */
-    private final static Logger LOG = Logger.getLogger(ResolverQuery.class.getName());
+    private final static Logger LOG = Logging.getLogger(ResolverQuery.class.getName());
 
     private static final String handlernameTag = "HandlerName";
     private static final String credentialTag = "jxta:Cred";
@@ -166,7 +164,7 @@ public class ResolverQuery extends ResolverQueryMsg implements Cloneable {
      */
     public void readIt(XMLElement<?> doc) {
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
             TextElement<?> elem = (TextElement<?>) elements.nextElement();
@@ -189,7 +187,7 @@ public class ResolverQuery extends ResolverQueryMsg implements Cloneable {
             // Set source route
             if (elem.getName().equals(srcRouteTag)) {
 
-                for (Enumeration<? extends Element<?>> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
+                for (Enumeration<?> eachXpt = elem.getChildren(); eachXpt.hasMoreElements();) {
 
                     XMLElement<?> aXpt = (XMLElement<?>) eachXpt.nextElement();
                     RouteAdvertisement routeAdv = (RouteAdvertisement) AdvertisementFactory.newAdvertisement(aXpt);
@@ -246,8 +244,8 @@ public class ResolverQuery extends ResolverQueryMsg implements Cloneable {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         // sanity check!
         if (null == getHandlerName()) {

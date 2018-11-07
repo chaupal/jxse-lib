@@ -64,6 +64,7 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.exception.ProtocolNotSupportedException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.Authenticator;
 import net.jxta.membership.MembershipService;
@@ -79,8 +80,6 @@ import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  The passwd membership service provides a Membership Service implementation
@@ -96,10 +95,7 @@ import java.util.logging.Logger;
  */
 public class PasswdMembershipService implements MembershipService {
 
-    /**
-     *  Log4J Logger
-     */
-    private static final Logger LOG = Logger.getLogger(PasswdMembershipService.class.getName());
+    private static final Logger LOG = Logging.getLogger(PasswdMembershipService.class.getName());
 
     /**
      * Well known service specification identifier: password membership
@@ -279,7 +275,7 @@ public class PasswdMembershipService implements MembershipService {
          * {@inheritDoc}
          */
         @SuppressWarnings({ "rawtypes", "unchecked" })
-		public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
+        public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
             StructuredDocument doc = StructuredDocumentFactory.newStructuredDocument(as, "jxta:Cred");
 
             if (doc instanceof XMLDocument) {
@@ -291,7 +287,7 @@ public class PasswdMembershipService implements MembershipService {
                 ((Attributable) doc).addAttribute("type", "jxta:PasswdCred");
             }
 
-            Element e = doc.createElement("PeerGroupID", getPeerGroupID().toString());
+            Element<?> e = doc.createElement("PeerGroupID", getPeerGroupID().toString());
 
             doc.appendChild(e);
 
@@ -383,7 +379,7 @@ public class PasswdMembershipService implements MembershipService {
                         "Could not construct : " + getClass().getName() + "from doc containing a " + doctype);
             }
 
-            Enumeration<? extends Element<?>> elements = doc.getChildren();
+            Enumeration<?> elements = doc.getChildren();
 
             while (elements.hasMoreElements()) {
 
@@ -474,9 +470,9 @@ public class PasswdMembershipService implements MembershipService {
          */
         synchronized public boolean isReadyForJoin() {
             if ( null == password )
-                Logging.logCheckedFine(LOG, "null password");
+                Logging.logCheckedDebug(LOG, "null password");
             if ( null == password )
-                Logging.logCheckedFine(LOG, "null whoami");
+                Logging.logCheckedDebug(LOG, "null whoami");
             return ((null != password) && (null != whoami));
         }
 
@@ -551,8 +547,8 @@ public class PasswdMembershipService implements MembershipService {
      *  Default constructor. Normally only called by the peer group.
      */
     public PasswdMembershipService() throws PeerGroupException {
-        principals = new ArrayList<>();
-        authCredentials = new ArrayList<>();
+        principals = new ArrayList<Credential>();
+        authCredentials = new ArrayList<Credential>();
 
 //        support = new PropertyChangeSupport(getInterface());
         support = new PropertyChangeSupport(this);
@@ -604,7 +600,7 @@ public class PasswdMembershipService implements MembershipService {
         peergroup = group;
         implAdvertisement = (ModuleImplAdvertisement) impl;
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring Password Membership Service : " + assignedID);
 
@@ -625,13 +621,13 @@ public class PasswdMembershipService implements MembershipService {
 
         XMLElement<?> myParam = (XMLElement<?>) configAdv.getServiceParam(assignedID);
 
-        logins = new HashMap<>();
+        logins = new HashMap<String, String>();
 
         if (null == myParam) {
             throw new PeerGroupException("parameters for group passwords missing");
         }
 
-        for (Enumeration<? extends Element<?>> allLogins = myParam.getChildren(); allLogins.hasMoreElements();) {
+        for (Enumeration<?> allLogins = myParam.getChildren(); allLogins.hasMoreElements();) {
             XMLElement<?> aLogin = (XMLElement<?>) allLogins.nextElement();
 
             if (aLogin.getName().equals("login")) {
@@ -645,7 +641,7 @@ public class PasswdMembershipService implements MembershipService {
                 int lastDelim = etcPasswd.indexOf(':', nextDelim + 1);
                 String passwd = etcPasswd.substring(nextDelim + 1, lastDelim);
 
-                Logging.logCheckedFine(LOG, "Adding login : \'", login, "\' with encoded password : \'", passwd, "\'");
+                Logging.logCheckedDebug(LOG, "Adding login : \'", login, "\' with encoded password : \'", passwd, "\'");
                 logins.put(login, passwd);
 
             }
@@ -820,7 +816,7 @@ public class PasswdMembershipService implements MembershipService {
         }
 
         String encodedPW = makePsswd(passwd);
-        Logging.logCheckedFine(LOG, "Password \'", passwd, "\' encodes as: \'", encodedPW, "\'");
+        Logging.logCheckedDebug(LOG, "Password \'", passwd, "\' encodes as: \'", encodedPW, "\'");
 
         String mustMatch = (String) logins.get(identity);
 

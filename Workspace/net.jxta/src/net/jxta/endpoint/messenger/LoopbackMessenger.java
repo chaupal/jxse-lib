@@ -59,13 +59,13 @@ package net.jxta.endpoint.messenger;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.Message;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 
 import java.io.IOException;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
-import java.util.logging.Logger;
 
 /**
  * This class implements local delivery of messages (for example when the
@@ -98,7 +98,7 @@ public class LoopbackMessenger extends BlockingMessenger {
     /**
      *  Logger
      */
-    private final static transient Logger LOG = Logger.getLogger(LoopbackMessenger.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(LoopbackMessenger.class.getName());
 
     /**
      * The peergroup we are working for, ie. that we will loop back to.

@@ -56,9 +56,8 @@
 
 package net.jxta.impl.util;
 
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-
-import java.util.logging.Logger;
 
 /**
  * This class does not in itself allocate anything; it just does accounting.
@@ -149,7 +148,7 @@ public class ResourceDispatcher {
     /**
      *  Logger
      */
-    private final static transient Logger LOG = Logger.getLogger(ResourceDispatcher.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(ResourceDispatcher.class.getName());
 
     private long extraItems;
     private long reservedItems;

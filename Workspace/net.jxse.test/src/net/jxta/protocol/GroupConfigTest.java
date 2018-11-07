@@ -64,12 +64,12 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLDocument;
-import net.jxta.impl.peergroup.IModuleDefinitions;
 import net.jxta.impl.protocol.DiscoveryConfigAdv;
-import net.jxta.impl.protocol.GroupConfig;
 import net.jxta.impl.protocol.HTTPAdv;
 import net.jxta.impl.protocol.RdvConfigAdv;
 import net.jxta.impl.protocol.RelayConfigAdv;
+import net.jxta.platform.GroupConfig;
+import net.jxta.platform.IModuleDefinitions;
 
 import org.junit.Ignore;
 import org.junit.Test;
@@ -138,7 +138,8 @@ public class GroupConfigTest {
         assertEquals("Original instance and clone instance were not identical.", cp, cp2);
     }
 
-    private static XMLDocument<?> wrapParm(Advertisement srcAdv, boolean enabled) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private static XMLDocument<?> wrapParm(Advertisement srcAdv, boolean enabled) {
         try {
             XMLDocument<?> advDoc = (XMLDocument<?>) srcAdv.getDocument(MimeMediaType.XMLUTF8);
 

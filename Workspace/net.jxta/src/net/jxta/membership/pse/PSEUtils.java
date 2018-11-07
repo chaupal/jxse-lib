@@ -88,7 +88,6 @@ import java.util.Date;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.logging.Logger;
 
 import javax.crypto.Cipher;
 import javax.crypto.EncryptedPrivateKeyInfo;
@@ -105,6 +104,7 @@ import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
 import net.jxta.impl.util.BASE64InputStream;
 import net.jxta.impl.util.BASE64OutputStream;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.util.IOUtils;
 
@@ -122,7 +122,7 @@ public final class PSEUtils {
     /**
      * Logger
      */
-    private static final transient Logger LOG = Logger.getLogger(PSEUtils.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(PSEUtils.class.getName());
 
     /**
      * Singleton instance.
@@ -216,7 +216,7 @@ public final class PSEUtils {
 
             if (null == issuerinfo) {
 
-                Logging.logCheckedFine(LOG, "Generating Self Signed Cert ...");
+                Logging.logCheckedDebug(LOG, "Generating Self Signed Cert ...");
 
                 if (!cn.endsWith("-CA")) {
                     useCN = cn + "-CA";
@@ -226,7 +226,7 @@ public final class PSEUtils {
 
             } else {
 
-                Logging.logCheckedFine(LOG, "Generating Client Cert ...");
+                Logging.logCheckedDebug(LOG, "Generating Client Cert ...");
                 useCN = cn;
 
             }
@@ -258,7 +258,7 @@ public final class PSEUtils {
 
         } catch (NoSuchAlgorithmException e) {
 
-            Logging.logCheckedSevere(LOG, "Could not generate certificate\n\n", e);
+            Logging.logCheckedError(LOG, "Could not generate certificate\n\n", e);
 
             SecurityException failure = new SecurityException("Could not generate certificate");
             failure.initCause(e);
@@ -328,7 +328,7 @@ public final class PSEUtils {
             // for signing service cert
             info.issuerPkey = signer;
 
-            Logging.logCheckedFine(LOG, "Client Cert : \n", info.cert);
+            Logging.logCheckedDebug(LOG, "Client Cert : \n", info.cert);
             return info;
 
         } catch (SignatureException e) {
@@ -811,7 +811,7 @@ public final class PSEUtils {
 
         String encoded = base64.toString();
 
-        Logging.logCheckedFiner(LOG, "Encoded ", in.length, " bytes -> ", encoded.length(), " characters.");
+        Logging.logCheckedFine(LOG, "Encoded ", in.length, " bytes -> ", encoded.length(), " characters.");
 
         return encoded;
     }
@@ -842,7 +842,7 @@ public final class PSEUtils {
 
     	byte[] result = bos.toByteArray();
 
-        Logging.logCheckedFiner(LOG, "Decoded ", result.length, " bytes.");
+        Logging.logCheckedFine(LOG, "Decoded ", result.length, " bytes.");
 
         return result;
     }

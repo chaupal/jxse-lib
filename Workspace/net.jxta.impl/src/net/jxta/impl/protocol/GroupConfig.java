@@ -64,21 +64,18 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.ConfigParams;
 
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Configuration container for any Peer Group.
  */
 public class GroupConfig extends ConfigParams implements Cloneable {
 
-    /**
-     *  Logger
-     */
-    private static final Logger LOG = Logger.getLogger(GroupConfig.class.getName());
+    private static final Logger LOG = Logging.getLogger(GroupConfig.class.getName());
 
     private static final String advType = "jxta:GroupConfig";
 
@@ -124,7 +121,7 @@ public class GroupConfig extends ConfigParams implements Cloneable {
      * @param doc the element
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	GroupConfig(XMLElement doc) {
+    GroupConfig(XMLElement doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -146,7 +143,7 @@ public class GroupConfig extends ConfigParams implements Cloneable {
             Element<?> elem = (Element<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
 
         }

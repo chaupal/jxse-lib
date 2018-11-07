@@ -55,7 +55,7 @@
  */
 
 package net.jxta.impl.content;
-
+ 
 /**
  * This interface defines the API which must be implemented to be notified of
  * events and problems created while managing a list of subordinate Module

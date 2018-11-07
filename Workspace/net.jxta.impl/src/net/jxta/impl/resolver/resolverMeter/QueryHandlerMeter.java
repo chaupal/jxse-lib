@@ -96,16 +96,25 @@ public class QueryHandlerMeter {
         }
     }
 
-    @SuppressWarnings("unused")
     private class QueryMetric {
-    	int queryId;
-    	long querySentTime = System.currentTimeMillis();
-    	int numResponsesReceived = 0;
+        int queryId;
+        long querySentTime = System.currentTimeMillis();
+        int numResponsesReceived = 0;
         long lastResponseTime = 0;
 
         QueryMetric(int queryId) {
             this.queryId = queryId;
         }
+
+		@SuppressWarnings("unused")
+		protected int getQueryId() {
+			return queryId;
+		}
+
+		@SuppressWarnings("unused")
+		protected int getNumResponsesReceived() {
+			return numResponsesReceived;
+		}
     }
 
     private static List<QueryMetricsTable> queryMetricsTables = new LinkedList<QueryMetricsTable>();
@@ -511,7 +520,7 @@ public class QueryHandlerMeter {
         destinationMeter.errorWhileProcessingQuery();
     }
 
-    public Enumeration<QueryDestinationMeter> getQueryDestinationMeters() {
+    public Enumeration<?> getQueryDestinationMeters() {
         return Collections.enumeration(queryDestinationMeters.values());
     }
 

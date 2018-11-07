@@ -1,10 +1,10 @@
 package net.jxse.module;
 
 import net.jxta.document.Advertisement;
-import net.jxta.impl.protocol.PlatformConfig;
 import net.jxta.platform.Module;
 import net.jxta.platform.ModuleClassID;
 import net.jxta.platform.ModuleSpecID;
+import net.jxta.platform.PlatformConfig;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
 public interface IJxtaModuleService<T extends Module> extends IModuleService<T>{

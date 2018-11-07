@@ -68,16 +68,17 @@ import net.jxta.impl.rendezvous.RendezVousPropagateMessage;
 import net.jxta.impl.rendezvous.RendezVousServiceImpl;
 import net.jxta.impl.rendezvous.RendezVousServiceProvider;
 import net.jxta.impl.rendezvous.rendezvousMeter.RendezvousMeterBuildSettings;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.rendezvous.RendezvousEvent;
+
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 /**
  * A JXTA {@link net.jxta.rendezvous.RendezVousService} implementation which
@@ -88,10 +89,7 @@ import java.util.logging.Logger;
  */
 public class AdhocPeerRdvService extends RendezVousServiceProvider {
 
-    /**
-     * Log4J Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(AdhocPeerRdvService.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(AdhocPeerRdvService.class.getName());
 
     /**
      * Default Maximum TTL. This is minimum needed to bridge networks.
@@ -104,6 +102,7 @@ public class AdhocPeerRdvService extends RendezVousServiceProvider {
      * @param g          the peergroup
      * @param rdvService the rendezvous service
      */
+    @SuppressWarnings({ "rawtypes" })
     public AdhocPeerRdvService(PeerGroup g, RendezVousServiceImpl rdvService) {
 
         super(g, rdvService);
@@ -116,7 +115,7 @@ public class AdhocPeerRdvService extends RendezVousServiceProvider {
             Advertisement adv = null;
 
             try {
-                XMLDocument<?> configDoc = (XMLDocument<?>) confAdv.getServiceParam(rdvService.getAssignedID());
+                XMLDocument configDoc = (XMLDocument) confAdv.getServiceParam(rdvService.getAssignedID());
 
                 if (null != configDoc) {
                     // XXX 20041027 backwards compatibility
@@ -294,7 +293,7 @@ public class AdhocPeerRdvService extends RendezVousServiceProvider {
 
                     ID dest = destPeerIDs.nextElement();
 
-                    Logging.logCheckedFine(LOG, "Sending ", msg, " to client ", dest);
+                    Logging.logCheckedDebug(LOG, "Sending ", msg, " to client ", dest);
 
                     EndpointAddress addr = mkAddress(dest, PropSName, PropPName);
 
@@ -374,7 +373,7 @@ public class AdhocPeerRdvService extends RendezVousServiceProvider {
     @Override
     protected void repropagate(Message msg, RendezVousPropagateMessage propHdr, String serviceName, String serviceParam) {
 
-        Logging.logCheckedFine(LOG, "Repropagating ", msg, " (", propHdr.getMsgId(), ")");
+        Logging.logCheckedDebug(LOG, "Repropagating ", msg, " (", propHdr.getMsgId(), ")");
 
         if (RendezvousMeterBuildSettings.RENDEZVOUS_METERING && (rendezvousMeter != null)) {
             rendezvousMeter.receivedMessageRepropagatedInGroup();
@@ -386,7 +385,7 @@ public class AdhocPeerRdvService extends RendezVousServiceProvider {
             if (null != propHdr) {
                 sendToNetwork(msg, propHdr);
             } else {
-                Logging.logCheckedFine(LOG, "No propagate header, declining to repropagate ", msg, ")");
+                Logging.logCheckedDebug(LOG, "No propagate header, declining to repropagate ", msg, ")");
             }
 
         } catch (Exception ez1) {

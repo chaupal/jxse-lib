@@ -59,13 +59,13 @@ package net.jxta.impl.protocol;
 import net.jxta.document.*;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 /**
  * A Leasing Protocol Request Message.
@@ -96,15 +96,12 @@ import java.util.logging.Logger;
  */
 public class LeaseRequestMsg {
 
-    /**
-     *  Log4J Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(LeaseRequestMsg.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(LeaseRequestMsg.class.getName());
 
-    private final static String CLIENT_ID_ATTR = "client_id";
+     private final static String CLIENT_ID_ATTR = "client_id";
     private final static String REQUESTED_LEASE_ATTR = "requested_lease";
     private final static String SERVER_ADV_GEN_ATTR = "server_adv_gen";
- 
+
     private final static String CLIENT_CRED_TAG = "Credential";
 
     /**
@@ -149,14 +146,13 @@ public class LeaseRequestMsg {
         }
 
         XMLElement<?> doc = (XMLElement<?>) root;
-
         if (!doc.getName().equals(getMessageType())) {
             throw new IllegalArgumentException(
                     "Could not construct : " + getClass().getName() + " from doc containing a '" + doc.getName()
                     + "'. Should be : " + getMessageType());
         }
 
-        Enumeration<Attribute> eachAttr = doc.getAttributes();
+        Enumeration<?> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -197,7 +193,7 @@ public class LeaseRequestMsg {
             }
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 

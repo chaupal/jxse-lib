@@ -60,11 +60,11 @@ import java.util.Iterator;
 import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import net.jxta.document.Element;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.impl.util.threads.SelfCancellingTask;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.meter.MonitorEvent;
 import net.jxta.meter.MonitorException;
@@ -92,7 +92,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
     public static final int MIN_LEASE = 60 * 1000; // 1 minute
 
     private static final Random rand = new Random();
-    private final static Logger LOG = Logger.getLogger(RemoteMonitorPeerInfoHandler.class.getName());
+    private final static Logger LOG = Logging.getLogger(RemoteMonitorPeerInfoHandler.class.getName());
 
     private Hashtable<Integer, RequestInfo> requestInfos = new Hashtable<Integer, RequestInfo>();
     private Hashtable<Integer, LeaseInfo> leaseInfos = new Hashtable<Integer, LeaseInfo>();
@@ -107,7 +107,6 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
         this.executor = peerGroup.getTaskManager().getLocalScheduledExecutorService("RemoteMonitorPeerInfoHandler");
     }
 
-    
     public void stop() {
     	this.executor.shutdownNow();
     }
@@ -133,7 +132,6 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
         int leaseId; // other guys leaseId.
         long requestedLease;
         PeerInfoMessenger peerInfoMessenger;
-        
         RequestInfo(PeerID peerId, int queryId, MonitorListener monitorListener, long timeout, PeerInfoMessenger peerInfoMessenger) {
             this(peerId, queryId, timeout, peerInfoMessenger);
             this.monitorListener = monitorListener;
@@ -151,11 +149,6 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
             this.peerInfoMessenger = peerInfoMessenger;
             this.validUntil = System.currentTimeMillis() + timeout;
         }
-
-		@SuppressWarnings("unused")
-		protected long getValidUntil() {
-			return validUntil;
-		}
     }
 
     private class LeaseInfo {
@@ -290,7 +283,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
             }
 
         } catch (Exception e) {
-            Logging.logCheckedFine(LOG, "Monitor failed in processQuery\n", e);
+            Logging.logCheckedDebug(LOG, "Monitor failed in processQuery\n", e);
         }
     }
 
@@ -349,7 +342,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
                 }
             }
         } catch (DocumentSerializationException e) {
-            Logging.logCheckedFine(LOG, "Document Serialization Failed\n", e);
+            Logging.logCheckedDebug(LOG, "Document Serialization Failed\n", e);
         }
     }
 
@@ -395,7 +388,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
                     try {
                         renewLease(queryId);
                     } catch (Exception e) {
-                        Logging.logCheckedFine(LOG, "Lease Renewal Failed\n", e);
+                        Logging.logCheckedDebug(LOG, "Lease Renewal Failed\n", e);
                     }
                 }
             }, renewTime, TimeUnit.MILLISECONDS);
@@ -418,7 +411,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
                     RemoteMonitorResponse remoteMonitorResponse = RemoteMonitorResponse.createMonitorReportResponse(queryId, monitorReport);
                     peerInfoMessenger.sendPeerInfoResponse(queryId, requestSourceID, MONITOR_HANDLER_NAME, remoteMonitorResponse);
                 } catch (Exception e) {
-                    Logging.logCheckedFine(LOG, e);
+                    Logging.logCheckedDebug(LOG, e);
                 }
             }
 
@@ -462,7 +455,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
                         leaseInfo.listenerAddedToWorldGroup = true;
                         leaseInfo.worldGroup = worldGroup;
                     } catch (PeerGroupException e) {
-                        Logging.logCheckedFine(LOG, e);
+                        Logging.logCheckedDebug(LOG, e);
                     }
                 }
             }
@@ -479,7 +472,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
 
         } catch (MonitorException e) {
 
-            Logging.logCheckedFine(LOG, e);
+            Logging.logCheckedDebug(LOG, e);
 
         }
     }
@@ -504,7 +497,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
         } catch (MonitorException e) {
 
             // Currently not thrown by MonitorManager.removeMonitorListener()
-            Logging.logCheckedFine(LOG, e);
+            Logging.logCheckedDebug(LOG, e);
 
         }
     }
@@ -532,7 +525,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
 
         } catch (PeerGroupException e) {
 
-            Logging.logCheckedFine(LOG, e);
+            Logging.logCheckedDebug(LOG, e);
 
         }
     }
@@ -593,7 +586,7 @@ class RemoteMonitorPeerInfoHandler implements PeerInfoHandler {
 
         } catch (Exception e) {
 
-            Logging.logCheckedFine(LOG, "error while attempting Monitor lease renewal\n", e);
+            Logging.logCheckedDebug(LOG, "error while attempting Monitor lease renewal\n", e);
 
         }
     }

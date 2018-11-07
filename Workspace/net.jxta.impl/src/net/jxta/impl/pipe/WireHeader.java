@@ -65,22 +65,19 @@ import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * This class implements a JXTA-WIRE header.
  */
 public class WireHeader {
 
-    /**
-     * Logger
-     */
-    private final static Logger LOG = Logger.getLogger(WireHeader.class.getName());
+    private final static Logger LOG = Logging.getLogger(WireHeader.class.getName());
 
     private static final String Name = "JxtaWire";
     private static final String MsgIdTag = "MsgId";
@@ -198,13 +195,13 @@ public class WireHeader {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
         while (elements.hasMoreElements()) {
 
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) 
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem.getName());
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem.getName());
 
         }
 
@@ -230,7 +227,7 @@ public class WireHeader {
      * @return the docment for this header
      */
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	public Document getDocument(MimeMediaType encodeAs) {
+   public Document getDocument(MimeMediaType encodeAs) {
         StructuredTextDocument doc = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(encodeAs, Name);
 
@@ -250,7 +247,7 @@ public class WireHeader {
             throw new IllegalStateException("TTL must be >= 1");
         }
 
-        Element e;
+        Element<?> e;
         if ((srcPeer != null) && (srcPeer != ID.nullID)) {
             e = doc.createElement(SrcTag, srcPeer.toString());
             doc.appendChild(e);

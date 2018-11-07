@@ -150,7 +150,7 @@ public class ResolverResponse extends ResolverResponseMsg {
     }
 
     public void readIt(TextElement<?> doc) {
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
             TextElement<?> elem = (TextElement<?>) elements.nextElement();
@@ -179,9 +179,9 @@ public class ResolverResponse extends ResolverResponseMsg {
     /**
      *  {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-    public Document getDocument(MimeMediaType asMimeType) {
+   public Document getDocument(MimeMediaType asMimeType) {
 
         StructuredTextDocument adv = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(asMimeType, getAdvertisementType());

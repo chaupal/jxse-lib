@@ -61,6 +61,7 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.Messenger;
 import net.jxta.id.ID;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.OutputPipe;
@@ -74,19 +75,15 @@ import java.util.Set;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 /**
- * An implementation of Ouput Pipe which sends messages on the pipe
+ * An implementation of Output Pipe which sends messages on the pipe
  * asynchronously. The <code>send()</code> method for this implementation will
  * never block.
  */
 class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnable {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(NonBlockingOutputPipe.class.getName());
+    private static final Logger LOG = Logging.getLogger(NonBlockingOutputPipe.class.getName());
 
     /**
      * Amount of time an idle worker thread will linger
@@ -244,13 +241,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
 
     }
 
-    
-    protected PeerGroup getPeerGroup() {
-		return peerGroup;
-	}
-
-
-	/**
+    /**
      * {@inheritDoc}
      */
     @Override
@@ -262,7 +253,11 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
 
     }
 
-    /**
+    protected PeerGroup getPeerGroup() {
+		return peerGroup;
+	}
+
+	/**
      * {@inheritDoc}
      */
     public synchronized void close() {
@@ -315,7 +310,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
      */
     public boolean send(Message msg) throws IOException {
 
-        Logging.logCheckedFine(LOG, "Queuing ", msg, " for pipe ", getPipeID());
+        Logging.logCheckedDebug(LOG, "Queuing ", msg, " for pipe ", getPipeID());
 
         boolean pushed = false;
         while (!isClosed()) {
@@ -330,7 +325,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
         if (!pushed && isClosed()) {
 
             IOException failed = new IOException("Could not enqueue " + msg + " for sending. Pipe is closed.");
-            Logging.logCheckedSevere(LOG, failed);
+            Logging.logCheckedError(LOG, failed);
             throw failed;
 
         }
@@ -425,7 +420,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
             // state loop
             while (WorkerState.CLOSED != workerstate) {
                 synchronized (this) {
-                    LOG.fine("NON-BLOCKING WORKER AT STATE : " + workerstate
+                    LOG.debug("NON-BLOCKING WORKER AT STATE : " + workerstate
                             + ((WorkerState.SENDMESSAGES == workerstate)
                                     ? "\n\t" + TimeUtils.toRelativeTimeMillis(nextVerifyAt, TimeUtils.timeNow())
                                     + " until verify."
@@ -435,9 +430,9 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
                     if ((WorkerState.STARTVERIFY == workerstate) || (WorkerState.STARTMIGRATE == workerstate)) {
 
                         if (null == destPeer) {
-                            Logging.logCheckedFine(LOG, "Starting re-resolve for \'", getPipeID());
+                            Logging.logCheckedDebug(LOG, "Starting re-resolve for \'", getPipeID());
                         } else {
-                            Logging.logCheckedFine(LOG, "Starting verify for \'", getPipeID(), "\' to : ", destPeer);
+                            Logging.logCheckedDebug(LOG, "Starting verify for \'", getPipeID(), "\' to : ", destPeer);
                         }
 
                         queryID = PipeResolver.getNextQueryID();
@@ -455,7 +450,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
                         // move on to the next state.
                     } else if ((WorkerState.PENDINGVERIFY == workerstate) || (WorkerState.PENDINGMIGRATE == workerstate)) {
 
-                        Logging.logCheckedFine(LOG,
+                        Logging.logCheckedDebug(LOG,
                             "Pipe ", ((WorkerState.PENDINGVERIFY == workerstate) ? "verify" : "migrate"),
                             "in progress. Continues for ",
                             TimeUtils.toRelativeTimeMillis(absoluteTimeoutAt, TimeUtils.timeNow()),
@@ -493,14 +488,14 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
 
                             if (null != destPeer) {
 
-                                Logging.logCheckedFine(LOG, "Sending out verify query (",
+                                Logging.logCheckedDebug(LOG, "Sending out verify query (",
                                     queryID, ") for \'", getPipeID(), "\' to : ", destPeer);
 
                                 pipeResolver.sendPipeQuery(pAdv, Collections.singleton(destPeer), queryID);
 
                             } else {
 
-                                Logging.logCheckedFine(LOG, "Sending out resolve query (", queryID, ") for ",
+                                Logging.logCheckedDebug(LOG, "Sending out resolve query (", queryID, ") for ",
                                     getPipeID());
 
                                 pipeResolver.sendPipeQuery(pAdv, resolvablePeers, queryID);
@@ -514,7 +509,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
 
                         if (sleep >= 0) {
 
-                            Logging.logCheckedFine(LOG, "Waiting ", sleep, "ms for response for (", queryID, ") for ", getPipeID());
+                            Logging.logCheckedDebug(LOG, "Waiting ", sleep, "ms for response for (", queryID, ") for ", getPipeID());
 
                             try {
                                 wait(sleep);
@@ -530,7 +525,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
                         if ((null == destMessenger) || destMessenger.isClosed()) {
 
                             destMessenger = null;
-                            Logging.logCheckedFine(LOG, "Getting messenger to \'", destPeer, "\' for pipe ", getPipeID());
+                            Logging.logCheckedDebug(LOG, "Getting messenger to \'", destPeer, "\' for pipe ", getPipeID());
 
                             destAddress = mkAddress(destPeer, getPipeID());
                             // todo 20031011 bondolo@jxta.org This should not be done under sync
@@ -562,7 +557,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
                             }
                         } else {
 
-                            Logging.logCheckedFine(LOG, "Using existing messenger to : ", destPeer);
+                            Logging.logCheckedDebug(LOG, "Using existing messenger to : ", destPeer);
 
                         }
 
@@ -588,7 +583,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
                         serviceThread = null;
                         break;
                     } else {
-                        LOG.warning("Unrecognized state in worker thread : " + workerstate);
+                        LOG.warn("Unrecognized state in worker thread : " + workerstate);
                     }
                 }
 
@@ -623,7 +618,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
                         }
                     }
 
-                    Logging.logCheckedFine(LOG, "Sending ", msg, " on ", getPipeID());
+                    Logging.logCheckedDebug(LOG, "Sending ", msg, " on ", getPipeID());
 
                     if (!destMessenger.isClosed()) {
                         try {
@@ -645,7 +640,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
             }
         } catch (Throwable all) {
 
-            Logging.logCheckedSevere(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
+            Logging.logCheckedError(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
 
             // give another thread the chance to start unless one already has.
             // If the exception was caused by damaged state on this object then
@@ -721,7 +716,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
             return true;
         }
 
-        Logging.logCheckedFine(LOG, "Ignoring NAK from ", event.getPeerID());
+        Logging.logCheckedDebug(LOG, "Ignoring NAK from ", event.getPeerID());
 
         // didn't refer to us or we don't care.
         return false;
@@ -737,7 +732,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
             if ((workerstate == WorkerState.PENDINGVERIFY) && !event.getPeerID().equals(destPeer)) {
                 // not from the right peer so ignore it.
 
-                Logging.logCheckedFine(LOG, "Ignoring response from ", event.getPeerID());
+                Logging.logCheckedDebug(LOG, "Ignoring response from ", event.getPeerID());
                 return false;
 
             } else {
@@ -758,7 +753,7 @@ class NonBlockingOutputPipe implements PipeResolver.Listener, OutputPipe, Runnab
             return true;
         }
 
-        Logging.logCheckedFine(LOG, "Ignoring resolve from ", event.getPeerID());
+        Logging.logCheckedDebug(LOG, "Ignoring resolve from ", event.getPeerID());
 
         // didn't refer to us or we don't care.
         return false;

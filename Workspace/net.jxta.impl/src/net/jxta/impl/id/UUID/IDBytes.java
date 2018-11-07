@@ -71,7 +71,7 @@ import java.util.zip.Checksum;
 public final class IDBytes implements Serializable {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      *  The bytes.
      */
     public final byte[] bytes;

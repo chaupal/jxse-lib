@@ -58,10 +58,10 @@ package net.jxta.impl.protocol;
 
 import net.jxta.document.*;
 import net.jxta.id.ID;
-import net.jxta.membership.pse.IPSECredential;
 import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.util.BASE64InputStream;
 import net.jxta.impl.util.BASE64OutputStream;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.SignedAdvertisement;
 
@@ -75,17 +75,13 @@ import java.io.StringWriter;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.security.Signature;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * A container for signed Advertisements
  */
 public class SignedAdv extends SignedAdvertisement {
 
-    /**
-     * Logger
-     */
-    private static final transient Logger LOG = Logger.getLogger(SignedAdv.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(SignedAdv.class.getName());
 
     private static final String ADV_TYPE = "jxta:SA";
 
@@ -113,11 +109,11 @@ public class SignedAdv extends SignedAdvertisement {
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element<?>  root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
-            return new SignedAdv((XMLElement<?> ) root);
+            return new SignedAdv((XMLElement<?>) root);
         }
     }
 
@@ -155,7 +151,7 @@ public class SignedAdv extends SignedAdvertisement {
      *
      *  @param doc The XML serialization of the advertisement.
      */
-    private SignedAdv(XMLElement<?>  doc) {
+    private SignedAdv(XMLElement<?> doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -170,14 +166,14 @@ public class SignedAdv extends SignedAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            Element<?>  elem = (Element<?> ) elements.nextElement();
+            Element<?> elem = (Element<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
             }
 
         }
@@ -215,13 +211,13 @@ public class SignedAdv extends SignedAdvertisement {
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element<?>  raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement<?>  elem = (XMLElement<?> ) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if ("Credential".equals(elem.getName())) {
             signer = new PSECredential(elem);
@@ -255,46 +251,41 @@ public class SignedAdv extends SignedAdvertisement {
                 throw failure;
             }
         } else if ("Advertisement".equals(elem.getName())) {
-            try {
+        	InputStream bis = null;
+        	ByteArrayOutputStream bos = null;
+        	try {
                 Reader advertisementB64 = new StringReader(elem.getTextValue());
-                InputStream bis = new BASE64InputStream(advertisementB64);
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                try {
-                	do {
-                		int c = bis.read();
+                bis = new BASE64InputStream(advertisementB64);
+                bos = new ByteArrayOutputStream();
 
-                		if (-1 == c) {
-                			break;
-                		}
-                		bos.write(c);
-                	} while (true);
+                do {
+                    int c = bis.read();
 
-                	byte advbytes[] = bos.toByteArray();
+                    if (-1 == c) {
+                        break;
+                    }
+                    bos.write(c);
+                } while (true);
 
-                	Signature verifier = ((IPSECredential) signer).getSignatureVerifier("SHA1WITHRSA");
+                byte advbytes[] = bos.toByteArray();
 
-                	verifier.update(advbytes);
+                Signature verifier = ((PSECredential) signer).getSignatureVerifier("SHA1WITHRSA");
 
-                	boolean matched = verifier.verify(signature);
+                verifier.update(advbytes);
 
-                	if (!matched) {
-                		throw new IllegalArgumentException("Advertisement could not be verified");
-                	}
-                }
-                finally {
-                	bos.close();
-                	bis.close();
+                boolean matched = verifier.verify(signature);
+
+                if (!matched) {
+                    throw new IllegalArgumentException("Advertisement could not be verified");
                 }
 
                 advertisementB64 = new StringReader(elem.getTextValue());
+                bis.close();
                 bis = new BASE64InputStream(advertisementB64);
-                try {
+
                 XMLDocument<?> advDocument = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(elem.getRoot().getMimeType(),bis);
                 adv = AdvertisementFactory.newAdvertisement(advDocument);
-                }
-                finally {
-                	bis.close();
-                }
+
                 return true;
             } catch (IOException failed) {
                 IllegalArgumentException failure = new IllegalArgumentException("Could not process Advertisement");
@@ -315,6 +306,17 @@ public class SignedAdv extends SignedAdvertisement {
 
                 throw failure;
             }
+        	finally{
+        		try{
+        		if( bis != null )
+        			bis.close();
+        		if( bos != null )
+        			bos.close();
+        		}
+        		catch( IOException ex ){
+        			ex.printStackTrace();
+        		}
+        	}
         }
 
         return false;
@@ -323,9 +325,9 @@ public class SignedAdv extends SignedAdvertisement {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-    public Document getDocument(MimeMediaType encodeAs) {
+   public Document getDocument(MimeMediaType encodeAs) {
 
         if (null == adv) {
             throw new IllegalStateException("Advertisement not initialized");
@@ -341,7 +343,7 @@ public class SignedAdv extends SignedAdvertisement {
 
         StructuredDocument doc = (StructuredDocument<?>) super.getDocument(encodeAs);
 
-        StructuredDocument<?> advDoc = (StructuredDocument<?>) adv.getDocument(encodeAs);
+        StructuredDocument advDoc = (StructuredDocument<?>) adv.getDocument(encodeAs);
 
         try {
             ByteArrayOutputStream bos = new ByteArrayOutputStream();
@@ -351,7 +353,7 @@ public class SignedAdv extends SignedAdvertisement {
 
             byte advData[] = bos.toByteArray();
 
-            IPSECredential psecred = (IPSECredential) signer;
+            PSECredential psecred = (PSECredential) signer;
 
             Signature advSigner = psecred.getSigner("SHA1WITHRSA");
 

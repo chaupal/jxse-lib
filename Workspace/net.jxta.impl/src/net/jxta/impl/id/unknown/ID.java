@@ -67,14 +67,14 @@ import java.net.URI;
  *  @see net.jxta.peer.PeerID
  *  @see net.jxta.peergroup.PeerGroupID
  *  @see net.jxta.pipe.PipeID
- *  @see net.jxta.platform.ModuleClassID
- *  @see net.jxta.platform.ModuleSpecID
+ *  @see net.jxta.platform.net.jxta.peergroup.core.ModuleClassID
+ *  @see net.jxta.platform.net.jxta.peergroup.core.ModuleSpecID
  *
  **/
 public final class ID extends net.jxta.id.ID {
 	private static final long serialVersionUID = 1L;
 
-    String  unqiueValue;
+	String  unqiueValue;
 
     /**
      *  Constructor for IDs.

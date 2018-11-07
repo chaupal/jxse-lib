@@ -56,11 +56,10 @@
 
 package net.jxta.impl.id.binaryID;
 
+import java.io.IOException;
 import java.io.Serializable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
-import net.jxta.util.IOUtils;
 
 /**
  * A <code>BinaryID</code> is a 256-byte, identifier.
@@ -73,7 +72,7 @@ import net.jxta.util.IOUtils;
 
 public class BinaryID implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	private final static transient Logger LOG = Logger.getLogger(BinaryID.class.getName());
     public static String UUIDEncoded = "uuid";
     public final static int flagsSize = 1;
@@ -217,8 +216,13 @@ public class BinaryID implements Serializable {
             LOG.log(Level.SEVERE, "Unable to decode binary value.\n", e);
             throw new RuntimeException("Unable to encode binary value.");
         }
-    	finally {
-    		IOUtils.closeQuietly(decoder);
+    	finally{
+    		if( decoder != null )
+				try {
+					decoder.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
     	}
 
     }

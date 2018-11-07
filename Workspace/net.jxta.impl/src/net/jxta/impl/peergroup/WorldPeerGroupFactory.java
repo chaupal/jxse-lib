@@ -58,10 +58,16 @@ package net.jxta.impl.peergroup;
 
 import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.PeerGroupException;
+import net.jxta.impl.loader.JxtaLoaderModuleManager;
+import net.jxta.impl.platform.DefaultConfigurator;
+import net.jxta.impl.platform.NullConfigurator;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
+import net.jxta.module.IJxtaModuleManager;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.JxtaLoader;
+import net.jxta.platform.Module;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
@@ -71,8 +77,6 @@ import java.lang.reflect.InvocationTargetException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A factory for instantiating the World Peer Group. Every peer starts by
@@ -107,7 +111,7 @@ public final class WorldPeerGroupFactory {
     /**
      * Logger
      */
-    private final static transient Logger LOG = Logger.getLogger(WorldPeerGroupFactory.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(WorldPeerGroupFactory.class.getName());
 
     private static final Map<String, PeerGroup> worldPeerGroups = new HashMap<String, PeerGroup>();
 
@@ -159,8 +163,7 @@ public final class WorldPeerGroupFactory {
             configurator.setConfigParams(config);
             configurator.save();
         } catch (ConfiguratorException configFailure) {
-            LOG.severe("Failure while managing World Peer Group configuration");
-
+            Logging.logCheckedSevere(LOG, "Failure while managing World Peer Group configuration");
             throw new PeerGroupException("Failure while managing World Peer Group configuration", configFailure);
         }
     }
@@ -234,7 +237,8 @@ public final class WorldPeerGroupFactory {
     private static Class<?> getDefaultWorldPeerGroupClass() throws PeerGroupException {
 
         try {
-            JxtaLoader loader = net.jxta.impl.peergroup.GenericPeerGroup.getJxtaLoader();
+          IJxtaModuleManager<Module> root = JxtaLoaderModuleManager.getRoot( StdPeerGroup.class );
+          JxtaLoader loader = (JxtaLoader) root.getLoader();
 
             ModuleImplAdvertisement worldGroupImplAdv = loader.findModuleImplAdvertisement(PeerGroup.refPlatformSpecID);
 
@@ -267,12 +271,12 @@ public final class WorldPeerGroupFactory {
     @SuppressWarnings("unchecked")
 	private PeerGroup newWorldPeerGroup(Class<?> worldPeerGroupClass, ConfigParams config, URI storeHome) throws PeerGroupException {
         if (!storeHome.isAbsolute()) {
-            LOG.severe("storeHome must be an absolute URI.");
+        	Logging.logCheckedSevere(LOG,"storeHome must be an absolute URI.");
             throw new PeerGroupException("storeHome must be an absolute URI.");
         }
 
         if (storeHome.isOpaque()) {
-            LOG.severe("Opaque storeHome is not currently supported.");
+        	Logging.logCheckedSevere(LOG,"Opaque storeHome is not currently supported.");
             throw new PeerGroupException("Opaque storeHome is not currently supported.");
         }
 
@@ -315,7 +319,7 @@ public final class WorldPeerGroupFactory {
                 return result;
             } catch (RuntimeException e) {
                 // should be all other checked exceptions
-                LOG.log(Level.SEVERE, "World Peer Group could not be instantiated.\n", e);
+            	Logging.logCheckedSevere(LOG, "World Peer Group could not be instantiated.\n", e);
 
                 // cleanup broken instance
                 if (null != result) {
@@ -326,7 +330,7 @@ public final class WorldPeerGroupFactory {
                 throw e;
             } catch (Exception e) {
                 // should be all other checked exceptions
-                LOG.log(Level.SEVERE, "World Peer Group could not be instantiated.\n", e);
+                Logging.logCheckedSevere(LOG, "World Peer Group could not be instantiated.\n", e);
 
                 // cleanup broken instance
                 if (null != result) {

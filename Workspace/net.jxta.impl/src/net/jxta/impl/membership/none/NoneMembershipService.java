@@ -64,21 +64,21 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.exception.ProtocolNotSupportedException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.Authenticator;
 import net.jxta.membership.MembershipService;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.service.Service;
+
 import java.beans.PropertyChangeListener;
 import java.beans.PropertyChangeSupport;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import net.jxta.platform.ModuleSpecID;
 
 /**
  *  A Membership Service implementation which is intended to be used with peer
@@ -94,10 +94,7 @@ import net.jxta.platform.ModuleSpecID;
  */
 public class NoneMembershipService implements MembershipService {
 
-    /**
-     *  Log4J Logger
-     **/
-    private static final Logger LOG = Logger.getLogger(NoneMembershipService.class.getName());
+    private static final Logger LOG = Logging.getLogger(NoneMembershipService.class.getName());
 
     /**
      * Well known service specification identifier: pse membership
@@ -228,7 +225,7 @@ public class NoneMembershipService implements MembershipService {
          * {@inheritDoc}
          **/
         @SuppressWarnings({ "rawtypes", "unchecked" })
-		public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
+        public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
             StructuredDocument doc = StructuredDocumentFactory.newStructuredDocument(as, "jxta:Cred");
 
             if (doc instanceof Attributable) {
@@ -323,7 +320,7 @@ public class NoneMembershipService implements MembershipService {
                         "Could not construct : " + getClass().getName() + "from doc containing a " + doctype);
             }
 
-            Enumeration<? extends Element<?>> elements = doc.getChildren();
+            Enumeration<?> elements = doc.getChildren();
 
             while (elements.hasMoreElements()) {
 
@@ -426,7 +423,7 @@ public class NoneMembershipService implements MembershipService {
          *  <code>join()</code>
          **/
         synchronized public boolean isReadyForJoin() {
-            Logging.logCheckedFine(LOG, "Always ready to join");
+            Logging.logCheckedDebug(LOG, "Always ready to join");
             // always ready.
             return true;
         }
@@ -488,8 +485,8 @@ public class NoneMembershipService implements MembershipService {
      *  default constructor. Normally called only by the peer group.
      **/
     public NoneMembershipService() {
-        principals = new ArrayList<>();
-        principalsAuth = new ArrayList<>();
+        principals = new ArrayList<Credential>();
+        principalsAuth = new ArrayList<Credential>();
         support = new PropertyChangeSupport(this); // getInterface());
     }
 
@@ -539,7 +536,7 @@ public class NoneMembershipService implements MembershipService {
         implAdvertisement = (ModuleImplAdvertisement) impl;
         peergroup = group;
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring None Membership Service : " + assignedID);
 
@@ -652,7 +649,7 @@ public class NoneMembershipService implements MembershipService {
      * {@inheritDoc}
      **/
     public void resign() {
-        List<Credential> allCreds = new ArrayList<>();
+        List<Credential> allCreds = new ArrayList<Credential>();
 
         allCreds.addAll(principals);
         allCreds.remove(defaultCredential);

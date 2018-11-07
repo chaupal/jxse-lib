@@ -97,11 +97,11 @@ public class PeerInfoQueryMsg extends PeerInfoQueryMessage {
         super();
     }
 
-    public PeerInfoQueryMsg(Element<?>  root) {
+    public PeerInfoQueryMsg(Element<?> root) {
         initialize(root);
     }
 
-    public void initialize(Element<?>  root) {
+    public void initialize(Element<?> root) {
         if (!TextElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports TextElement");
         }
@@ -109,12 +109,12 @@ public class PeerInfoQueryMsg extends PeerInfoQueryMessage {
         setSourcePid(null);
         setTargetPid(null);
 
-        TextElement<?>  doc = (TextElement<?> ) root;
+        TextElement<?> doc = (TextElement<?>) root;
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
-            TextElement<?>  element = (TextElement<?> ) elements.nextElement();
+            TextElement<?> element = (TextElement<?>) elements.nextElement();
             String elementName = element.getName();
 
             if (elementName.equals("sourcePid")) {
@@ -143,7 +143,7 @@ public class PeerInfoQueryMsg extends PeerInfoQueryMessage {
                     throw new IllegalArgumentException("Unusable ID in advertisement");
                 }
             } else if (elementName.equals("request")) {
-                Enumeration<? extends Element<?>> elems = element.getChildren();
+                Enumeration<?> elems = element.getChildren();
 
                 if (elems.hasMoreElements()) {
                     setRequest(StructuredDocumentUtils.copyAsDocument((Element<?>) elems.nextElement()));
@@ -152,8 +152,8 @@ public class PeerInfoQueryMsg extends PeerInfoQueryMessage {
         }
     }
 
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredTextDocument doc = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(encodeAs, getMessageType());
@@ -169,7 +169,7 @@ public class PeerInfoQueryMsg extends PeerInfoQueryMessage {
         e = doc.createElement("targetPid", getTargetPid().toString());
         doc.appendChild(e);
 
-        Element<?>  request = getRequest();
+        Element<?> request = getRequest();
 
         if (null != request) {
             e = doc.createElement("request");

@@ -1,5 +1,5 @@
 /*
-8i8 * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
+ * Copyright (c) 2001-2007 Sun Microsystems, Inc.  All rights reserved.
  *
  *  The Sun Project JXTA(TM) Software License
  *
@@ -173,11 +173,8 @@ public class MonitorManager implements Service {
     // Cooperate with the code that loaded this module to replace the strong
     // group interface given by init() with a non-counted one.
     private void setPeerGroup(PeerGroup pg) {
-        //PeerGroup tmp = peerGroup;
-
         peerGroup = pg;
 //        tmp.unref();
-        //tmp = null;
     }
 
     public PeerMonitorInfo getPeerMonitorInfo() {

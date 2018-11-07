@@ -67,6 +67,7 @@ import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -74,7 +75,6 @@ import net.jxta.protocol.ModuleImplAdvertisement;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Provides XML serialization support for ModuleImplAdvertisement matching the
@@ -100,10 +100,7 @@ import java.util.logging.Logger;
  */
 public class ModuleImplAdv extends ModuleImplAdvertisement {
 
-    /**
-     * Log4J Logger
-     */
-    private static final Logger LOG = Logger.getLogger(ModuleImplAdv.class.getName());
+	private static final Logger LOG = Logging.getLogger(ModuleImplAdv.class.getName());
 
     private static final String msidTag = "MSID";
     private static final String compTag = "Comp";
@@ -170,7 +167,7 @@ public class ModuleImplAdv extends ModuleImplAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
@@ -276,8 +273,8 @@ public class ModuleImplAdv extends ModuleImplAdvertisement {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
@@ -307,7 +304,7 @@ public class ModuleImplAdv extends ModuleImplAdvertisement {
         adv.appendChild(e);
 
         // desc is optional
-        StructuredDocument<?> desc = getDesc();
+        StructuredDocument desc = getDesc();
 
         if (desc != null) {
             StructuredDocumentUtils.copyElements(adv, adv, desc);

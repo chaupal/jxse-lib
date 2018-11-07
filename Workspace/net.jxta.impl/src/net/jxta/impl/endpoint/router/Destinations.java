@@ -67,12 +67,12 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.Messenger;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 /**
@@ -103,10 +103,7 @@ import net.jxta.logging.Logging;
 
 class Destinations {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(Destinations.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(Destinations.class.getName());
 
     private final ConcurrentHashMap<EndpointAddress, Wisdom> wisdoms = new ConcurrentHashMap<EndpointAddress, Wisdom>(64);
 
@@ -209,7 +206,7 @@ class Destinations {
             Messenger currentIncoming = getIncoming();
 
             if (currentIncoming == null) {
-                Logging.logCheckedFine(LOG, "Accepted new incoming messenger for ", m.getDestinationAddress());
+                Logging.logCheckedDebug(LOG, "Accepted new incoming messenger for ", m.getDestinationAddress());
                 incomingMessenger = m;
                 return true;
             }
@@ -238,7 +235,7 @@ class Destinations {
 
             incomingMessenger = m;
 
-            Logging.logCheckedFine(LOG, "Accepted new incoming messenger for ", m.getDestinationAddress());
+            Logging.logCheckedDebug(LOG, "Accepted new incoming messenger for ", m.getDestinationAddress());
 
             return true;
         }
@@ -251,7 +248,7 @@ class Destinations {
             xportDest = m.getDestinationAddress();
             expiresAt = TimeUtils.toAbsoluteTimeMillis(EXPIRATION);
 
-            Logging.logCheckedFine(LOG, "Accepted new outgoing messenger for ", xportDest);
+            Logging.logCheckedDebug(LOG, "Accepted new outgoing messenger for ", xportDest);
             return true;
 
         }
@@ -416,10 +413,6 @@ class Destinations {
         wisdomGCHandle = executor.scheduleAtFixedRate(new WisdomGCTask(), 60, 60, TimeUnit.SECONDS);
     }
 
-    public boolean isStopped() {
-		return stopped;
-	}
-
     /**
      * Shutdown this cache. (stop the gc)
      */
@@ -462,7 +455,7 @@ class Destinations {
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable in ScheduledTask :" + Thread.currentThread().getName(), "\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable in ScheduledTask :" + Thread.currentThread().getName(), "\n", all);
 
             }
         }

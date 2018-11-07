@@ -60,6 +60,7 @@ import net.jxta.content.*;
 import net.jxta.document.Advertisement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.ModuleSpecID;
@@ -74,8 +75,6 @@ import java.net.URI;
 import java.net.URL;
 import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Reference implementation of the ContentService.  This implementation
@@ -94,11 +93,7 @@ public class ContentServiceImpl implements ContentService {
             "urn:jxta:uuid-DDC5CA55578E4AB99A0AA81D2DC6EF3F"
             + "3F7E9F18B5D84DD58D21CE9E37E19E6C06"));
 
-    /**
-     * Logger.
-     */
-    private static final Logger LOG = Logger.getLogger(
-            ContentServiceImpl.class.getName());
+    private static final Logger LOG = Logging.getLogger(ContentServiceImpl.class.getName());
 
     /**
      * List of all currently registered providers, used only for providing
@@ -184,7 +179,7 @@ public class ContentServiceImpl implements ContentService {
                     ModuleLifecycleState newState) {
                 ContentProviderSPI provider =
                         (ContentProviderSPI) subject.getModule();
-                LOG.fine("Content provider lifecycle state update: "
+                LOG.debug("Content provider lifecycle state update: "
                         + provider + " --> " + newState);
                 if (newState == ModuleLifecycleState.STARTED) {
                     active.add(provider);
@@ -216,7 +211,7 @@ public class ContentServiceImpl implements ContentService {
             waitingForInit = null;
         }
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder();
 
@@ -265,7 +260,7 @@ public class ContentServiceImpl implements ContentService {
             started = true;
         }
 
-        Logging.logCheckedFine(LOG, "Content Service started.");
+        Logging.logCheckedDebug(LOG, "Content Service started.");
 
         return START_OK;
     }
@@ -283,7 +278,7 @@ public class ContentServiceImpl implements ContentService {
 
         manager.stop();
 
-        Logging.logCheckedFine(LOG, "Content Service stopped.");
+        Logging.logCheckedDebug(LOG, "Content Service stopped.");
 
     }
 
@@ -358,7 +353,7 @@ public class ContentServiceImpl implements ContentService {
              * returns the ContentProvider sub-interface to prevent
              * user access to SPI methods.
              */
-            Logging.logCheckedFine(LOG, "Cannot remove provider which is not a full SPI: ", provider);
+            Logging.logCheckedDebug(LOG, "Cannot remove provider which is not a full SPI: ", provider);
             return;
 
         }
@@ -434,7 +429,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             return new TransferAggregator(this, active, contentID);
         } catch (TransferException transx) {
-            Logging.logCheckedFine(LOG, "Returning null due to exception\n", transx);
+            Logging.logCheckedDebug(LOG, "Returning null due to exception\n", transx);
             return null;
         }
 
@@ -450,7 +445,7 @@ public class ContentServiceImpl implements ContentService {
         try {
             return new TransferAggregator(this, active, adv);
         } catch (TransferException transx) {
-            Logging.logCheckedFine(LOG, "Returning null due to exception\n", transx);
+            Logging.logCheckedDebug(LOG, "Returning null due to exception\n", transx);
             return null;
         }
     }
@@ -471,7 +466,7 @@ public class ContentServiceImpl implements ContentService {
 
                 if (subShares == null) continue;
 
-                Logging.logCheckedFine(LOG, "Content with ID '", content.getContentID(),
+                Logging.logCheckedDebug(LOG, "Content with ID '", content.getContentID(),
                     "' being shared by provider: ", provider);
 
                 if (result == null) result = new ArrayList<ContentShare>();
@@ -480,7 +475,8 @@ public class ContentServiceImpl implements ContentService {
 
             } catch (UnsupportedOperationException uox) {
 
-                Logging.logCheckedFinest(LOG, "Ignoring provider which doesn't support ",
+                // LOGGING: was Finest
+                Logging.logCheckedDebug(LOG, "Ignoring provider which doesn't support ",
                             "share operation: ", provider);
 
             }
@@ -613,9 +609,9 @@ public class ContentServiceImpl implements ContentService {
 
         ClassLoader loader = getClass().getClassLoader();
 
-        Logging.logCheckedFine(LOG, "Locating providers");
+        Logging.logCheckedDebug(LOG, "Locating providers");
 
-        Enumeration<?> resources;
+        Enumeration<URL> resources;
         try {
             resources = loader.getResources(
                     "META-INF/services/" + ContentProviderSPI.class.getName());
@@ -634,7 +630,7 @@ public class ContentServiceImpl implements ContentService {
         while (resources.hasMoreElements()) {
 
             URL resURL = (URL) resources.nextElement();
-            Logging.logCheckedFine(LOG, "   Provider services resource: " + resURL);
+            Logging.logCheckedDebug(LOG, "   Provider services resource: " + resURL);
 
             try {
 
@@ -673,21 +669,21 @@ public class ContentServiceImpl implements ContentService {
                 Class<?> cl = loader.loadClass(str);
                 provider = (ContentProviderSPI) cl.newInstance();
                 result.add(provider);
-                Logging.logCheckedFine(LOG, "Added provider: ", str);
+                Logging.logCheckedDebug(LOG, "Added provider: ", str);
 
             } catch (ClassNotFoundException cnfx) {
 
-                Logging.logCheckedSevere(LOG, "Could not load service provider\n", cnfx);
+                Logging.logCheckedError(LOG, "Could not load service provider\n", cnfx);
                 // Continue to next provider class name
 
             } catch (InstantiationException instx) {
 
-                Logging.logCheckedSevere(LOG, "Could not load service provider\n", instx);
+                Logging.logCheckedError(LOG, "Could not load service provider\n", instx);
                 // Continue to next provider class name
 
             } catch (IllegalAccessException iaccx) {
 
-                Logging.logCheckedSevere(LOG, "Could not load service provider\n", iaccx);
+                Logging.logCheckedError(LOG, "Could not load service provider\n", iaccx);
                 // Continue to next provider class name
 
             }

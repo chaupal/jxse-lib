@@ -55,9 +55,11 @@
  */
 package net.jxta.impl.util.ternary;
 
+import net.jxta.logging.Logger;
+import net.jxta.logging.Logging;
+
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Logger;
 
 
 /**
@@ -90,7 +92,7 @@ import java.util.logging.Logger;
 public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
 
     private final static long MAX_NODE_TRAVERSALS = Long.getLong( TernarySearchTreeImpl.class.getName(  ) + ".maxNodeTraversals", 300 );
-    private final static Logger LOG = Logger.getLogger( TernarySearchTreeImpl.class.getName(  ) );
+    private final static Logger LOG = Logging.getLogger( TernarySearchTreeImpl.class.getName(  ) );
     private volatile static int treesCreated = 0;
     private volatile TSTNode<E> rootNode = null;
 
@@ -175,7 +177,11 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
 
             deleteNode( node );
         } else {
-            LOG.warning( ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) + "Failed to find node to remove given key: " + key );
+
+            if ( Logging.SHOW_WARNING && LOG.isWarnEnabled() ) {
+
+                LOG.warn( ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) + "Failed to find node to remove given key: " + key );
+            }
         }
 
         return nodeData;
@@ -239,10 +245,15 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
             }
 
             if ( ++nodesTraversed > MAX_NODE_TRAVERSALS ) {
-            	nodesTraversed = 0;
-            	LOG.warning(
-            			( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) +
-            			"Excessive node traversal detected.  Tree is either broken or very inefficient!" );
+
+                nodesTraversed = 0;
+
+                if ( Logging.SHOW_WARNING && LOG.isWarnEnabled() ) {
+
+                    LOG.warn(
+                        ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) +
+                        "Excessive node traversal detected.  Tree is either broken or very inefficient!" );
+                }
             }
         }
     }
@@ -410,9 +421,13 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
             if ( ++nodesTraversed > MAX_NODE_TRAVERSALS ) {
 
                 nodesTraversed = 0;
-                    LOG.warning(
+
+                if ( Logging.SHOW_WARNING && LOG.isWarnEnabled() ) {
+
+                    LOG.warn(
                         ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) +
                         "Excessive node traversal detected.  Tree is either broken or very inefficient!" );
+                }
             }
         }
     }
@@ -434,7 +449,12 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
 
         while ( node != null ) {
 
-               LOG.fine( "Deleting tree node: " + node );
+        	// LOGGING: was Finest
+            if ( Logging.SHOW_DEBUG && LOG.isDebugEnabled() ) {
+
+                LOG.debug( "Deleting tree node: " + node );
+            }
+
             node = deleteNodeRecursion( node );
         }
     }

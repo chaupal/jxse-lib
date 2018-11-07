@@ -55,6 +55,7 @@
  */
 package net.jxta.endpoint;
 
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.util.SimpleSelectable;
 import net.jxta.util.SimpleSelectable.IdentityReference;
@@ -66,7 +67,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.concurrent.Executor;
-import java.util.logging.Logger;
 
 /**
  * The legacy getMessenger asynchronous API never returns any object to the invoker until a messenger could actually be made,
@@ -95,7 +95,7 @@ public class ListenerAdaptor implements Runnable {
     /**
      * Logger
      */
-    private final static transient Logger LOG = Logger.getLogger(ListenerAdaptor.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(ListenerAdaptor.class.getName());
 
     /**
      * The in progress messages.

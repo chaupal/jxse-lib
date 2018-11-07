@@ -81,15 +81,18 @@ import net.jxta.impl.endpoint.transportMeter.TransportMeterBuildSettings;
 import net.jxta.impl.endpoint.transportMeter.TransportServiceMonitor;
 import net.jxta.impl.meter.MonitorManager;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.meter.MonitorResources;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
 import net.jxta.platform.Module;
 import net.jxta.platform.ModuleClassID;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.TransportAdvertisement;
+
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InterruptedIOException;
@@ -105,8 +108,7 @@ import java.util.NoSuchElementException;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.Executor;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.jxta.impl.protocol.MulticastAdv;
 
 /**
@@ -123,10 +125,7 @@ import net.jxta.impl.protocol.MulticastAdv;
  */
 public class McastTransport implements Runnable, Module, MessagePropagater {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(McastTransport.class.getName());
+    private static final Logger LOG = Logging.getLogger(McastTransport.class.getName());
 
     /**
      * Well known service class identifier: mcast message transport
@@ -244,10 +243,12 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
      */
     public McastTransport() {
     }
+
     
-    public ID getAssignedID() {
+    protected ID getAssignedID() {
 		return assignedID;
 	}
+
 
 	/**
      * {@inheritDoc}
@@ -276,7 +277,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
     /**
      * {@inheritDoc}
      */
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
 
         this.group = group;
@@ -286,10 +287,10 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
         ConfigParams configAdv = group.getConfigAdvertisement();
 
         // Get out invariable parameters from the implAdv
-        XMLElement<?> param = (XMLElement<?>) implAdvertisement.getParam();
+        XMLElement param = (XMLElement<?>) implAdvertisement.getParam();
 
         if (param != null) {
-            Enumeration<XMLElement<?>> list = (Enumeration<XMLElement<?>>) param.getChildren("Proto");
+            Enumeration<XMLElement<?>> list = param.getChildren("Proto");
             if (list.hasMoreElements()) {
                 XMLElement<?> pname = list.nextElement();
                 protocolName = pname.getTextValue();
@@ -297,13 +298,13 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
         }
 
         // Get our peer-defined parameters in the configAdv
-        param = (XMLElement<?>) configAdv.getServiceParam(PeerGroup.multicastProtoClassID);
+        param = (XMLElement<?>) configAdv.getServiceParam(IModuleDefinitions.multicastProtoClassID);
 
         if (null == param) {
             throw new IllegalArgumentException(TransportAdvertisement.getAdvertisementType() + " could not be located.");
         }
 
-		Enumeration<XMLElement<?>> multiChilds = (Enumeration<XMLElement<?>>) param.getChildren(TransportAdvertisement.getAdvertisementType());
+        Enumeration<XMLElement<?>> multiChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
 
         // get the TransportAdv
         if (multiChilds.hasMoreElements()) {
@@ -325,7 +326,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
         try {
             paramsAdv = AdvertisementFactory.newAdvertisement(param);
         } catch (NoSuchElementException notThere) {
-            Logging.logCheckedFine(LOG, "Could not find parameter document\n", notThere);
+            Logging.logCheckedDebug(LOG, "Could not find parameter document\n", notThere);
         }
 
         if (!(paramsAdv instanceof MulticastAdv)) {
@@ -425,11 +426,11 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
         } catch (SocketException ignored) {
             // We may not be able to set loopback mode. It is inconsistent
             // whether an error will occur if the set fails.
-            LOG.log(Level.CONFIG, "exception occurred enabling multicastsocket loopbackmode", ignored);
+            LOG.info("exception occurred enabling multicastsocket loopbackmode", ignored);
         }
 
         // Tell tell the world about our configuration.
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring IP Multicast Message Transport : " + assignedID);
 
@@ -461,7 +462,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
                 configInfo.append("\n\t\tUsing Network Interface (from socket): ").append(multicastSocket.getNetworkInterface());
                 configInfo.append("\n\t\tLoopBackMode disabled: ").append(multicastSocket.getLoopbackMode());
             } catch (java.net.SocketException se) {
-                LOG.log(Level.CONFIG, "SocketException handled accessing multicastSocket", se);
+                LOG.info("SocketException handled accessing multicastSocket", se);
             }
 
             configInfo.append("\n\t\tMulticast Server Bind Addr: ").append(multicastSocket.getLocalSocketAddress());
@@ -513,7 +514,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
 
         if (messengerEventListener == null) {
 
-            Logging.logCheckedSevere(LOG, "Transport registration refused");
+            Logging.logCheckedError(LOG, "Transport registration refused");
             return -1;
 
         }
@@ -530,7 +531,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
 
         } catch (IOException soe) {
 
-            Logging.logCheckedSevere(LOG, "Could not join multicast group, setting Multicast off");
+            Logging.logCheckedError(LOG, "Could not join multicast group, setting Multicast off");
             return -1;
 
         }
@@ -610,7 +611,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
 
                     if (isClosed) return;
 
-                    Logging.logCheckedFine(LOG, "multicast message received from :", packet.getAddress().getHostAddress());
+                    Logging.logCheckedDebug(LOG, "multicast message received from :", packet.getAddress().getHostAddress());
 
                     // This operation is blocking and may take a long time to
                     // return. As a result we may lose datagram packets because
@@ -627,7 +628,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
                 } catch (Exception e) {
 
                     if (isClosed) return;
-                    if (!isClosed) Logging.logCheckedSevere(LOG, "failure during multicast receive\n", e);
+                    if (!isClosed) Logging.logCheckedError(LOG, "failure during multicast receive\n", e);
                     break;
 
                 }
@@ -636,7 +637,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
 
             if (isClosed) return;
 
-            Logging.logCheckedSevere(LOG, "Uncaught Throwable in thread :" + Thread.currentThread().getName(), all);
+            Logging.logCheckedError(LOG, "Uncaught Throwable in thread :" + Thread.currentThread().getName(), all);
 
         } finally {
 
@@ -688,7 +689,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
             if (isClosed || multicastSocket == null) return false;
 
             multicastSocket.send(packet);
-            Logging.logCheckedFine(LOG, "Sent Multicast message to :", pName, "/", pParams);
+            Logging.logCheckedDebug(LOG, "Sent Multicast message to :", pName, "/", pParams);
 
             if (TransportMeterBuildSettings.TRANSPORT_METERING && (multicastTransportBindingMeter != null)) {
                 multicastTransportBindingMeter.messageSent(true, message, TimeUtils.timeNow() - sendStartTime, numBytesInPacket);
@@ -724,12 +725,12 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
 
             // FIXME: hard-coded constant
             if (size < 4) {
-                Logging.logCheckedFine(LOG, "damaged multicast discarded");
+                Logging.logCheckedDebug(LOG, "damaged multicast discarded");
                 throw new IOException("damaged multicast discarded : too short");
             }
 
             if (('J' != buffer[0]) || ('X' != buffer[1]) || ('T' != buffer[2]) || ('A' != buffer[3])) {
-                Logging.logCheckedFine(LOG, "damaged multicast discarded");
+                Logging.logCheckedDebug(LOG, "damaged multicast discarded");
                 throw new IOException("damaged multicast discarded : incorrect signature");
             }
 
@@ -757,7 +758,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
             EndpointAddress srcAddr = new EndpointAddress(srcAddrElem.toString());
 
             if (srcAddr.equals(ourSrcAddr)) {
-                Logging.logCheckedFine(LOG, "Discard loopback multicast message");
+                Logging.logCheckedDebug(LOG, "Discard loopback multicast message");
                 return;
             }
 
@@ -780,7 +781,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
                 multicastTransportBindingMeter.receiveFailure(false, messageReceiveBeginTime - TimeUtils.timeNow(), size);
             }
 
-            Logging.logCheckedFine(LOG, "Discard incoming multicast message\n", e);
+            Logging.logCheckedDebug(LOG, "Discard incoming multicast message\n", e);
 
         }
     }
@@ -861,7 +862,8 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
                 return;
             }
 
-            Logging.logCheckedFiner(LOG, "Queuing incoming datagram packet : ", packet);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Queuing incoming datagram packet : ", packet);
 
             // push the datagram
             queue.put(packet);
@@ -876,7 +878,7 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
 
             // If it's ok, start a new executor outside of the synchronization.
             if (execute) {
-                Logging.logCheckedFine(LOG, "Starting new executor datagram processing task");
+                Logging.logCheckedDebug(LOG, "Starting new executor datagram processing task");
                 executor.execute(this);
             }
         }
@@ -891,13 +893,14 @@ public class McastTransport implements Runnable, Module, MessagePropagater {
                 DatagramPacket packet;
 
                 while (!stopped && (null != (packet = queue.poll()))) {
-                    Logging.logCheckedFiner(LOG, "Processing incoming datagram packet : ", packet);
+                	// LOGGING: was Finer
+                    Logging.logCheckedDebug(LOG, "Processing incoming datagram packet : ", packet);
                     processMulticast(packet);
                 }
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable\n", all);
 
             } finally {
 

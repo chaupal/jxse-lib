@@ -63,11 +63,11 @@ import net.jxta.endpoint.TextDocumentMessageElement;
 import net.jxta.impl.protocol.LimitedRangeRdvMsg;
 import net.jxta.impl.rendezvous.RdvWalker;
 import net.jxta.impl.rendezvous.rpv.PeerViewElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 
 import java.io.IOException;
-import java.util.logging.Logger;
 
 /**
  * The Limited Range Walker is designed to be used by Rendezvous Peer in
@@ -78,10 +78,7 @@ import java.util.logging.Logger;
  */
 public class LimitedRangeWalker implements RdvWalker {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(LimitedRangeWalker.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(LimitedRangeWalker.class.getName());
 
     /**
      * The walk we are associated with.
@@ -127,7 +124,7 @@ public class LimitedRangeWalker implements RdvWalker {
 
                 Message newMsg = msg.clone();
 
-                Logging.logCheckedFine(LOG, "Walking ", newMsg, " [UP] to ", upPeer);
+                Logging.logCheckedDebug(LOG, "Walking ", newMsg, " [UP] to ", upPeer);
 
                 rdvMsg.setDirection(LimitedRangeRdvMsg.WalkDirection.UP);
 
@@ -144,7 +141,7 @@ public class LimitedRangeWalker implements RdvWalker {
             if ((downPeer != null) && downPeer.isAlive()) {
                 Message newMsg = msg.clone();
 
-                Logging.logCheckedFine(LOG, "Walking ", newMsg, " [DOWN] to ", downPeer);
+                Logging.logCheckedDebug(LOG, "Walking ", newMsg, " [DOWN] to ", downPeer);
                 rdvMsg.setDirection(LimitedRangeRdvMsg.WalkDirection.DOWN);
 
                 updateRdvMessage(newMsg, rdvMsg);
@@ -158,14 +155,14 @@ public class LimitedRangeWalker implements RdvWalker {
      */
     public void walkMessage(PeerID destination, Message msg, String srcSvcName, String srcSvcParam, int ttl) throws IOException {
 
-        Logging.logCheckedFine(LOG, "Walking ", msg, " to ", srcSvcName, "/", srcSvcParam);
+        Logging.logCheckedDebug(LOG, "Walking ", msg, " to ", srcSvcName, "/", srcSvcParam);
 
         // Check if there is already a Rdv Message
         LimitedRangeRdvMsg rdvMsg = LimitedRangeWalk.getRdvMessage(msg);
 
         if (rdvMsg == null) {
 
-            Logging.logCheckedFine(LOG, "Creating new Walk Header for ", msg, " with TTL=", ttl);
+            Logging.logCheckedDebug(LOG, "Creating new Walk Header for ", msg, " with TTL=", ttl);
 
             // Create a new one.
             rdvMsg = new LimitedRangeRdvMsg();
@@ -188,7 +185,7 @@ public class LimitedRangeWalker implements RdvWalker {
 
         if (useTTL <= 0) {
 
-            Logging.logCheckedFine(LOG, "LimitedRangeWalker was not able to send ", msg, " : No TTL remaining");
+            Logging.logCheckedDebug(LOG, "LimitedRangeWalker was not able to send ", msg, " : No TTL remaining");
             return;
 
         }

@@ -70,7 +70,7 @@ import java.security.ProviderException;
 public class PeerID extends net.jxta.impl.id.UUID.PeerID {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * Used only internally.
      */
     protected PeerID() {

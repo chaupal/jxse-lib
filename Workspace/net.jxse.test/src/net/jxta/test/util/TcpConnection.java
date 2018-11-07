@@ -61,12 +61,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
-import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.document.MimeMediaType;
 import net.jxta.endpoint.EndpointAddress;
@@ -119,7 +119,7 @@ public class TcpConnection implements Runnable {
      *  only one outgoing message per connection.
      */
     private transient Object writeLock = "Write Lock";
-    private final static Logger LOG = Logger.getLogger(TcpConnection.class.getName());
+    private final static Logger LOG = Logging.getLogger(TcpConnection.class.getName());
     private MessageListener listener = null;
     private final static MimeMediaType appMsg = new MimeMediaType("application/x-jxta-msg");
 

@@ -58,6 +58,8 @@ package net.jxta.impl.endpoint;
 
 import junit.framework.*;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
+import net.jxta.platform.PlatformConfig;
 // import net.jxta.peergroup.PeerGroupFactory;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.document.*;
@@ -65,10 +67,8 @@ import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.TransportAdvertisement;
-import net.jxta.impl.peergroup.IModuleDefinitions;
 import net.jxta.impl.peergroup.WorldPeerGroupFactory;
 import net.jxta.impl.protocol.HTTPAdv;
-import net.jxta.impl.protocol.PlatformConfig;
 import net.jxta.impl.protocol.TCPAdv;
 
 import org.junit.Ignore;
@@ -153,6 +153,7 @@ public class XportConfTest extends TestCase {
         xpAdv.setServerEnabled(true);
     }
 
+    @SuppressWarnings({ "rawtypes", "unchecked" })
     private void removeRelay(ConfigParams config) throws Exception {
         StructuredTextDocument param = (StructuredTextDocument<?>)
                 config.getServiceParam(IModuleDefinitions.relayProtoClassID);

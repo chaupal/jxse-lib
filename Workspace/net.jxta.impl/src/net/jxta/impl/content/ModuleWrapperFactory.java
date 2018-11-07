@@ -59,6 +59,7 @@ package net.jxta.impl.content;
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
+
 import net.jxta.platform.Module;
 import net.jxta.service.Service;
 

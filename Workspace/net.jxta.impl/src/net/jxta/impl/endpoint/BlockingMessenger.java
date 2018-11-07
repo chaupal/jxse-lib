@@ -57,10 +57,10 @@ package net.jxta.impl.endpoint;
 
 import java.io.IOException;
 import java.io.InterruptedIOException;
+import java.util.Timer;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
 
 import net.jxta.endpoint.AbstractMessenger;
 import net.jxta.endpoint.ChannelMessenger;
@@ -72,6 +72,7 @@ import net.jxta.endpoint.MessengerStateListener;
 import net.jxta.endpoint.OutgoingMessageEvent;
 import net.jxta.impl.util.threads.SelfCancellingTask;
 import net.jxta.impl.util.threads.TaskManager;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.util.SimpleSelectable;
@@ -90,10 +91,7 @@ import net.jxta.util.SimpleSelectable;
  */
 public abstract class BlockingMessenger extends AbstractMessenger {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(BlockingMessenger.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(BlockingMessenger.class.getName());
 
     /**
      * The self destruct timer.
@@ -102,7 +100,7 @@ public abstract class BlockingMessenger extends AbstractMessenger {
      * makes the owning canonical messenger, if any, subject to removal if it is
      * otherwise unreferenced.
      */
-    //private final static transient Timer timer = new Timer("BlockingMessenger self destruct timer", true);
+    private final static transient Timer timer = new Timer("BlockingMessenger self destruct timer", true);
 
     /*
      * Actions that we defer to after returning from event methods. In other 
@@ -192,6 +190,200 @@ public abstract class BlockingMessenger extends AbstractMessenger {
     protected final TaskManager taskManager;
 
     /**
+     * Our statemachine implementation; just connects the standard AbstractMessengerState action methods to
+     * this object.
+     */
+    private class BlockingMessengerState extends MessengerState {
+
+        protected BlockingMessengerState(MessengerStateListener listener) {
+            super(true, listener);
+        }
+
+        /*
+         * The required action methods.
+         */
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void connectAction() {
+            deferredAction = DeferredAction.ACTION_CONNECT;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void startAction() {
+            deferredAction = DeferredAction.ACTION_SEND;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void closeInputAction() {
+            // we're synchonized here. (invoked from stateMachine).
+            inputClosed = true;
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        @Override
+        protected void closeOutputAction() {
+            // This will break the cnx; thereby causing a down event if we have a send in progress.
+            // If the cnx does not break before the current message is sent, then the message will be sent successfully,
+            // resulting in an idle event. Either of these events is enough to complete the shutdown process.
+            lieToOldTransports = true;
+            closeImpl();
+            lieToOldTransports = false;
+
+            // Disconnect from the timer.
+            if (selfDestructTaskHandle != null) {
+                selfDestructTaskHandle.cancel(false);
+            }
+        }
+
+        // This is a synchronous action. No synchronization needed: we're already synchronized, here.
+        // There's a subtlety here: we do not clear the current message. We let sendMessageB or sendMessageN
+        // deal with it, so that they can handle the status reporting each in their own way. So basically, all we
+        // do is to set a reason for that message to fail in case we are shutdown from the outside and that message
+        // is not sent yet. As long as there is a current message, it is guaranteed that there is a thread
+        // in charge of reporting its status. It is also guaranteed that when failAll is called, the input is
+        // already closed, and so, we have no obligation of making room for future messages immediately.
+        // All this aggravation is so that we do not have to create one context wrapper for each message just so
+        // that we can associate it with its result. Instead we use our single msg and single status model
+        // throughout.
+        @Override
+        protected void failAllAction() {
+
+            if (currentMessage == null) {
+                return;
+            }
+
+            if (currentThrowable == null) {
+                currentThrowable = new IOException("Messenger unexpectedly closed");
+            }
+        }
+    }
+
+    /**
+     * The implementation of channel messenger that getChannelMessenger returns:
+     * All it does is address rewriting. Even close() is forwarded to the shared messenger.
+     * The reason is that BlockingMessengers are not really shared; they're transitional
+     * entities used directly by CanonicalMessenger. GetChannel is used only to provide address
+     * rewriting when we pass a blocking messenger directly to incoming messenger listeners...this
+     * practice is to be removed in the future, in favor of making incoming messengers full-featured
+     * async messengers that can be shared.
+     */
+    private final class BlockingMessengerChannel extends ChannelMessenger {
+
+        public BlockingMessengerChannel(EndpointAddress baseAddress, PeerGroupID redirection, String origService, String origServiceParam) {
+            super(baseAddress, redirection, origService, origServiceParam);
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public int getState() {
+            return BlockingMessenger.this.getState();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void resolve() {
+            BlockingMessenger.this.resolve();
+        }
+
+        /**
+         * {@inheritDoc}
+         */
+        public void close() {
+            BlockingMessenger.this.close();
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p/>
+         * Address rewriting done here.
+         */
+        public boolean sendMessageN(Message msg, String service, String serviceParam) {
+            return BlockingMessenger.this.sendMessageN(msg, effectiveService(service), effectiveParam(service, serviceParam));
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p/>
+         * Address rewriting done here.
+         */
+        public void sendMessageB(Message msg, String service, String serviceParam) throws IOException {
+            BlockingMessenger.this.sendMessageB(msg, effectiveService(service), effectiveParam(service, serviceParam));
+        }
+
+        /**
+         * {@inheritDoc}
+         *
+         * <p/>
+         * We're supposed to return the complete destination, including
+         * service and param specific to that channel. It is not clear, whether
+         * this should include the cross-group mangling, though. For now, let's
+         * say it does not.
+         */
+        public EndpointAddress getLogicalDestinationAddress() {
+            EndpointAddress rawLogical = getLogicalDestinationImpl();
+
+            if (rawLogical == null) {
+                return null;
+            }
+            return new EndpointAddress(rawLogical, origService, origServiceParam);
+        }
+
+        // Check if it is worth staying registered
+        @SuppressWarnings("unused")
+		public void itemChanged(Object changedObject) {
+
+            if (!notifyChange()) {
+                if (haveListeners()) {
+                    return;
+                }
+
+                BlockingMessenger.this.unregisterListener(this);
+
+                if (!haveListeners()) {
+                    return;
+                }
+
+                // Ooops collision. We should not have unregistered. Next time, then. In case of collision, the end result
+                // is always to stay registered. There's no harm in staying registered.
+                BlockingMessenger.this.registerListener(this);
+            }
+        }
+
+        /**
+         * {@inheritDoc}
+         * <p/>
+         * Always make sure we're registered with the shared messenger.
+         */
+        @Override
+        protected void registerListener(SimpleSelectable l) {
+            BlockingMessenger.this.registerListener(this);
+            super.registerListener(l);
+        }
+    }
+
+    private void storeCurrent(Message msg, String service, String param) {
+        currentMessage = msg;
+        currentService = service;
+        currentParam = param;
+        currentThrowable = null;
+    }
+
+    /**
      * Constructor.
      * <p/>
      * We start in the CONNECTED state, we pretend to have a queue of size 1, and we can never re-connect.  Although this
@@ -220,11 +412,11 @@ public abstract class BlockingMessenger extends AbstractMessenger {
          * <p/>
          * As long as this timer task is scheduled, this messenger is not subject to GC. Therefore, its owner, if any, which is strongly
          * referenced, is not subject to GC either. This avoids prematurely closing open connections just because a destination is
-         * not currently in use, which we would have to do if CanonicalMessengers could be GCed independantly (and which would
+         * not currently in use, which we would have to do if CanonicalMessengers could be GCed independently (and which would
          * force us to use finalizers, too).<p/>
          *
-         * Such a mechanism is usefull only if this blocking messenger is expensive to make or holds system resources that require
-         * an explicit invocation of the close method. Else, it is better to let it be GC'ed along with any refering canonical
+         * Such a mechanism is useful only if this blocking messenger is expensive to make or holds system resources that require
+         * an explicit invocation of the close method. Else, it is better to let it be GC'ed along with any referring canonical
          * messenger when memory is tight.<p/>
          *
          */
@@ -246,7 +438,7 @@ public abstract class BlockingMessenger extends AbstractMessenger {
 
                     } catch (Throwable uncaught) {
 
-                        Logging.logCheckedSevere(LOG, "Uncaught Throwable in selfDescructTask. \n", uncaught);
+                        Logging.logCheckedError(LOG, "Uncaught Throwable in selfDescructTask. \n", uncaught);
 
                     }
                 }
@@ -263,18 +455,7 @@ public abstract class BlockingMessenger extends AbstractMessenger {
         }
     }
 
-    private void storeCurrent(Message msg, String service, String param) {
-        currentMessage = msg;
-        currentService = service;
-        currentParam = param;
-        currentThrowable = null;
-    }
-
-    public Object getOwner() {
-		return owner;
-	}
-
-	/**
+    /**
      * Sets an owner for this blocking messenger. Owners are normally canonical messengers. The goal of registering the owner is
      * to keep that owner reachable as long as this blocking messenger is.  Canonical messengers are otherwise softly referenced,
      * and so, may be deleted whenever memory is tight.
@@ -293,7 +474,16 @@ public abstract class BlockingMessenger extends AbstractMessenger {
         this.owner = owner;
     }
 
-    /**
+    
+    protected static Timer getTimer() {
+		return timer;
+	}
+
+	protected Object getOwner() {
+		return owner;
+	}
+
+	/**
      * Assemble a destination address for a message based upon the messenger
      * default destination address and the optional provided overrides.
      *
@@ -502,7 +692,7 @@ public abstract class BlockingMessenger extends AbstractMessenger {
                 }
             }
             // Yes, we return true in either case. sendMessageN is supposed to be async. If a message fails
-            // after it was successfuly queued, the error is not reported by the return value, but only by
+            // after it was successfully queued, the error is not reported by the return value, but only by
             // the message property (and select). Just making sure the behaviour is as normal as can be
             // even it means suppressing some information.
 
@@ -563,8 +753,8 @@ public abstract class BlockingMessenger extends AbstractMessenger {
             case ACTION_CONNECT:
                 cantConnect();
                 break;
-            default:
-            	break;
+		default:
+			break;
         }
     }
 
@@ -598,7 +788,7 @@ public abstract class BlockingMessenger extends AbstractMessenger {
 
         if (currentMessage == null) {
 
-            Logging.logCheckedSevere(LOG, "Internal error. Asked to send with no message.");
+            Logging.logCheckedError(LOG, "Internal error. Asked to send with no message.");
             return;
 
         }
@@ -685,192 +875,4 @@ public abstract class BlockingMessenger extends AbstractMessenger {
      * Obtain the logical destination address from the implementer (a transport for example).
      */
     protected abstract EndpointAddress getLogicalDestinationImpl();
-    
-    /**
-     * Our statemachine implementation; just connects the standard AbstractMessengerState action methods to
-     * this object.
-     */
-    private class BlockingMessengerState extends MessengerState {
-
-        protected BlockingMessengerState(MessengerStateListener listener) {
-            super(true, listener);
-        }
-
-        /*
-         * The required action methods.
-         */
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void connectAction() {
-            deferredAction = DeferredAction.ACTION_CONNECT;
-        }
-
-        
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void startAction() {
-            deferredAction = DeferredAction.ACTION_SEND;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void closeInputAction() {
-            // we're synchonized here. (invoked from stateMachine).
-            inputClosed = true;
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        @Override
-        protected void closeOutputAction() {
-            // This will break the cnx; thereby causing a down event if we have a send in progress.
-            // If the cnx does not break before the current message is sent, then the message will be sent successfully,
-            // resulting in an idle event. Either of these events is enough to complete the shutdown process.
-            lieToOldTransports = true;
-            closeImpl();
-            lieToOldTransports = false;
-
-            // Disconnect from the timer.
-            if (selfDestructTaskHandle != null) {
-                selfDestructTaskHandle.cancel(false);
-            }
-        }
-
-        // This is a synchronous action. No synchronization needed: we're already synchronized, here.
-        // There's a subtlety here: we do not clear the current message. We let sendMessageB or sendMessageN
-        // deal with it, so that they can handle the status reporting each in their own way. So basically, all we
-        // do is to set a reason for that message to fail in case we are shutdown from the outside and that message
-        // is not sent yet. As long as there is a current message, it is guaranteed that there is a thread
-        // in charge of reporting its status. It is also guaranteed that when failAll is called, the input is
-        // already closed, and so, we have no obligation of making room for future messages immediately.
-        // All this aggravation is so that we do not have to create one context wrapper for each message just so
-        // that we can associate it with its result. Instead we use our single msg and single status model
-        // throughout.
-        @Override
-        protected void failAllAction() {
-
-            if (currentMessage == null) {
-                return;
-            }
-
-            if (currentThrowable == null) {
-                currentThrowable = new IOException("Messenger unexpectedly closed");
-            }
-        }
-    }
-    
-    /**
-     * The implementation of channel messenger that getChannelMessenger returns:
-     * All it does is address rewriting. Even close() is forwarded to the shared messenger.
-     * The reason is that BlockingMessengers are not really shared; they're transitional
-     * entities used directly by CanonicalMessenger. GetChannel is used only to provide address
-     * rewriting when we pass a blocking messenger directly to incoming messenger listeners...this
-     * practice is to be removed in the future, in favor of making incoming messengers full-featured
-     * async messengers that can be shared.
-     */
-    private final class BlockingMessengerChannel extends ChannelMessenger {
-
-        public BlockingMessengerChannel(EndpointAddress baseAddress, PeerGroupID redirection, String origService, String origServiceParam) {
-            super(baseAddress, redirection, origService, origServiceParam);
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public int getState() {
-            return BlockingMessenger.this.getState();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void resolve() {
-            BlockingMessenger.this.resolve();
-        }
-
-        /**
-         * {@inheritDoc}
-         */
-        public void close() {
-            BlockingMessenger.this.close();
-        }
-
-        /**
-         * {@inheritDoc}
-         *
-         * <p/>
-         * Address rewriting done here.
-         */
-        public boolean sendMessageN(Message msg, String service, String serviceParam) {
-            return BlockingMessenger.this.sendMessageN(msg, effectiveService(service), effectiveParam(service, serviceParam));
-        }
-
-        /**
-         * {@inheritDoc}
-         *
-         * <p/>
-         * Address rewriting done here.
-         */
-        public void sendMessageB(Message msg, String service, String serviceParam) throws IOException {
-            BlockingMessenger.this.sendMessageB(msg, effectiveService(service), effectiveParam(service, serviceParam));
-        }
-
-        /**
-         * {@inheritDoc}
-         *
-         * <p/>
-         * We're supposed to return the complete destination, including
-         * service and param specific to that channel. It is not clear, whether
-         * this should include the cross-group mangling, though. For now, let's
-         * say it does not.
-         */
-        public EndpointAddress getLogicalDestinationAddress() {
-            EndpointAddress rawLogical = getLogicalDestinationImpl();
-
-            if (rawLogical == null) {
-                return null;
-            }
-            return new EndpointAddress(rawLogical, origService, origServiceParam);
-        }
-
-        // Check if it is worth staying registered
-        @SuppressWarnings("unused")
-		public void itemChanged(Object changedObject) {
-
-            if (!notifyChange()) {
-                if (haveListeners()) {
-                    return;
-                }
-
-                BlockingMessenger.this.unregisterListener(this);
-
-                if (!haveListeners()) {
-                    return;
-                }
-
-                // Ooops collision. We should not have unregistered. Next time, then. In case of collision, the end result
-                // is always to stay registered. There's no harm in staying registered.
-                BlockingMessenger.this.registerListener(this);
-            }
-        }
-
-        /**
-         * {@inheritDoc}
-         * <p/>
-         * Always make sure we're registered with the shared messenger.
-         */
-        @Override
-        protected void registerListener(SimpleSelectable l) {
-            BlockingMessenger.this.registerListener(this);
-            super.registerListener(l);
-        }
-    }
 }

@@ -65,21 +65,19 @@ import net.jxta.document.Element;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocument;
 import net.jxta.document.XMLElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.TransportAdvertisement;
+
 import java.util.Arrays;
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Provides configuration parameters for the JXTA TCP Message Transport.
  */
 public class TCPAdv extends TransportAdvertisement {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(TCPAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(TCPAdv.class.getName());
 
     private static final String CONFIGMODES[] = {"auto", "manual"};
     private static final String INDEXFIELDS[] = {/* none */};
@@ -133,12 +131,12 @@ public class TCPAdv extends TransportAdvertisement {
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(net.jxta.document.Element<?>  root) {
+        public Advertisement newInstance(net.jxta.document.Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new TCPAdv((XMLElement<?> ) root);
+            return new TCPAdv((XMLElement<?>) root);
         }
     }
 
@@ -167,7 +165,7 @@ public class TCPAdv extends TransportAdvertisement {
         setProtocol("tcp");
     }
 
- 	private TCPAdv(XMLElement<?>  doc) {
+    private TCPAdv(XMLElement<?> doc) {
         this();
 
         String doctype = doc.getName();
@@ -191,11 +189,11 @@ public class TCPAdv extends TransportAdvertisement {
             publicAddressOnly = (options.indexOf(PublicAddressOnlyAttr) != -1);
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
-            XMLElement<?>  elem = (XMLElement<?> ) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                 Logging.logCheckedWarning(LOG, "Unhandled Element: ", elem);
@@ -636,13 +634,21 @@ public class TCPAdv extends TransportAdvertisement {
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element<?>  raw) {
+    protected boolean handleElement(Element<?> raw) {
 
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement<?>  elem = (XMLElement<?> ) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
+
+//
+//        To delete in a future release
+//
+//        if (elem.getName().equals(MULTICAST_OFF_TAG)) {
+//            setMulticastState(false);
+//            return true;
+//        }
 
         if (elem.getName().equals(ClientOffTag)) {
             setClientEnabled(false);
@@ -744,8 +750,8 @@ public class TCPAdv extends TransportAdvertisement {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
@@ -782,6 +788,29 @@ public class TCPAdv extends TransportAdvertisement {
             throw new IllegalStateException("Dynamic ports not supported with public address port forwarding.");
         }
 
+//
+//        To delete in a future release
+//
+//        if (getMulticastState() && (null == getMulticastAddr())) {
+//            throw new IllegalStateException("Multicast enabled and no address specified.");
+//        }
+//
+//        if (getMulticastState() && (-1 == getMulticastPort())) {
+//            throw new IllegalStateException("Multicast enabled and no port specified.");
+//        }
+//
+//        if (getMulticastState() && ((getMulticastPort() <= 0) || (getMulticastPort() > 65536))) {
+//            throw new IllegalStateException("Illegal Multicast Port Value");
+//        }
+//
+//        if (getMulticastState() && (-1 == getMulticastSize())) {
+//            throw new IllegalStateException("Multicast enabled and no size specified.");
+//        }
+//
+//        if (getMulticastState() && ((getMulticastSize() <= 0) || (getMulticastSize() > 1048575L))) {
+//            throw new IllegalStateException("Illegal Multicast datagram size");
+//        }
+
         if (adv instanceof Attributable) {
             // Only one flag for now. Easy.
             if (publicAddressOnly) {
@@ -794,28 +823,28 @@ public class TCPAdv extends TransportAdvertisement {
         adv.appendChild(proto);
 
         if (!isClientEnabled()) {
-            Element<?>  clientEnabled = adv.createElement(ClientOffTag);
+            Element clientEnabled = adv.createElement(ClientOffTag);
             adv.appendChild(clientEnabled);
         }
 
         if (!isServerEnabled()) {
-            Element<?>  serverOff = adv.createElement(ServerOffTag);
+            Element serverOff = adv.createElement(ServerOffTag);
             adv.appendChild(serverOff);
         }
 
         if (getConfigMode() != null) {
-            Element<?>  configMode = adv.createElement("ConfigMode", getConfigMode());
+            Element configMode = adv.createElement("ConfigMode", getConfigMode());
             adv.appendChild(configMode);
         }
 
         String interfaceAddr = getInterfaceAddress();
 
         if (null != interfaceAddr) {
-            Element<?>  interfaceAddrr = adv.createElement("InterfaceAddress", interfaceAddr);
+            Element<?> interfaceAddrr = adv.createElement("InterfaceAddress", interfaceAddr);
             adv.appendChild(interfaceAddrr);
         }
 
-        Element<?>  portEl = adv.createElement(PORT_ELEMENT, Integer.toString(listenPort));
+        Element<?> portEl = adv.createElement(PORT_ELEMENT, Integer.toString(listenPort));
         adv.appendChild(portEl);
         if (adv instanceof Attributable) {
             Attributable attrElem = (Attributable) portEl;
@@ -827,9 +856,43 @@ public class TCPAdv extends TransportAdvertisement {
 
         String serverAddr = getServer();
         if (null != serverAddr) {
-            Element<?>  server = adv.createElement("Server", serverAddr);
+            Element<?> server = adv.createElement("Server", serverAddr);
             adv.appendChild(server);
         }
+
+//
+//        To delete in a future release
+//
+//        if (!getMulticastState()) {
+//            Element mOff = adv.createElement(MULTICAST_OFF_TAG);
+//            adv.appendChild(mOff);
+//        }
+//
+//        if (null != getMulticastAddr()) {
+//            Element mAddrr = adv.createElement(MULTICAST_ADDRESS_TAG, getMulticastAddr());
+//            adv.appendChild(mAddrr);
+//        }
+//
+//        if (null != this.getMulticastInterface()) {
+//            Element mInterace = adv.createElement(MULTICAST_INTERFACE_TAG, getMulticastInterface());
+//            adv.appendChild(mInterace);
+//        }
+//
+//        if (-1 != getMulticastPort()) {
+//            Element mPort = adv.createElement(MULTICAST_PORT_TAG, Integer.toString(getMulticastPort()));
+//            adv.appendChild(mPort);
+//        }
+//
+//        if (-1 != getMulticastPoolSize()) {
+//            Element poolEl = adv.createElement(MCAST_THREAD_POOL, Integer.toString(getMulticastPoolSize()));
+//            adv.appendChild(poolEl);
+//        }
+//
+//        if (-1 != getMulticastSize()) {
+//            Element mSize = adv.createElement("MulticastSize", Integer.toString(getMulticastSize()));
+//            adv.appendChild(mSize);
+//        }
+
         return adv;
     }
 

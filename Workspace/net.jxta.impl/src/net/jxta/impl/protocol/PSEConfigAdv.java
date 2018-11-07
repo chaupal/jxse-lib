@@ -60,10 +60,12 @@ import net.jxta.document.*;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.membership.pse.PSEUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroupID;
 
 import javax.crypto.EncryptedPrivateKeyInfo;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -78,7 +80,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  *  Contains parameters for configuration of the PSE Membership Service.
@@ -97,10 +98,7 @@ import java.util.logging.Logger;
  */
 public final class PSEConfigAdv extends ExtendableAdvertisement implements Cloneable {
 
-    /**
-     *   Log4J Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(PSEConfigAdv.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(PSEConfigAdv.class.getName());
 
     /**
      *  Our DOCTYPE
@@ -207,7 +205,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<?extends Attribute> eachAttr = doc.getAttributes();
+        Enumeration<?> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -240,7 +238,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) 
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
 
         }
 
@@ -363,7 +361,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
 
         } catch (Exception failed) {
 
-            Logging.logCheckedSevere(LOG, "Failed to process seed cert\n", failed);
+            Logging.logCheckedError(LOG, "Failed to process seed cert\n", failed);
 
             IllegalArgumentException failure = new IllegalArgumentException("Failed to process seed cert");
             failure.initCause(failed);
@@ -382,7 +380,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
      */
     public void setCertificate(X509Certificate newCert) {
 
-        Logging.logCheckedFine(LOG, "setCert : ", newCert);
+        Logging.logCheckedDebug(LOG, "setCert : ", newCert);
 
         certs.clear();
 
@@ -402,7 +400,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
      */
     public void setCertificateChain(X509Certificate[] newCerts) {
 
-        Logging.logCheckedFine(LOG, "setCert : ", newCerts);
+        Logging.logCheckedDebug(LOG, "setCert : ", newCerts);
 
         certs.clear();
 
@@ -462,7 +460,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
 
         } catch (Exception failed) {
 
-            Logging.logCheckedSevere(LOG, "Failed to process private key\n", failed);
+            Logging.logCheckedError(LOG, "Failed to process private key\n", failed);
 
             IllegalStateException failure = new IllegalStateException("Failed to process private key");
             failure.initCause(failed);
@@ -576,7 +574,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
 
         } catch (Exception failed) {
 
-            Logging.logCheckedSevere(LOG, "Failed to process private key\n", failed);
+            Logging.logCheckedError(LOG, "Failed to process private key\n", failed);
 
             IllegalArgumentException failure = new IllegalArgumentException("Failed to process private key");
             failure.initCause(failed);
@@ -595,7 +593,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
      */
     public void setEncryptedPrivateKey(EncryptedPrivateKeyInfo newPriv, String algorithm) {
 
-        Logging.logCheckedFine(LOG, "setPrivateKey : ", newPriv);
+        Logging.logCheckedDebug(LOG, "setPrivateKey : ", newPriv);
 
         encryptedPrivateKey = newPriv;
         privAlgorithm = algorithm;
@@ -610,7 +608,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
      */
     public void setPrivateKey(PrivateKey newPriv, char[] password) {
 
-        Logging.logCheckedFine(LOG, "setPrivateKey : ", newPriv);
+        Logging.logCheckedDebug(LOG, "setPrivateKey : ", newPriv);
 
         EncryptedPrivateKeyInfo encypted = PSEUtils.pkcs5_Encrypt_pbePrivateKey(password, newPriv, 500);
         setEncryptedPrivateKey(encypted, newPriv.getAlgorithm());
@@ -631,7 +629,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
 
         if (ROOT_CERT_TAG.equals(elem.getName())) {
 
-            Enumeration<? extends Element<?>> elements = elem.getChildren();
+            Enumeration<?> elements = elem.getChildren();
 
             while (elements.hasMoreElements()) {
                 XMLElement<?> eachcertelem = (XMLElement<?>) elements.nextElement();
@@ -666,7 +664,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
                     continue;
                 }
 
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", eachcertelem.getName());
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", eachcertelem.getName());
 
             }
 
@@ -693,7 +691,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
     /**
      *  {@inheritDoc}
      */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    @SuppressWarnings({ "unchecked", "rawtypes" })
 	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
@@ -711,7 +709,7 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
         }
 
         if (null != keyStoreLocation) {
-            Element keyStoreLocationURI = adv.createElement(KEY_STORE_LOCATION_TAG, keyStoreLocation.toString());
+            Element<?> keyStoreLocationURI = adv.createElement(KEY_STORE_LOCATION_TAG, keyStoreLocation.toString());
 
             adv.appendChild(keyStoreLocationURI);
         }
@@ -726,11 +724,11 @@ public final class PSEConfigAdv extends ExtendableAdvertisement implements Clone
 
             // FIXME bondolo 20040501 needs to write certificate chain.
 
-            Element cert = adv.createElement(CERT_TAG, encodedRoot);
+            Element<?> cert = adv.createElement(CERT_TAG, encodedRoot);
 
             rootcert.appendChild(cert);
 
-            Element privatekey = adv.createElement(ENCRYPTED_PRIVATE_KEY_TAG, encodedPrivateKey);
+            Element<?> privatekey = adv.createElement(ENCRYPTED_PRIVATE_KEY_TAG, encodedPrivateKey);
 
             rootcert.appendChild(privatekey);
 

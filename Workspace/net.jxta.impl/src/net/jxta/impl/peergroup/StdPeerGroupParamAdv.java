@@ -66,8 +66,9 @@ import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLElement;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
 import net.jxta.platform.ModuleClassID;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -76,7 +77,6 @@ import java.net.URI;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Not actually an advertisement, but often acts as part of one.
@@ -92,10 +92,7 @@ import java.util.logging.Logger;
 @Deprecated
 public class StdPeerGroupParamAdv {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(StdPeerGroupParamAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(StdPeerGroupParamAdv.class.getName());
 
     private static final String PARAM_TAG = "Parm";
     private static final String PROTO_TAG = "Proto";
@@ -112,20 +109,20 @@ public class StdPeerGroupParamAdv {
      * The services which will be loaded for this peer group.
      * <p/>
      * <ul>
-     *     <li>Keys are {@link net.jxta.platform.ModuleClassID}.</li>
-     *     <li>Values are {@link net.jxta.platform.ModuleSpecID} or
+     *     <li>Keys anet.jxta.platform.core..platform.core.ModuleClassID}.</li>
+     *     <li>Valnet.jxta.platform.core..jxta.platform.core.ModuleSpecID} or
      *     {@link net.jxta.protocol.ModuleImplAdvertisement}.</li>
      * </ul>
      */ 
-    private final Map<ModuleClassID, Object> services = new HashMap<>();
+    private final Map<ModuleClassID, Object> services = new HashMap<ModuleClassID, Object>();
 
     /**
      * The protocols (message transports) which will be loaded for this peer
      * group.
      * <p/>
      * <ul>
-     *     <li>Keys are {@link net.jxta.platform.ModuleClassID}.</li>
-     *     <li>Values are {@link net.jxta.platform.ModuleSpecID} or
+     *     net.jxta.platform.core.k net.jxta.platform.core.ModuleClassID}.</li>
+     *  net.jxta.platform.core.{@linnet.jxta.peergroup.coreore.ModuleSpecID} or
      *     {@link net.jxta.protocol.ModuleImplAdvertisement}.</li>
      * </ul>
      */ 
@@ -135,12 +132,11 @@ public class StdPeerGroupParamAdv {
      * The applications which will be loaded for this peer group.
      * <p/>
      * <ul>
-     *     <li>Keys are {@link net.jxta.platform.ModuleClassID}.</li>
-     *     <li>Values are {@link net.jxta.platform.ModuleSpecID} or
+ net.jxta.platform.core. are {@linet.jxta.peergroup.corecore.ModuleClassID}.</li>net.jxta.platform.core.alues are {@lnet.jxta.peergroup.core.core.ModuleSpecID} or
      *     {@link net.jxta.protocol.ModuleImplAdvertisement}.</li>
      * </ul>
      */ 
-    private final Map<ModuleClassID, Object> apps = new HashMap<>();
+    private final Map<ModuleClassID, Object> apps = new HashMap<ModuleClassID, Object>();
 
     /**
      * Private constructor for new instances.
@@ -347,19 +343,19 @@ public class StdPeerGroupParamAdv {
 
     }
 
-    @SuppressWarnings("unchecked")
-	private void initialize(XMLElement<?> doc) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+   private void initialize(XMLElement doc) {
         if (!doc.getName().equals(PARAM_TAG)) {
             throw new IllegalArgumentException("Can not construct " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
         // set defaults
         int appCount = 0;
-        Enumeration<XMLElement<?>> modules = (Enumeration<XMLElement<?>>) doc.getChildren();
+        Enumeration<XMLElement<?>> modules = doc.getChildren();
 
         while (modules.hasMoreElements()) {
 
-            XMLElement<?> module = modules.nextElement();
+            XMLElement module = modules.nextElement();
             String tagName = module.getName();
 
             Map<ModuleClassID, Object> theTable;
@@ -394,7 +390,7 @@ public class StdPeerGroupParamAdv {
                 }
 
                 // Check for children anyway.
-                Enumeration<XMLElement<?>> fields = (Enumeration<XMLElement<?>>) module.getChildren();
+                Enumeration<XMLElement<?>> fields = module.getChildren();
 
                 while (fields.hasMoreElements()) {
 
@@ -453,7 +449,7 @@ public class StdPeerGroupParamAdv {
 
             if (theTable == apps) {
                 // Only the first (or only) one may use the base class.
-                if (classID == PeerGroup.applicationClassID) {
+                if (classID == IModuleDefinitions.applicationClassID) {
                     if (appCount++ != 0) {
                         classID = IDFactory.newModuleClassID(classID);
                     }
@@ -480,7 +476,7 @@ public class StdPeerGroupParamAdv {
     }
 
     @SuppressWarnings({ "rawtypes", "unchecked" })
-	private void outputModules(StructuredDocument doc, Map<ModuleClassID, Object> modulesTable, String mainTag) {
+    private void outputModules(StructuredDocument doc, Map<ModuleClassID, Object> modulesTable, String mainTag) {
 
         for (Map.Entry<ModuleClassID, Object> entry : modulesTable.entrySet()) {
             ModuleClassID mcid = entry.getKey();
@@ -500,12 +496,12 @@ public class StdPeerGroupParamAdv {
 
                 if (modulesTable != apps && !mcid.equals(mcid.getBaseClass())) {
                     // It is not an app and there is a role ID. Output it.
-                    Element i = doc.createElement(MCID_TAG, mcid.toString());
+                    Element<?> i = doc.createElement(MCID_TAG, mcid.toString());
 
                     m.appendChild(i);
                 }
 
-                StructuredDocument advdoc = (StructuredDocument) ((Advertisement) val).getDocument(doc.getMimeType());
+                StructuredDocument<?> advdoc = (StructuredDocument<?>) ((Advertisement) val).getDocument(doc.getMimeType());
 
                 StructuredDocumentUtils.copyElements(doc, m, advdoc);
             } else if (val instanceof ModuleSpecID) {
@@ -530,7 +526,7 @@ public class StdPeerGroupParamAdv {
 
             } else {
 
-                Logging.logCheckedSevere(LOG, "unsupported descriptor for ", mcid, " in ", mainTag, " module table : ", val);
+                Logging.logCheckedError(LOG, "unsupported descriptor for ", mcid, " in ", mainTag, " module table : ", val);
                 throw new IllegalStateException("unsupported descriptor for " + mcid + " in " + mainTag +" module table : " + val);
 
             }

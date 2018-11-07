@@ -58,7 +58,6 @@ package net.jxta.impl.endpoint.servlethttp;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.Attribute;
-import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
@@ -69,9 +68,10 @@ import net.jxta.impl.endpoint.transportMeter.TransportBindingMeter;
 import net.jxta.impl.endpoint.transportMeter.TransportMeter;
 import net.jxta.impl.endpoint.transportMeter.TransportMeterBuildSettings;
 import net.jxta.impl.endpoint.transportMeter.TransportServiceMonitor;
+import net.jxta.impl.loader.JxtaLoaderModuleManager;
 import net.jxta.impl.meter.MonitorManager;
-import net.jxta.impl.peergroup.GenericPeerGroup;
 import net.jxta.impl.protocol.HTTPAdv;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.meter.MonitorResources;
 import net.jxta.peergroup.PeerGroup;
@@ -87,7 +87,6 @@ import java.util.Collections;
 import java.util.Comparator;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * A JXTA Message Transport
@@ -97,9 +96,9 @@ import java.util.logging.Logger;
  * <li>An HTTP-server-based message receiver</li>
  * </ul>
  */
-public final class ServletHttpTransportImpl extends ServletHttpTransport implements Module {
+public final class ServletHttpTransportImpl implements ServletHttpTransport, Module {
 
-    private final static transient Logger LOG = Logger.getLogger(ServletHttpTransportImpl.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(ServletHttpTransportImpl.class.getName());
 
     /**
      * The name of the protocol
@@ -186,7 +185,7 @@ public final class ServletHttpTransportImpl extends ServletHttpTransport impleme
         XMLElement<?> param = (XMLElement<?>) implAdvertisement.getParam();
 
         if (param != null) {
-            Enumeration<? extends Element<?>> list = param.getChildren("Proto");
+            Enumeration<?> list = param.getChildren("Proto");
 
             if (list.hasMoreElements()) {
                 XMLElement<?> pname = (XMLElement<?>) list.nextElement();
@@ -201,7 +200,7 @@ public final class ServletHttpTransportImpl extends ServletHttpTransport impleme
 
         param = (XMLElement<?>) peerAdv.getServiceParam(assignedID);
 
-        Enumeration<? extends Element<?>> httpChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
+        Enumeration<?> httpChilds = param.getChildren(TransportAdvertisement.getAdvertisementType());
 
         // get the TransportAdv
         if (httpChilds.hasMoreElements()) {
@@ -267,6 +266,8 @@ public final class ServletHttpTransportImpl extends ServletHttpTransport impleme
         publicAddress = publicAddresses.get(0);
 
         // Tell tell the world about our configuration.
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
+
             StringBuilder configInfo = new StringBuilder("Configuring HTTP Message Transport : " + assignedID);
 
             if (implAdvertisement != null) {
@@ -296,6 +297,9 @@ public final class ServletHttpTransportImpl extends ServletHttpTransport impleme
             }
 
             LOG.config(configInfo.toString());
+
+        }
+
     }
 
     /**
@@ -329,13 +333,13 @@ public final class ServletHttpTransportImpl extends ServletHttpTransport impleme
             try {
 
                 // Use peer group class loader (useful for HttpMessageServlet)
-                final ClassLoader classLoader = GenericPeerGroup.getJxtaLoader();
-                receiver = new HttpMessageReceiver(this, publicAddresses, usingInterface, usingPort);
+                final ClassLoader classLoader = JxtaLoaderModuleManager.getClassLoader( group );
+                receiver = new HttpMessageReceiver(this, publicAddresses, usingInterface, usingPort, classLoader);
                 receiver.start();
 
             } catch (PeerGroupException e) {
 
-                Logging.logCheckedSevere(LOG, "Could not start http message receiver\n", e);
+                Logging.logCheckedError(LOG, "Could not start http message receiver\n", e);
                 return -1; // Can't go on; if we were configured to be a server we must make the failure obvious.
 
             }
@@ -352,7 +356,7 @@ public final class ServletHttpTransportImpl extends ServletHttpTransport impleme
 
             } catch (PeerGroupException e) {
 
-                Logging.logCheckedSevere(LOG, "Could not start http message sender\n", e);
+                Logging.logCheckedError(LOG, "Could not start http message sender\n", e);
                 return -1; // Can't go on; if we were configured to be a client we must make the failure obvious.
 
             }

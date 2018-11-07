@@ -67,17 +67,18 @@ import net.jxta.document.TextElement;
 import net.jxta.document.XMLDocument;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.pipe.PipeID;
 import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.protocol.PipeResolverMessage;
+
 import java.io.IOException;
 import java.io.StringReader;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This class implements {@link net.jxta.protocol.PipeResolverMessage} by
@@ -123,10 +124,7 @@ import java.util.logging.Logger;
  */
 public class PipeResolverMsg extends PipeResolverMessage {
 
-    /**
-     * Log4J Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(PipeResolverMsg.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(PipeResolverMsg.class.getName());
 
     private final static String MsgTypeTag = "MsgType";
     private final static String PipeIdTag = "PipeId";
@@ -158,7 +156,7 @@ public class PipeResolverMsg extends PipeResolverMessage {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + docName);
         }
 
-        Enumeration<? extends Element<?>> each = doc.getChildren();
+        Enumeration<?> each = doc.getChildren();
 
         while (each.hasMoreElements()) {
             TextElement<?> elem = (TextElement<?>) each.nextElement();
@@ -220,7 +218,7 @@ public class PipeResolverMsg extends PipeResolverMessage {
 											new StringReader(peerAdv))));
                 } catch (IOException caught) {
 
-                    Logging.logCheckedFine(LOG, "Malformed peer adv in message\n", caught);
+                    Logging.logCheckedDebug(LOG, "Malformed peer adv in message\n", caught);
                     throw new IllegalArgumentException("Malformed peer adv in message : " + caught.getMessage());
 
                 }
@@ -259,8 +257,8 @@ public class PipeResolverMsg extends PipeResolverMessage {
      * @param encodeAs The document representation format requested.
      * @return the message as a document.
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredTextDocument doc = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(encodeAs, getMessageType());
@@ -333,7 +331,7 @@ public class PipeResolverMsg extends PipeResolverMessage {
                             "Provided Peer Advertisement does not refer to one of the peers in the response list.");
                 }
 
-                StructuredTextDocument<?> asDoc = (StructuredTextDocument<?>) peerAdv.getSignedDocument();
+                StructuredTextDocument asDoc = (StructuredTextDocument<?>) peerAdv.getSignedDocument();
 
                 element = doc.createElement(PeerAdvTag, asDoc.toString());
                 doc.appendChild(element);
@@ -344,4 +342,3 @@ public class PipeResolverMsg extends PipeResolverMessage {
         return doc;
     }
 }
-

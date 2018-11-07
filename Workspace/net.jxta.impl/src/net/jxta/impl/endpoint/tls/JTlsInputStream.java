@@ -60,6 +60,7 @@ import net.jxta.endpoint.ByteArrayMessageElement;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.ByteArrayOutputStream;
@@ -72,7 +73,6 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 /**
  *  Acts as the input for TLS. Accepts ciphertext which arrives in messages
@@ -84,7 +84,7 @@ import java.util.logging.Logger;
  *
  */
 class JTlsInputStream extends InputStream {
-    private static final Logger LOG = Logger.getLogger(JTlsInputStream.class.getName());
+    private static final Logger LOG = Logging.getLogger(JTlsInputStream.class.getName());
 
     private static final boolean  DEBUGIO = false;
 
@@ -138,11 +138,6 @@ class JTlsInputStream extends InputStream {
         int seqnum;
         MessageElement elt;
         boolean ackd;
-        
-		@SuppressWarnings("unused")
-		public boolean isAckd() {
-			return ackd;
-		}
     }
 
     public JTlsInputStream(TlsConn conn, long timeout) {
@@ -209,7 +204,7 @@ class JTlsInputStream extends InputStream {
             if (len > 0) {
 
                 if (DEBUGIO) {
-                    Logging.logCheckedFine(LOG, "Read() : ", (a[0] & 255));
+                    Logging.logCheckedDebug(LOG, "Read() : ", (a[0] & 255));
                 }
 
                 return (a[0] & 0xFF); // The byte
@@ -234,7 +229,7 @@ class JTlsInputStream extends InputStream {
         int i = local_read(a, offset, length);
 
         if (DEBUGIO) {
-            Logging.logCheckedFine(LOG, "Read(byte[], int, ", length, "), bytes read = ", i);
+            Logging.logCheckedDebug(LOG, "Read(byte[], int, ", length, "), bytes read = ", i);
         }
 
         // If we've reached EOF; there's nothing to do but close().
@@ -309,7 +304,7 @@ class JTlsInputStream extends InputStream {
 
             conn.sendToRemoteTls(ACKMsg);
 
-            Logging.logCheckedFine(LOG, "SENT ACK, seqn#", seqnAck, " and ", sackList.size(), " SACKs ");
+            Logging.logCheckedDebug(LOG, "SENT ACK, seqn#", seqnAck, " and ", sackList.size(), " SACKs ");
 
         } catch (IOException e) {
 
@@ -323,7 +318,7 @@ class JTlsInputStream extends InputStream {
      */
     public void queueIncomingMessage(Message msg) {
 
-        Logging.logCheckedFine(LOG, "Queue Incoming Message begins for ", msg);
+        Logging.logCheckedDebug(LOG, "Queue Incoming Message begins for ", msg);
 
         long startEnqueue = TimeUtils.timeNow();
 
@@ -358,7 +353,7 @@ class JTlsInputStream extends InputStream {
             // Wait until someone dequeues if we are at the size limit
             // see if this is a duplicate
             if (newElt.seqnum <= sequenceNumber) {
-                Logging.logCheckedFine(LOG, "RCVD OLD MESSAGE : Discard seqn#", newElt.seqnum, " now at seqn#", sequenceNumber);
+                Logging.logCheckedDebug(LOG, "RCVD OLD MESSAGE : Discard seqn#", newElt.seqnum, " now at seqn#", sequenceNumber);
                 break;
             }
 
@@ -388,7 +383,7 @@ class JTlsInputStream extends InputStream {
 
                 if (duplicate) {
 
-                    Logging.logCheckedFine(LOG, "RCVD OLD MESSAGE : Discard duplicate msg, seqn#", newElt.seqnum);
+                    Logging.logCheckedDebug(LOG, "RCVD OLD MESSAGE : Discard duplicate msg, seqn#", newElt.seqnum);
                     newElt = null;
                     break;
 
@@ -396,7 +391,7 @@ class JTlsInputStream extends InputStream {
 
                 inputQueue.add(insertIndex, newElt);
 
-                Logging.logCheckedFine(LOG, "Enqueued msg with seqn#", newElt.seqnum, " at index ", insertIndex);
+                Logging.logCheckedDebug(LOG, "Enqueued msg with seqn#", newElt.seqnum, " at index ", insertIndex);
                 inputQueue.notifyAll();
                 newElt = null;
 
@@ -405,7 +400,7 @@ class JTlsInputStream extends InputStream {
 
         long waited = TimeUtils.toRelativeTimeMillis(TimeUtils.timeNow(), startEnqueue);
 
-        Logging.logCheckedFine(LOG, "Queue Incoming Message for ", msg, " completed in ", waited, " msec.");
+        Logging.logCheckedDebug(LOG, "Queue Incoming Message for ", msg, " completed in ", waited, " msec.");
 
     }
 
@@ -466,7 +461,7 @@ class JTlsInputStream extends InputStream {
                 } else if (iQ.seqnum != desiredSeqn) {
 
                     if (TimeUtils.toRelativeTimeMillis(nextRetransRequest) < 0) {
-                        Logging.logCheckedFine(LOG, "Trigger retransmission. Wanted seqn#", desiredSeqn, " found seqn#", iQ.seqnum);
+                        Logging.logCheckedDebug(LOG, "Trigger retransmission. Wanted seqn#", desiredSeqn, " found seqn#", iQ.seqnum);
                         sendACK(desiredSeqn - 1);
                         nextRetransRequest = TimeUtils.toAbsoluteTimeMillis(TimeUtils.ASECOND);
                     }
@@ -499,7 +494,7 @@ class JTlsInputStream extends InputStream {
         Logging.logCheckedInfo(LOG, "DEQUEUED seqn#", iQ.seqnum, " in ", waited, " msec on input queue");
 
         if (wct > 0) {
-           Logging.logCheckedFine(LOG, "DEQUEUE waited ", wct, " times on input queue");
+           Logging.logCheckedDebug(LOG, "DEQUEUE waited ", wct, " times on input queue");
         }
 
         return iQ.elt;
@@ -516,7 +511,7 @@ class JTlsInputStream extends InputStream {
                 // reset the record
                 jtrec.resetRecord(); // GC as necessary(tlsRecord byte[])
 
-                Logging.logCheckedFine(LOG, "local_read: getting next data block at seqn#", (sequenceNumber + 1));
+                Logging.logCheckedDebug(LOG, "local_read: getting next data block at seqn#", (sequenceNumber + 1));
 
                 MessageElement elt = null;
 
@@ -538,7 +533,7 @@ class JTlsInputStream extends InputStream {
                 jtrec.size = elt.getByteLength();
                 jtrec.tlsRecord = elt.getStream();
 
-                Logging.logCheckedFine(LOG, "local_read: new seqn#", sequenceNumber, ", bytes = ", jtrec.size);
+                Logging.logCheckedDebug(LOG, "local_read: new seqn#", sequenceNumber, ", bytes = ", jtrec.size);
 
             }
 
@@ -563,7 +558,7 @@ class JTlsInputStream extends InputStream {
             jtrec.nextByte += copied;
 
             if (DEBUGIO) {
-                Logging.logCheckedFine(LOG, "local_read: Requested ", length, ", Read ", copied, " bytes");
+                Logging.logCheckedDebug(LOG, "local_read: Requested ", length, ", Read ", copied, " bytes");
             }
 
             return copied;

@@ -65,8 +65,6 @@ import java.security.SignatureException;
 import java.security.cert.CertificateEncodingException;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.MimeMediaType;
@@ -82,6 +80,7 @@ import net.jxta.endpoint.TextDocumentMessageElement;
 import net.jxta.endpoint.WireFormatMessageFactory;
 import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
 import net.jxta.membership.pse.IPSECredential;
@@ -94,10 +93,7 @@ import net.jxta.protocol.RouteAdvertisement;
  */
 public class EndpointRouterMessage {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(EndpointRouterMessage.class.getName());
+    private static final Logger LOG = Logging.getLogger(EndpointRouterMessage.class.getName());
 
     public static final String MESSAGE_NS = "jxta";
     public static final String MESSAGE_NAME = "EndpointRouterMsg";
@@ -143,7 +139,7 @@ public class EndpointRouterMessage {
         return rmDirty;
     }
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings({ "rawtypes", "unchecked" })
 	public EndpointRouterMessage(Message message, boolean removeMsg, MembershipService membershipService)
     {
         this.membershipService = membershipService;
@@ -168,12 +164,12 @@ public class EndpointRouterMessage {
                 return;
             }
 
-            XMLDocument<?> doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(rmElem);
+            XMLDocument doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(rmElem);
 
             Enumeration<XMLElement<?>> each;
-            XMLElement<?> e;
+            XMLElement e;
 
-            each = (Enumeration<XMLElement<?>>) doc.getChildren();
+            each = doc.getChildren();
             if (!each.hasMoreElements()) {
                 // results in rmExists being false.
                 return;
@@ -199,7 +195,7 @@ public class EndpointRouterMessage {
                     }
 
                     if (e.getName().equals(GatewayForwardTag)) {
-                        for (Enumeration<XMLElement<?>> eachXpt = (Enumeration<XMLElement<?>>) e.getChildren(); eachXpt.hasMoreElements();) {
+                        for (Enumeration<XMLElement<?>> eachXpt = e.getChildren(); eachXpt.hasMoreElements();) {
 
                             if (forwardGateways == null) {
                                 forwardGateways = new Vector<AccessPointAdvertisement>();
@@ -219,14 +215,14 @@ public class EndpointRouterMessage {
                     }
 
                     if (e.getName().equals(GatewayReverseTag)) {
-                        for (Enumeration<XMLElement<?>> eachXpt = (Enumeration<XMLElement<?>>) e.getChildren(); eachXpt.hasMoreElements();) {
+                        for (Enumeration<XMLElement<?>> eachXpt = e.getChildren(); eachXpt.hasMoreElements();) {
                             if (reverseGateways == null) {
                                 reverseGateways = new Vector<AccessPointAdvertisement>();
                             }
                             if (reverseCache == null) {
                                 reverseCache = new Vector<XMLElement<?>>();
                             }
-                            XMLElement<?> aXpt = eachXpt.nextElement();
+                            XMLElement aXpt = eachXpt.nextElement();
                             AccessPointAdvertisement xptAdv = (AccessPointAdvertisement)
                                     AdvertisementFactory.newAdvertisement(aXpt);
 
@@ -330,7 +326,7 @@ public class EndpointRouterMessage {
             } else {
                 for (AccessPointAdvertisement gateway : forwardGateways) {
                     try {
-                        XMLDocument xptDoc = (XMLDocument) gateway.getDocument(MimeMediaType.XMLUTF8);
+                        XMLDocument<?> xptDoc = (XMLDocument<?>) gateway.getDocument(MimeMediaType.XMLUTF8);
                         StructuredDocumentUtils.copyElements(doc, e, xptDoc);
                     } catch (Exception ignored) {
                         //ignored
@@ -346,7 +342,7 @@ public class EndpointRouterMessage {
 
             if (reverseCache != null) {
 
-                for (XMLElement xptDoc : reverseCache) {
+                for (XMLElement<?> xptDoc : reverseCache) {
 
                     try {
 
@@ -368,7 +364,7 @@ public class EndpointRouterMessage {
 
                     try {
 
-                        XMLDocument xptDoc = (XMLDocument) gateway.getDocument(MimeMediaType.XMLUTF8);
+                        XMLDocument<?> xptDoc = (XMLDocument<?>) gateway.getDocument(MimeMediaType.XMLUTF8);
                         StructuredDocumentUtils.copyElements(doc, e, xptDoc);
 
                     } catch (Exception e1) {
@@ -382,10 +378,10 @@ public class EndpointRouterMessage {
 
             try {
             	if(membershipService instanceof PSEMembershipService) {
-            		IPSECredential tempCred = (PSECredential)membershipService.getDefaultCredential();
+            		IPSECredential tempCred = (IPSECredential)membershipService.getDefaultCredential();
             		radv.sign(tempCred, true, false);
             	}
-                XMLDocument radvDoc = (XMLDocument) radv.getSignedDocument();
+                XMLDocument<?> radvDoc = (XMLDocument<?>) radv.getSignedDocument();
                 StructuredDocumentUtils.copyElements(doc, doc, radvDoc);
 
             } catch (Exception e1) {
@@ -409,7 +405,7 @@ public class EndpointRouterMessage {
         if(!WireFormatMessageFactory.CBJX_DISABLE && membershipService instanceof PSEMembershipService) {
             try {
             	PSEMembershipService tempPSE = (PSEMembershipService) membershipService;
-                IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
+                PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
 
                 //Payload
                 byte[] tempPayload = address.toURI().toString().getBytes();
@@ -438,13 +434,13 @@ public class EndpointRouterMessage {
                 ByteArrayMessageElement tempBAME = new ByteArrayMessageElement(MESSAGE_NAME+"-fingerprint", MimeMediaType.AOS, tempBAOS.toByteArray(),null);
                 this.message.replaceMessageElement(MESSAGE_NS, tempBAME);
             } catch (InvalidKeyException ex) {
-                Logger.getLogger(EndpointRouterMessage.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
             } catch (CertificateEncodingException ex) {
-                Logger.getLogger(EndpointRouterMessage.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
             } catch (SignatureException ex) {
-                Logger.getLogger(EndpointRouterMessage.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
             } catch (IOException ex) {
-                Logger.getLogger(EndpointRouterMessage.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
             }
         }
     }

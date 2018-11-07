@@ -3,13 +3,13 @@ package net.jxta.impl.endpoint.netty;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.MessageSender;
 import net.jxta.endpoint.Messenger;
 import net.jxta.endpoint.MessengerEventListener;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
@@ -43,7 +43,7 @@ public class NettyTransportClient implements MessageSender, TransportClientCompo
         }
     }
 
-    private static final Logger LOG = Logger.getLogger(NettyTransportClient.class.getName());
+    private static final Logger LOG = Logging.getLogger(NettyTransportClient.class.getName());
     
     private EndpointAddress localAddress;
     
@@ -153,8 +153,10 @@ public class NettyTransportClient implements MessageSender, TransportClientCompo
         try {
 
             if(!connectFuture.await(5000L, TimeUnit.MILLISECONDS)) {
-                LOG.info("Netty transport for protocol {} failed to connect to {} within acceptable time" +
+                if(Logging.SHOW_INFO && LOG.isInfoEnabled()) {
+                    LOG.infoParams("Netty transport for protocol {} failed to connect to {} within acceptable time", 
                             new Object[] { addrTranslator.getProtocolName(), dest });
+                }
                 return null;
             }
         } catch(InterruptedException e) {
@@ -166,10 +168,13 @@ public class NettyTransportClient implements MessageSender, TransportClientCompo
         
         if(!connectFuture.isSuccess()) {
 
-        	Throwable cause = connectFuture.getCause();
-        	String causeString = (cause != null) ? cause.getMessage() : "cause unknown";
-        	String message = String.format("Netty transport for protocol %s failed to connect to %s - %s", addrTranslator.getProtocolName(), dest, causeString);
-        	LOG.warning(message);
+            if(Logging.SHOW_INFO && LOG.isInfoEnabled()) {
+                Throwable cause = connectFuture.getCause();
+                String causeString = (cause != null) ? cause.getMessage() : "cause unknown";
+				String message = String.format("Netty transport for protocol %s failed to connect to %s - %s", addrTranslator.getProtocolName(), dest, causeString);
+                LOG.info(message);
+            }
+
             return null;
 
         }
@@ -193,9 +198,11 @@ public class NettyTransportClient implements MessageSender, TransportClientCompo
             return null;
 
         }
-
-        LOG.info("succeeded in connecting to {}, remote peer has logical address {}" + new Object[] { dest, clientRegistry.logicalEndpointAddress });
-
+        
+        if(Logging.SHOW_INFO && LOG.isInfoEnabled()) {
+            LOG.infoParams("succeeded in connecting to {}, remote peer has logical address {}", new Object[] { dest, clientRegistry.logicalEndpointAddress });
+        }
+        
         channels.add(connectFuture.getChannel());
         // return new NettyMessenger(connectFuture.getChannel(), homeGroupID, localPeerID, clientRegistry.directedAt, clientRegistry.logicalEndpointAddress, endpointService);
         return new AsynchronousNettyMessenger(connectFuture.getChannel(), homeGroupID, localPeerID, clientRegistry.directedAt, clientRegistry.logicalEndpointAddress, endpointService);

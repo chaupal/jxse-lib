@@ -67,7 +67,9 @@ import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -80,17 +82,13 @@ import java.net.URLConnection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Logger;
 
 /**
  * Manages Access Permissions.
  */
 public class AccessList {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(AccessList.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(AccessList.class.getName());
 
     private final static String PEER_TAG = "peer";
     private final static String NAME_TAG = "name";
@@ -186,7 +184,7 @@ public class AccessList {
 
     private InputStream getInputStream(URI uri) throws IOException {
 
-        Logging.logCheckedFine(LOG, "Loading ACL : ", uri);
+        Logging.logCheckedDebug(LOG, "Loading ACL : ", uri);
 
         URL url = uri.toURL();
 
@@ -343,8 +341,8 @@ public class AccessList {
      * @param asMimeType mime type encoding
      * @return The document value
      */
-    @SuppressWarnings({ "unchecked", "rawtypes" })
-	public Document getDocument(MimeMediaType asMimeType) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+   public Document getDocument(MimeMediaType asMimeType) {
         StructuredDocument adv = StructuredDocumentFactory.newStructuredDocument(asMimeType, getAdvertisementType());
 
         if (adv instanceof XMLDocument) {

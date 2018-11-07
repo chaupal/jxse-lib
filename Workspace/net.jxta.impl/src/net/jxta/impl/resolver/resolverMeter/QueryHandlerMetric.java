@@ -109,7 +109,8 @@ public class QueryHandlerMetric implements DocumentSerializable {
     private int numErrorsSendingResponses = 0;
     private int numErrorsPropagatingResponses = 0;
 	
-    private HashMap<PeerID, QueryDestinationMetric> destinationMetrics = new HashMap<>();
+    private HashMap<PeerID, QueryDestinationMetric> destinationMetrics = 
+    		new HashMap<PeerID, QueryDestinationMetric>();
 
     public QueryHandlerMetric(String handlerName) {
         this.handlerName = handlerName;
@@ -477,7 +478,7 @@ public class QueryHandlerMetric implements DocumentSerializable {
     }
 
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 

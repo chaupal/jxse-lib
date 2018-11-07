@@ -64,13 +64,13 @@ import java.nio.channels.spi.AbstractSelectableChannel;
 import java.nio.channels.spi.AbstractSelectionKey;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
-import java.util.logging.Logger;
 
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.Messenger;
 import net.jxta.impl.endpoint.BlockingMessenger;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 
@@ -79,10 +79,7 @@ import net.jxta.peer.PeerID;
  */
 class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
-	/**
-	 * Logger
-	 */
-	private static final Logger LOG = Logger.getLogger(RelayServerClient.class.getName());
+	private static final Logger LOG = Logging.getLogger(RelayServerClient.class.getName());
 
 	/**
 	 * the Relay Server of this client
@@ -155,7 +152,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 		    throw new Error("Unhandled IOException", impossible);
 		}
 
-		Logging.logCheckedFine(LOG, "new Client peerId=", clientPeerId, " lease=", leaseLength);
+		Logging.logCheckedDebug(LOG, "new Client peerId=", clientPeerId, " lease=", leaseLength);
 		
 		this.server = server;
 		this.clientPeerId = clientPeerId;
@@ -206,6 +203,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
                     Messenger useMessenger;
                     QueuedMessage message;
+                    boolean wasOOB;
 
                     synchronized (this) {
 
@@ -222,9 +220,11 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
                         if (outOfBandMessage != null) {
                             message = outOfBandMessage;
                             outOfBandMessage = null;
+                            wasOOB = true;
                         } else {
                             message = messageList.poll();
-                         }
+                            wasOOB = false;
+                        }
 
                         // No messages? We are now inactive.
                         if(null == message) {
@@ -299,11 +299,11 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
 
             } finally {
 
-                Logging.logCheckedFine(LOG, "Stopped sending queued messages for ", this);
+                Logging.logCheckedDebug(LOG, "Stopped sending queued messages for ", this);
 
                 // Re-register with the selector for future messages.
                 synchronized(this) {
@@ -316,7 +316,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
                         } catch(ClosedChannelException betterNotBe) {
 
-                            Logging.logCheckedSevere(LOG, "Channel unexpectedly closed!\n", betterNotBe);
+                            Logging.logCheckedError(LOG, "Channel unexpectedly closed!\n", betterNotBe);
 
                         }
                     }
@@ -435,7 +435,8 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
             long now = TimeUtils.timeNow();
             boolean isExpired = !isOpen() || (now > leaseExpireAt) || (now > queueStallAt);
-            Logging.logCheckedFiner(LOG, this, " : isExpired() = ", isExpired);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, this, " : isExpired() = ", isExpired);
 
             return isExpired;
 
@@ -455,7 +456,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
 		if (!isOpen()) return false;
 
-		Logging.logCheckedFine(LOG, this, " : additional lease = ", leaseLength );
+		Logging.logCheckedDebug(LOG, this, " : additional lease = ", leaseLength );
 
 		leaseExpireAt = TimeUtils.toAbsoluteTimeMillis(leaseLength);
 
@@ -474,11 +475,11 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
             // make sure we are being passed a valid messenger
             if ((null == newMessenger) || (0 == (newMessenger.getState() & Messenger.USABLE))) {
-                Logging.logCheckedFine(LOG, "Ignorning bad messenger (", newMessenger, ")");
+                Logging.logCheckedDebug(LOG, "Ignorning bad messenger (", newMessenger, ")");
                 return false;
             }
 
-            Logging.logCheckedFine(LOG, "New messenger : ", newMessenger );
+            Logging.logCheckedDebug(LOG, "New messenger : ", newMessenger );
 
             // Unless we change our mind, we'll close the new messenger.
             // If we do not keep it, we must close it. Otherwise the client on the
@@ -494,7 +495,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
                     messengerToClose = messenger;
                     messenger = newMessenger;
 
-                    Logging.logCheckedFine(LOG, "Messenger (", messenger, ")");
+                    Logging.logCheckedDebug(LOG, "Messenger (", messenger, ")");
 
                     // If we had no previous messenger then register this channel.
                     if(null == messengerToClose) {
@@ -506,7 +507,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
                         } catch(ClosedChannelException betterNotBe) {
 
-                            Logging.logCheckedSevere(LOG, "Channel unexpectedly closed!\n", betterNotBe);
+                            Logging.logCheckedError(LOG, "Channel unexpectedly closed!\n", betterNotBe);
 
                         }
 
@@ -522,7 +523,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
             // Now that we are out of sync, close the unused messenger.
             // In either case, we claim that we kept the new one.
             if (messengerToClose != null) {
-                Logging.logCheckedFine(LOG, "Closing messenger : ", messengerToClose );
+                Logging.logCheckedDebug(LOG, "Closing messenger : ", messengerToClose );
                 messengerToClose.close();
             }
 
@@ -538,7 +539,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 	 */
 	private boolean queueMessage(Message message, String destService, String destParam, boolean outOfBand) {
 
-            Logging.logCheckedFine(LOG, "queueMessage for ", this);
+            Logging.logCheckedDebug(LOG, "queueMessage for ", this);
 
             synchronized (this) {
 
@@ -581,7 +582,7 @@ class RelayServerClient extends AbstractSelectableChannel implements Runnable {
 
             }
 
-            Logging.logCheckedFine(LOG, "done queueMessage for ", this);
+            Logging.logCheckedDebug(LOG, "done queueMessage for ", this);
 
             return true;
 	}

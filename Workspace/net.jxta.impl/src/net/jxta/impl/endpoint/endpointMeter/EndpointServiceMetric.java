@@ -184,7 +184,7 @@ public class EndpointServiceMetric implements ServiceMetric {
     }
 
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 

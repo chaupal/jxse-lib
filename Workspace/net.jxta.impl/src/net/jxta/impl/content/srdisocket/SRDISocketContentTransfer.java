@@ -64,7 +64,8 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.ScheduledExecutorService;
-import java.util.logging.Logger;
+
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.content.Content;
 import net.jxta.peergroup.PeerGroup;
@@ -85,11 +86,9 @@ import net.jxta.socket.JxtaSocket;
  * SRDI advertisements and JxtaSocket-based communications.
  */
 public class SRDISocketContentTransfer extends AbstractContentTransfer {
-    /**
-     * Logger instance.
-     */
-    private static final Logger LOG =
-            Logger.getLogger(SRDISocketContentTransfer.class.getName());
+
+	private static final Logger LOG =
+            Logging.getLogger(SRDISocketContentTransfer.class.getName());
 
     /**
      * The number of seconds between source discovery attempts.
@@ -210,7 +209,7 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
 
         ContentTransferState result;
 
-        Logging.logCheckedFine(LOG, "Transfer attempt starting");
+        Logging.logCheckedDebug(LOG, "Transfer attempt starting");
 
         // Add new sources to our tracked list
         for (ContentShareAdvertisement candidate : newSources) {
@@ -220,12 +219,12 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
             }
         }
 
-        Logging.logCheckedFine(LOG, "Sources remaining: ", sourcesRemaining.size());
-        Logging.logCheckedFine(LOG, "Sources tried    : ", sourcesTried.size());
+        Logging.logCheckedDebug(LOG, "Sources remaining: ", sourcesRemaining.size());
+        Logging.logCheckedDebug(LOG, "Sources tried    : ", sourcesTried.size());
 
         if (sourcesRemaining.size() == 0) {
 
-            Logging.logCheckedFine(LOG, "No sources remaining to try");
+            Logging.logCheckedDebug(LOG, "No sources remaining to try");
             return ContentTransferState.STALLED;
 
             /* Another option:
@@ -246,8 +245,9 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
             ContentRequest request = new ContentRequest();
             request.setContentID(getTransferContentID());
 
-            Logging.logCheckedFiner(LOG, "Sending content request to:\n", adv.getPipeAdvertisement());
-            Logging.logCheckedFiner(LOG, "Request:\n", request.getDocument(MimeMediaType.XMLUTF8));
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Sending content request to:\n", adv.getPipeAdvertisement());
+            Logging.logCheckedDebug(LOG, "Request:\n", request.getDocument(MimeMediaType.XMLUTF8));
 
             socket = new JxtaSocket(
                     peerGroup, null, adv.getPipeAdvertisement(),
@@ -256,21 +256,25 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
             OutputStream outStream = socket.getOutputStream();
             request.writeToStream(outStream);
 
-            Logging.logCheckedFiner(LOG, "Request sent.  Awaiting response.");
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Request sent.  Awaiting response.");
 
             InputStream inStream = socket.getInputStream();
             ContentResponse response = ContentResponse.readFromStream(inStream);
 
-            Logging.logCheckedFiner(LOG, "Got response: ", response.getDocument(MimeMediaType.XMLUTF8));
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Got response: ", response.getDocument(MimeMediaType.XMLUTF8));
 
             if (response.getSuccess()) {
 
-                Logging.logCheckedFiner(LOG, "Retrieving content");
+            	// LOGGING: was Finer
+                Logging.logCheckedDebug(LOG, "Retrieving content");
                 resultContent = transferContent(dest, adv, inStream);
 
             }
 
-            Logging.logCheckedFiner(LOG, "Transaction completed");
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Transaction completed");
 
         } catch (IOException iox) {
 
@@ -282,7 +286,8 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
                 try {
                     socket.close();
                 } catch (IOException iox) {
-                    Logging.logCheckedFinest(LOG, "Ignoring exception\n" + iox);
+                    // LOGGING: was Finest
+                    Logging.logCheckedDebug(LOG, "Ignoring exception\n" + iox);
                 }
             }
 
@@ -295,7 +300,7 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
             result = ContentTransferState.COMPLETED;
         }
 
-        Logging.logCheckedFine(LOG, "Transfer attempt exiting with result: ", result);
+        Logging.logCheckedDebug(LOG, "Transfer attempt exiting with result: ", result);
         return result;
     }
 
@@ -345,7 +350,7 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
             destFile.createNewFile();
             fileOut = new FileOutputStream(destFile);
         } catch (Throwable t) {
-            Logging.logCheckedFine(LOG, "Caught exception\n", t);
+            Logging.logCheckedDebug(LOG, "Caught exception\n", t);
             return null;
         }
 
@@ -358,7 +363,8 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
 
             readCount = stream.read(buffer);
 
-            Logging.logCheckedFinest(LOG, "Read count: ", readCount);
+            // LOGGING: was Finest
+            Logging.logCheckedDebug(LOG, "Read count: ", readCount);
 
             if (readCount < 0) {
                 // EOS
@@ -375,7 +381,8 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
         // Final status update
         fireTransferProgress(totalReceived);
 
-        Logging.logCheckedFiner(LOG, "Content data transfer successful");
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, "Content data transfer successful");
 
         ContentAdvertisement cAdv = adv.getContentAdvertisement();
         FileDocument fileDocument =
@@ -383,7 +390,8 @@ public class SRDISocketContentTransfer extends AbstractContentTransfer {
         Content result = new Content(
                 adv.getContentID(), cAdv.getMetaID(), fileDocument);
 
-        Logging.logCheckedFiner(LOG, "Result Content object: ", result);
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, "Result Content object: ", result);
         return result;
     }
 

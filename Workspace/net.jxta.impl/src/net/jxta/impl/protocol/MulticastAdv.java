@@ -65,20 +65,18 @@ import net.jxta.document.Element;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocument;
 import net.jxta.document.XMLElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.TransportAdvertisement;
+
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  * Provides configuration parameters for the JXTA TCP Message Transport.
  */
 public class MulticastAdv extends TransportAdvertisement {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(MulticastAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(MulticastAdv.class.getName());
 
 //    private static final String CONFIGMODES[] = {"auto", "manual"};   // To be deleted in a future release
     private static final String INDEXFIELDS[] = {/* none */};
@@ -91,14 +89,24 @@ public class MulticastAdv extends TransportAdvertisement {
     private static final String MULTICAST_INTERFACE_TAG = "MulticastInterface";
     private static final String MULTICAST_ADDRESS_TAG = "MulticastAddr";
     private static final String MULTICAST_PORT_TAG = "MulticastPort";
+//    private static final String FlagsTag = "Flags";
+//    private static final String PublicAddressOnlyAttr = "PublicAddressOnly";  // To be deleted in a future release
 
+//    private String configMode = CONFIGMODES[0];   // To be deleted in a future release
     private String interfaceAddress = null;
     private String mcastInterface = null;
+//    private int startPort = -1;   // To be deleted in a future release
+//    private int listenPort = -1;  // To be deleted in a future release
+//    private int endPort = -1;     // To be deleted in a future release
+//    private String publicAddress = null;  // To be deleted in a future release
     private String multicastaddr = null;
     private int multicastport = -1;
     private int poolSize = 5;
     private int multicastsize = -1;
+//    private boolean clientEnabled = true; // To be deleted in a future release
+//    private boolean serverEnabled = true; // To be deleted in a future release
     private boolean multicastEnabled = true;
+//    private boolean publicAddressOnly = false;    // To be deleted in a future release
 
     /**
      * Our instantiator
@@ -157,7 +165,7 @@ public class MulticastAdv extends TransportAdvertisement {
         setProtocol("tcp");
     }
 
- 	private MulticastAdv(XMLElement<?> doc) {
+    private MulticastAdv(XMLElement<?> doc) {
         this();
 
         String doctype = doc.getName();
@@ -174,7 +182,17 @@ public class MulticastAdv extends TransportAdvertisement {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+ //       Attribute attr = doc.getAttribute(FlagsTag);
+
+//
+//        To be deleted in a future release
+//
+//        if (attr != null) {
+//            String options = attr.getValue();
+//            publicAddressOnly = (options.indexOf(PublicAddressOnlyAttr) != -1);
+//        }
+
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
@@ -735,9 +753,9 @@ public class MulticastAdv extends TransportAdvertisement {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
-    public Document getDocument(MimeMediaType encodeAs) {
+   public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
         if (!(adv instanceof Attributable)) {
@@ -748,6 +766,30 @@ public class MulticastAdv extends TransportAdvertisement {
         if (null == getProtocol()) {
             setProtocol("tcp");
         }
+
+//        if ((listenPort < -1) || (listenPort > 65535)) {
+//            throw new IllegalStateException("Illegal Listen Port Value");
+//        }
+//
+//        if ((startPort < -1) || (startPort > 65535)) {
+//            throw new IllegalStateException("Illegal Start Port Value");
+//        }
+//
+//        if ((endPort < -1) || (endPort > 65535)) {
+//            throw new IllegalStateException("Illegal End Port Value");
+//        }
+//
+//        if ((0 == startPort) && (endPort != 0) || (0 != startPort) && (endPort == 0)) {
+//            throw new IllegalStateException("Port ranges must both be 0 or non-0");
+//        }
+//
+//        if ((-1 == startPort) && (endPort != -1) || (-1 != startPort) && (endPort == -1)) {
+//            throw new IllegalStateException("Port ranges must both be -1 or not -1");
+//        }
+//
+//        if ((null != publicAddress) && ((-1 != startPort) || (listenPort <= 0))) {
+//            throw new IllegalStateException("Dynamic ports not supported with public address port forwarding.");
+//        }
 
         if (getMulticastState() && (null == getMulticastAddr())) {
             throw new IllegalStateException("Multicast enabled and no address specified.");
@@ -769,10 +811,31 @@ public class MulticastAdv extends TransportAdvertisement {
             throw new IllegalStateException("Illegal Multicast datagram size");
         }
 
+//        if (adv instanceof Attributable) {
+//            // Only one flag for now. Easy.
+//            if (publicAddressOnly) {
+//                ((Attributable) adv).addAttribute(FlagsTag, PublicAddressOnlyAttr);
+//            }
+//        }
+
         Element<?> proto = adv.createElement("Protocol", getProtocol());
 
         adv.appendChild(proto);
 
+//        if (!isClientEnabled()) {
+//            Element clientEnabled = adv.createElement(ClientOffTag);
+//            adv.appendChild(clientEnabled);
+//        }
+//
+//        if (!isServerEnabled()) {
+//            Element serverOff = adv.createElement(ServerOffTag);
+//            adv.appendChild(serverOff);
+//        }
+//
+//        if (getConfigMode() != null) {
+//            Element configMode = adv.createElement("ConfigMode", getConfigMode());
+//            adv.appendChild(configMode);
+//        }
 
         String interfaceAddr = getInterfaceAddress();
 
@@ -781,6 +844,21 @@ public class MulticastAdv extends TransportAdvertisement {
             adv.appendChild(interfaceAddrr);
         }
 
+//        Element portEl = adv.createElement(PORT_ELEMENT, Integer.toString(listenPort));
+//        adv.appendChild(portEl);
+//        if (adv instanceof Attributable) {
+//            Attributable attrElem = (Attributable) portEl;
+//            if ((-1 != startPort) && (-1 != endPort)) {
+//                attrElem.addAttribute("start", Integer.toString(startPort));
+//                attrElem.addAttribute("end", Integer.toString(endPort));
+//            }
+//        }
+//
+//        String serverAddr = getServer();
+//        if (null != serverAddr) {
+//            Element server = adv.createElement("Server", serverAddr);
+//            adv.appendChild(server);
+//        }
 
         if (!getMulticastState()) {
             Element<?> mOff = adv.createElement(MULTICAST_OFF_TAG);
@@ -832,5 +910,4 @@ public class MulticastAdv extends TransportAdvertisement {
 //    public boolean getServerEnabled() {
 //        return serverEnabled;
 //    }
-
 }

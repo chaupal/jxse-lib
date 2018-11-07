@@ -58,7 +58,8 @@ package net.jxta.impl.membership.pse;
 
 import net.jxta.id.ID;
 import net.jxta.impl.cm.CacheManager;
-import net.jxta.impl.peergroup.StdPeerGroup;
+import net.jxta.impl.peergroup.ICachedPeerGroup;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 
@@ -70,17 +71,13 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
-import java.util.logging.Logger;
 
 /**
  *  Manages a Keystore located within the JXTA CM.
  **/
 public class CMKeyStoreManager implements KeyStoreManager {
 
-    /**
-     *  Log4J Logger
-     **/
-    private final static transient Logger LOG = Logger.getLogger(CMKeyStoreManager.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(CMKeyStoreManager.class.getName());
 
     /**
      *  Our default keystore type.
@@ -133,7 +130,7 @@ public class CMKeyStoreManager implements KeyStoreManager {
 
         keystore_provider = provider;
 
-        keystore_cm = ((StdPeerGroup) group).getCacheManager();
+        keystore_cm = ((ICachedPeerGroup) group).getCacheManager();
 
         keystore_location = location;
 
@@ -221,7 +218,7 @@ public class CMKeyStoreManager implements KeyStoreManager {
      **/
     public KeyStore loadKeyStore(char[] password) throws KeyStoreException, IOException {
 
-        Logging.logCheckedFine(LOG, "Loading (", keystore_type, ",", keystore_provider, ") store from ", keystore_location);
+        Logging.logCheckedDebug(LOG, "Loading (", keystore_type, ",", keystore_provider, ") store from ", keystore_location);
 
         try {
 
@@ -261,7 +258,7 @@ public class CMKeyStoreManager implements KeyStoreManager {
      **/
     public void saveKeyStore(KeyStore store, char[] password) throws IOException, KeyStoreException {
 
-        Logging.logCheckedFine(LOG, "Writing ", store, " to ", keystore_location);
+        Logging.logCheckedDebug(LOG, "Writing ", store, " to ", keystore_location);
 
         try {
 

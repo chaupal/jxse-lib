@@ -136,7 +136,7 @@ public enum FaultCodes {
     URI_PARSE_ERROR(820, "URI Parse Error"),
     JAVA_RUNTIME_ERROR(2070, "Java Runtime Error");
 
-	/**
+    /**
      *  Numeric code for this fault.
      */
     private final int code;

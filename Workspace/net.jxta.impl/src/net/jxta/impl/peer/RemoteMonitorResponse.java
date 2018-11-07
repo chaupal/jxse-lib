@@ -100,6 +100,9 @@ public class RemoteMonitorResponse implements DocumentSerializable {
     private long lease = -1;
     private PeerMonitorInfo peerMonitorInfo;
 	
+    //private long reportRates[];
+    //private LinkedList<ModuleClassID> supportedModuleClassIDs;
+
     public RemoteMonitorResponse() {} // for serialization.
 	
     private RemoteMonitorResponse(String responseType, int requestId) { 
@@ -303,7 +306,7 @@ public class RemoteMonitorResponse implements DocumentSerializable {
     }
 	
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 			

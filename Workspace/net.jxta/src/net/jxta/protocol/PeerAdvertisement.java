@@ -64,6 +64,7 @@ import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
@@ -73,8 +74,6 @@ import java.util.HashMap;
 import java.util.Hashtable;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Generated when instantiating a group on a peer and contains all the
@@ -86,7 +85,7 @@ public abstract class PeerAdvertisement extends ExtendableAdvertisement implemen
     /**
      * Logger
      */
-    private static final Logger LOG = Logger.getLogger(PeerAdvertisement.class.getName());
+    private static final Logger LOG = Logging.getLogger(PeerAdvertisement.class.getName());
 
     /**
      * The id of this peer.
@@ -138,12 +137,12 @@ public abstract class PeerAdvertisement extends ExtendableAdvertisement implemen
      */
     protected int incModCount() {
 
-        if (Logging.SHOW_FINE && LOG.isLoggable(Level.FINE)) {
+        if (LOG.isDebugEnabled()) {
 
             Throwable trace = new Throwable("Stack Trace");
             StackTraceElement elements[] = trace.getStackTrace();
 
-            LOG.finer("Modification #" + (getModCount() + 1) + " to PeerAdv@" + Integer.toHexString(System.identityHashCode(this))
+            Logging.logCheckedDebug(LOG,"Modification #" + (getModCount() + 1) + " to PeerAdv@" + Integer.toHexString(System.identityHashCode(this))
                     + " caused by : " + "\n\t" + elements[1] + "\n\t" + elements[2]);
 
         }

@@ -64,7 +64,6 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageReceiver;
 import net.jxta.endpoint.MessageSender;
 import net.jxta.endpoint.Messenger;
-import net.jxta.endpoint.tls.IPSECredentialBridge;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
@@ -72,15 +71,16 @@ import net.jxta.impl.endpoint.LoopbackMessenger;
 import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
-import net.jxta.membership.pse.IPSECredential;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
 import javax.security.auth.x500.X500Principal;
+
 import java.beans.PropertyChangeEvent;
 import java.beans.PropertyChangeListener;
 import java.io.IOException;
@@ -95,8 +95,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.MissingResourceException;
 import java.util.ResourceBundle;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  A JXTA {@link net.jxta.endpoint.MessageTransport} implementation which
@@ -104,10 +102,7 @@ import java.util.logging.Logger;
  */
 public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
-    /**
-     *   Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(TlsTransport.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(TlsTransport.class.getName());
 
     /**
      *  If true then we can accept incoming connections. Eventually this should
@@ -322,7 +317,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
         myThreadGroup = new ThreadGroup("TLSTransport " + localTlsPeerAddr);
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring TLS Transport : " + assignedID);
 
@@ -380,14 +375,14 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
         if (!(groupMembership instanceof PSEMembershipService)) {
 
-            Logging.logCheckedSevere(LOG, "TLS Transport requires PSE Membership Service");
+            Logging.logCheckedError(LOG, "TLS Transport requires PSE Membership Service");
             return -1;
 
         }
 
         if (endpoint.addMessageTransport(this) == null) {
 
-            Logging.logCheckedSevere(LOG, "Transport registration refused");
+            Logging.logCheckedError(LOG, "Transport registration refused");
             return -1;
 
         }
@@ -425,7 +420,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
         } catch (Throwable e2) {
 
-            Logging.logCheckedSevere(LOG, "TLS could not register listener...as good as dead\n", e2);
+            Logging.logCheckedError(LOG, "TLS could not register listener...as good as dead\n", e2);
             return -1;
 
         }
@@ -516,7 +511,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
     public Messenger getMessenger(EndpointAddress addr) {
 //    public Messenger getMessenger(EndpointAddress addr, Object hintIgnored) {
 
-        Logging.logCheckedFine(LOG, "getMessenger for ", addr);
+        Logging.logCheckedDebug(LOG, "getMessenger for ", addr);
 
         EndpointAddress plainAddress = new EndpointAddress(addr, null, null);
 
@@ -524,7 +519,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
         // through the TLS. Local communication do not use TLS.
         if (plainAddress.equals(localTlsPeerAddr)) {
 
-            Logging.logCheckedFine(LOG, "returning TlsLoopbackMessenger");
+            Logging.logCheckedDebug(LOG, "returning TlsLoopbackMessenger");
             return new TlsLoopbackMessenger(endpoint, plainAddress, addr, localPeerAddr);
 
         }
@@ -538,7 +533,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
         if (conn == null) {
 
-            Logging.logCheckedSevere(LOG, "Cannot get a TLS connection for ", dstPAddr);
+            Logging.logCheckedError(LOG, "Cannot get a TLS connection for ", dstPAddr);
 
             // No connection was either available or created. Cannot do TLS
             // with the destination address.
@@ -546,7 +541,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
         }
 
-        Logging.logCheckedFine(LOG, "TlsMessanger with TlsConn DONE");
+        Logging.logCheckedDebug(LOG, "TlsMessanger with TlsConn DONE");
 
         // Build a TlsMessenger around it that will add our header.
         // Right now we do not want to "announce" outgoing messengers because they get pooled and so must
@@ -561,7 +556,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
      */
     void processReceivedMessage(final Message msg) {
 
-        Logging.logCheckedFine(LOG, "processReceivedMessage starts");
+        Logging.logCheckedDebug(LOG, "processReceivedMessage starts");
 
         // add a property to the message to indicate it came from us.
         msg.setMessageProperty(TlsTransport.class, this);
@@ -663,7 +658,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
         public synchronized void propertyChange(PropertyChangeEvent evt) {
 
             String evtProp = evt.getPropertyName();
-            IPSECredential cred = (IPSECredential) evt.getNewValue();
+            PSECredential cred = (PSECredential) evt.getNewValue();
 
             boolean validCertificate = true;
 
@@ -686,7 +681,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
                     X500Principal credSubjectDN = cred.getCertificate().getSubjectX500Principal();
                     X500Principal peerCertSubjectDN = peerCert.getSubjectX500Principal();
 
-                    Logging.logCheckedFine(LOG, "Checking credential cert for match to peer cert",
+                    Logging.logCheckedDebug(LOG, "Checking credential cert for match to peer cert",
                         "\n\tcred subject=", credSubjectDN, "\n\tpeer subject=", peerCertSubjectDN);
 
                     if (peerCertSubjectDN.equals(credSubjectDN)) {
@@ -704,7 +699,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
                 }
 
                 if (null != failure) {
-                    Logging.logCheckedSevere(LOG, "Failure building service certificate\n", failure);
+                    Logging.logCheckedError(LOG, "Failure building service certificate\n", failure);
                     return;
                 }
             }
@@ -719,7 +714,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
                     X500Principal credSubjectDN = credCert.getSubjectX500Principal();
                     X500Principal serviceIssuerDN = serviceCert[0].getIssuerX500Principal();
 
-                    Logging.logCheckedFine(LOG, "Checking credential cert for match to service issuer cert\n\tcred subject=", credSubjectDN,
+                    Logging.logCheckedDebug(LOG, "Checking credential cert for match to service issuer cert\n\tcred subject=", credSubjectDN,
                         "\n\t  svc issuer=", serviceIssuerDN);
 
                     if (credSubjectDN.equals(serviceIssuerDN)) {
@@ -744,21 +739,18 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
                 }
 
                 if (null != failure) {
-                    Logging.logCheckedSevere(LOG, "Failure building service credential\n", failure);
+                    Logging.logCheckedError(LOG, "Failure building service credential\n", failure);
                 }
             }
         }
     }
 
-    final public static class PSECredentialBridge implements IPSECredentialBridge {
+    final public static class PSECredentialBridge {
         private java.security.PrivateKey privateKey = null;
         private PSECredentialBridge() {
 
         }
-        /* (non-Javadoc)
-		 * @see net.jxta.impl.endpoint.tls.IPSECredentialBridge#setPrivateKey(java.security.PrivateKey)
-		 */
- 		public void setPrivateKey(java.security.PrivateKey privateKey) {
+        public void setPrivateKey(java.security.PrivateKey privateKey) {
             this.privateKey = privateKey;
         }
     }

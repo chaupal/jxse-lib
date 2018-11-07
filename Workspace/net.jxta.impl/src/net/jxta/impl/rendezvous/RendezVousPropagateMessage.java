@@ -66,23 +66,20 @@ import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.impl.id.UUID.UUID;
 import net.jxta.impl.id.UUID.UUIDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * This class defines the wire format of the Propagation header for messages.
  */
 public class RendezVousPropagateMessage {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(RendezVousPropagateMessage.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(RendezVousPropagateMessage.class.getName());
 
     public final static String MSG_NAME = "jxta:RendezVousPropagateMessage";
     public static final String MsgIdTag = "MessageId";
@@ -135,14 +132,14 @@ public class RendezVousPropagateMessage {
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
             XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (!handleElement(elem))
-                Logging.logCheckedFine(LOG, "Unhandled Element: ", elem);
+                Logging.logCheckedDebug(LOG, "Unhandled Element: ", elem);
 
         }
 
@@ -279,7 +276,7 @@ public class RendezVousPropagateMessage {
     }
 
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	public Document getDocument(MimeMediaType encodeAs) {
+    public Document getDocument(MimeMediaType encodeAs) {
 
         // Sanity Check!!!
 
@@ -306,7 +303,9 @@ public class RendezVousPropagateMessage {
             ((Attributable) doc).addAttribute("xml:space", "preserve");
         }
 
-        Element<?> e = doc.createElement(MsgIdTag, msgId.toString());
+        Element<?> e = null;
+
+        e = doc.createElement(MsgIdTag, msgId.toString());
         doc.appendChild(e);
 
         e = doc.createElement(DestSNameTag, destSName);

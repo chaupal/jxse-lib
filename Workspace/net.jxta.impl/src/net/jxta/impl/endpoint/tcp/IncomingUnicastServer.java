@@ -58,6 +58,7 @@ package net.jxta.impl.endpoint.tcp;
 import net.jxta.impl.endpoint.IPUtils;
 import net.jxta.impl.endpoint.transportMeter.TransportBindingMeter;
 import net.jxta.impl.endpoint.transportMeter.TransportMeterBuildSettings;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.IOException;
@@ -76,17 +77,13 @@ import java.nio.channels.spi.SelectorProvider;
 import java.text.MessageFormat;
 import java.util.Iterator;
 import java.util.concurrent.RejectedExecutionException;
-import java.util.logging.Logger;
 
 /**
  * This server handles incoming unicast TCP connections
  */
 public class IncomingUnicastServer implements Runnable {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(IncomingUnicastServer.class.getName());
+    private static final Logger LOG = Logging.getLogger(IncomingUnicastServer.class.getName());
     /**
      * The transport which owns this server.
      */
@@ -186,7 +183,7 @@ public class IncomingUnicastServer implements Runnable {
         try {
             acceptSelector.close();
         } catch (IOException io) {
-            Logging.logCheckedSevere(LOG, "IO error occured while closing Selectors\n\n", io);
+            Logging.logCheckedError(LOG, "IO error occured while closing Selectors\n\n", io);
         }
     }
 
@@ -276,7 +273,7 @@ public class IncomingUnicastServer implements Runnable {
                                 transport.executor.execute(builder);
                                 transport.incrementConnectionsAccepted();
                             } catch (RejectedExecutionException re) {
-                                Logging.logCheckedFine(LOG, MessageFormat.format("Executor rejected task : {0}", builder.toString()),
+                                Logging.logCheckedDebug(LOG, MessageFormat.format("Executor rejected task : {0}", builder.toString()),
                                     "\n", re.toString());
                             }
                         }
@@ -306,7 +303,7 @@ public class IncomingUnicastServer implements Runnable {
 
         } catch (Throwable all) {
 
-            Logging.logCheckedSevere(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
+            Logging.logCheckedError(LOG, "Uncaught Throwable in thread :", Thread.currentThread().getName(), "\n", all);
 
         } finally {
 
@@ -318,7 +315,7 @@ public class IncomingUnicastServer implements Runnable {
                     try {
                         temp.close();
                     } catch (IOException ignored) {
-                        Logging.logCheckedFine(LOG, "Exception occurred while closing server socket\n", ignored);
+                        Logging.logCheckedDebug(LOG, "Exception occurred while closing server socket\n", ignored);
                     }
                 }
                 acceptThread = null;
@@ -354,7 +351,7 @@ public class IncomingUnicastServer implements Runnable {
 
                     }
 
-                    Logging.logCheckedSevere(LOG, "Cannot bind ServerSocket on ", serverBindLocalInterface, ":", serverBindPreferredLocalPort, failed);
+                    Logging.logCheckedError(LOG, "Cannot bind ServerSocket on ", serverBindLocalInterface, ":", serverBindPreferredLocalPort, failed);
                     return null;
 
                 }
@@ -426,11 +423,11 @@ public class IncomingUnicastServer implements Runnable {
             } catch (IOException io) {
 
                 // protect against invalid connections
-                Logging.logCheckedFine(LOG, "Messenger creation failure\n\n", io);
+                Logging.logCheckedDebug(LOG, "Messenger creation failure\n\n", io);
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable\n", all);
 
             }
         }

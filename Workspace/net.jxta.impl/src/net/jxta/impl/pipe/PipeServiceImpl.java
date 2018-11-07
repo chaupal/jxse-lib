@@ -60,6 +60,7 @@ import net.jxta.document.Advertisement;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
@@ -74,6 +75,7 @@ import net.jxta.platform.Module;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.service.Service;
+
 import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -83,8 +85,6 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * A JXTA {@link net.jxta.pipe.PipeService} implementation which implements the
@@ -105,10 +105,7 @@ import java.util.logging.Logger;
  */
 public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
-	/**
-	 * The Logger
-	 */
-	private final static Logger LOG = Logger.getLogger(PipeServiceImpl.class
+	private final static Logger LOG = Logging.getLogger(PipeServiceImpl.class
 			.getName());
 
 	/**
@@ -214,7 +211,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 	public PipeServiceImpl() {// What is reason for this constructor???
 		// the same is automatically generated.
 	}
-	
+
 //	/**
 //	 * {@inheritDoc}
 //	 * <p/>
@@ -228,17 +225,16 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 //		return myInterface;
 //	}
 
-	protected PipeService getMyInterface() {
-		return myInterface;
-	}
-
-
-
+	
 	/**
 	 * {@inheritDoc}
 	 */
 	public ModuleImplAdvertisement getImplAdvertisement() {
 		return implAdvertisement;
+	}
+
+	protected PipeService getMyInterface() {
+		return myInterface;
 	}
 
 	/**
@@ -250,7 +246,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 		this.group = group;
 		implAdvertisement = (ModuleImplAdvertisement) impl;
 
-		if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+		if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 			StringBuilder configInfo = new StringBuilder(
 					"Configuring Pipe Service : " + assignedID);
 
@@ -342,7 +338,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 				wirePipe.stopApp();
 			}
 		} catch (Throwable failed) {
-			LOG.log(Level.SEVERE, "Failed to stop wire pipe\n", failed);
+			LOG.error("Failed to stop wire pipe", failed);
 		} finally {
 			wirePipe = null;
 		}
@@ -352,7 +348,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 				pipeResolver.stop();
 			}
 		} catch (Throwable failed) {
-			LOG.log(Level.SEVERE, "Failed to stop pipe resolver\n", failed);
+			LOG.error("Failed to stop pipe resolver", failed);
 		} finally {
 			pipeResolver = null;
 		}
@@ -403,7 +399,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 					"PipeAdvertisement PipeID may not be null");
 		}
 
-		Logging.logCheckedFine(LOG, "Create ", type, " InputPipe for ", pipeId);
+		Logging.logCheckedDebug(LOG, "Create ", type, " InputPipe for ", pipeId);
 
 		InputPipe inputPipe;
 		// create an InputPipe.
@@ -421,7 +417,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 		} else {
 
 			// Unknown type
-                        Logging.logCheckedSevere(LOG, "Cannot create pipe for unknown type : ", type);
+                        Logging.logCheckedError(LOG, "Cannot create pipe for unknown type : ", type);
 			throw new IOException("Cannot create pipe for unknown type : " + type);
 
 		}
@@ -457,7 +453,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
 		createOutputPipe(adv, resolvablePeers, localListener, queryid);
 
-		Logging.logCheckedFine(LOG, "Waiting synchronously for ", timeout,
+		Logging.logCheckedDebug(LOG, "Waiting synchronously for ", timeout,
                     "ms to resolve OutputPipe for ", adv.getPipeID());
 
 		try {
@@ -520,12 +516,12 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
 			IllegalArgumentException failed
                             = new IllegalArgumentException("Pipe type was not set");
-                        Logging.logCheckedSevere(LOG, failed);
+                        Logging.logCheckedError(LOG, failed);
 			throw failed;
 
 		}
 
-		Logging.logCheckedFine(LOG, "Create ", type, " OutputPipe for ", pipeId);
+		Logging.logCheckedDebug(LOG, "Create ", type, " OutputPipe for ", pipeId);
 
 		if (PipeService.PropagateType.equals(type)) {
 			OutputPipe op;
@@ -555,7 +551,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
 				} catch (Throwable ignored) {
 
-					Logging.logCheckedSevere(LOG, "Uncaught Throwable in listener for ", pipeId,
+					Logging.logCheckedError(LOG, "Uncaught Throwable in listener for ", pipeId,
 					    " (", listener.getClass().getName(), ")", ignored);
 					
 				}
@@ -592,7 +588,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 		} else {
 
 			// Unknown type
-			Logging.logCheckedSevere(LOG, "createOutputPipe: cannot create pipe for unknown type : ", type);
+			Logging.logCheckedError(LOG, "createOutputPipe: cannot create pipe for unknown type : ", type);
 			throw new IOException("cannot create pipe for unknown type : " + type);
 
 		}
@@ -613,11 +609,11 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 			}
 
 			if (perpipelisteners.get(pipeHolder.queryid) != null) {
-				LOG.warning("Clobbering output pipe listener for query "
+				LOG.warn("Clobbering output pipe listener for query "
 						+ pipeHolder.queryid);
 			}
 
-			Logging.logCheckedFine(LOG, "Adding pipe listener for pipe ", pipeId,
+			Logging.logCheckedDebug(LOG, "Adding pipe listener for pipe ", pipeId,
 		            " and query ", pipeHolder.queryid);
 
 			perpipelisteners.put(pipeHolder.queryid, pipeHolder);
@@ -650,7 +646,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
                         if (pl.listener == listener) {
                                 pipeResolver.removeListener((PipeID) pipeID, pl.queryid);
-                                Logging.logCheckedFine(LOG, "Removing listener for query ", pl.queryid);
+                                Logging.logCheckedDebug(LOG, "Removing listener for query ", pl.queryid);
                                 perpipelisteners.remove(entry.getKey());
                         }
 
@@ -690,7 +686,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
                     OutputPipeHolder pipeHolder = perpipelisteners.get(queryID);
                     perpipelisteners.remove(queryID);
 
-                    Logging.logCheckedFine(LOG, "Removing listener for query ", queryID);
+                    Logging.logCheckedDebug(LOG, "Removing listener for query ", queryID);
 
                     // clean up the map if there are no more listeners for the pipe
                     if (perpipelisteners.isEmpty()) outputPipeListeners.remove(pipeID);
@@ -725,7 +721,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
                     if (perpipelisteners == null) {
 
-                        Logging.logCheckedFine(LOG, "No listener for event for pipe ", pipeID);
+                        Logging.logCheckedDebug(LOG, "No listener for event for pipe ", pipeID);
                         return false;
 
                     }
@@ -734,7 +730,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
                     if (pipeHolder == null) {
 
-                        Logging.logCheckedFine(LOG, "No listener for event for query ", queryID);
+                        Logging.logCheckedDebug(LOG, "No listener for event for query ", queryID);
                         return false;
 
                     }
@@ -782,7 +778,7 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
                 } catch (Throwable ignored) {
 
-                    Logging.logCheckedSevere(LOG, "Uncaught Throwable in listener for ",
+                    Logging.logCheckedError(LOG, "Uncaught Throwable in listener for ",
                         pipeID, "(", pipeHolder.getClass().getName(), ")\n", ignored);
 
                 }
@@ -792,11 +788,11 @@ public class PipeServiceImpl implements PipeService, PipeResolver.Listener {
 
             } catch (IOException ie) {
 
-                Logging.logCheckedSevere(LOG, "Error creating output pipe ", event.getPipeID(), "\n", ie);
+                Logging.logCheckedError(LOG, "Error creating output pipe ", event.getPipeID(), "\n", ie);
 
             }
 
-            Logging.logCheckedFine(LOG, "No listener for event for ", event.getPipeID());
+            Logging.logCheckedDebug(LOG, "No listener for event for ", event.getPipeID());
             return false;
 
 	}

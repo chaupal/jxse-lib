@@ -57,25 +57,21 @@
 package net.jxta.impl.endpoint;
 
 import net.jxta.document.AdvertisementFactory;
-import net.jxta.document.Element;
 import net.jxta.document.XMLElement;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
 import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 
 import java.util.Enumeration;
-import java.util.logging.Logger;
 
 /**
  *  Utility functions related to the Endpoint Service.
  */
 public final class EndpointUtils {
 
-    /**
-     * Logger
-     */
-    private static final transient Logger LOG = Logger.getLogger(EndpointUtils.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(EndpointUtils.class.getName());
 
     /**
      * Extracts a route advertisement from a peer advertisement.
@@ -89,21 +85,21 @@ public final class EndpointUtils {
         try {
 
             // Get its EndpointService advertisement
-            XMLElement<?> endpParam = (XMLElement<?>) adv.getServiceParam(PeerGroup.endpointClassID);
+            XMLElement<?> endpParam = (XMLElement<?>) adv.getServiceParam(IModuleDefinitions.endpointClassID);
 
             if (endpParam == null) {
-                Logging.logCheckedFine(LOG, "No Endpoint Params");
+                Logging.logCheckedDebug(LOG, "No Endpoint Params");
                 return null;
             }
 
             // get the Route Advertisement element
-            Enumeration<? extends Element<?>> paramChilds = endpParam.getChildren(RouteAdvertisement.getAdvertisementType());
+            Enumeration<?> paramChilds = endpParam.getChildren(RouteAdvertisement.getAdvertisementType());
             XMLElement<?> param;
 
             if (paramChilds.hasMoreElements()) {
                 param = (XMLElement<?>) paramChilds.nextElement();
             } else {
-                Logging.logCheckedFine(LOG, "No Route Adv in Peer Adv");
+                Logging.logCheckedDebug(LOG, "No Route Adv in Peer Adv");
                 return null;
             }
 

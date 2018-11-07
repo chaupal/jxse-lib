@@ -58,12 +58,13 @@ package net.jxta.impl.protocol;
 
 import net.jxta.document.*;
 import net.jxta.id.ID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
+
 import java.net.URI;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.logging.Logger;
 
 /**
  * Contains parameters for configuration of the Reference Implementation
@@ -105,10 +106,7 @@ import java.util.logging.Logger;
  */
 public final class RdvConfigAdv extends ExtendableAdvertisement implements Cloneable {
 
-    /**
-     * Logger
-     */
-    private static final Logger LOG = Logger.getLogger(RdvConfigAdv.class.getName());
+    private static final Logger LOG = Logging.getLogger(RdvConfigAdv.class.getName());
 
     /**
      * Instantiator for RdvConfigAdv
@@ -304,7 +302,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
 
-        Enumeration<Attribute> eachAttr = doc.getAttributes();
+        Enumeration<?> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -380,7 +378,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
             }
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
@@ -452,7 +450,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
 
         if (SEEDS_RDV_ELEMENT.equals(elem.getName())) {
 
-            Enumeration<? extends Element<?>> eachSeedElem = elem.getChildren();
+            Enumeration<?> eachSeedElem = elem.getChildren();
 
             while (eachSeedElem.hasMoreElements()) {
                 XMLElement<?> aSeedElem = (XMLElement<?>) eachSeedElem.nextElement();
@@ -479,7 +477,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
                 }
             }
 
-            Enumeration<Attribute> eachAttr = elem.getAttributes();
+            Enumeration<?> eachAttr = elem.getAttributes();
 
             while (eachAttr.hasMoreElements()) {
 
@@ -518,8 +516,8 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
         StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
@@ -619,7 +617,7 @@ public final class RdvConfigAdv extends ExtendableAdvertisement implements Clone
             }
 
             for (URI seedingURI : seedingURIs) {
-                Element aSeed = adv.createElement(SEED_RDV_ADDR_ELEMENT, seedingURI.toString());
+                Element<?> aSeed = adv.createElement(SEED_RDV_ADDR_ELEMENT, seedingURI.toString());
 
                 seedsElem.appendChild(aSeed);
 

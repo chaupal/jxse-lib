@@ -56,6 +56,7 @@
 
 package net.jxta.impl.membership.pse;
 
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.File;
@@ -68,7 +69,6 @@ import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.cert.CertificateException;
-import java.util.logging.Logger;
 
 /**
  *  Manages a Keystore located at URI. This version precludes KeyStores which
@@ -76,10 +76,7 @@ import java.util.logging.Logger;
  **/
 public class URIKeyStoreManager implements KeyStoreManager {
 
-    /**
-     *  Log4J Logger
-     **/
-    private final static transient Logger LOG = Logger.getLogger(URIKeyStoreManager.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(URIKeyStoreManager.class.getName());
 
     /**
      *  The default keystore type we will use.
@@ -203,7 +200,7 @@ public class URIKeyStoreManager implements KeyStoreManager {
      **/
     public KeyStore loadKeyStore(char[] password) throws KeyStoreException, IOException {
 
-        Logging.logCheckedFine(LOG, "Loading (", keystore_type, ",", keystore_provider, ") store from ", keystore_location);
+        Logging.logCheckedDebug(LOG, "Loading (", keystore_type, ",", keystore_provider, ") store from ", keystore_location);
 
         try {
 
@@ -241,7 +238,7 @@ public class URIKeyStoreManager implements KeyStoreManager {
      **/
     public void saveKeyStore(KeyStore store, char[] password) throws KeyStoreException, IOException {
 
-        Logging.logCheckedFine(LOG, "Writing ", store, " to ", keystore_location);
+        Logging.logCheckedDebug(LOG, "Writing ", store, " to ", keystore_location);
 
         try {
 
@@ -280,7 +277,7 @@ public class URIKeyStoreManager implements KeyStoreManager {
 
         } else {
 
-            Logging.logCheckedSevere(LOG, "Unable to delete non-file URI :", keystore_location);
+            Logging.logCheckedError(LOG, "Unable to delete non-file URI :", keystore_location);
             throw new UnsupportedOperationException("Unable to delete non-file URI");
 
         }

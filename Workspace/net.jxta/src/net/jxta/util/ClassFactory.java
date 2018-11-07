@@ -56,6 +56,7 @@
 
 package net.jxta.util;
 
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.BufferedReader;
@@ -66,8 +67,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * This util class provides methods needed by class construction factories.
@@ -82,7 +81,7 @@ public abstract class ClassFactory<K, I> {
     /**
      *  Logger
      */
-    private static final transient Logger LOG = Logger.getLogger(ClassFactory.class.getName());
+    private static final transient Logger LOG = Logging.getLogger(ClassFactory.class.getName());
 
     /**
      *  Standard constructor.
@@ -266,7 +265,7 @@ public abstract class ClassFactory<K, I> {
             }
 
         } catch (IOException ex) {
-            LOG.log(Level.WARNING, "Failed to read provider list " + providerList, ex);
+            Logging.logCheckedWarning(LOG, "Failed to read provider list " + providerList, ex);
             return false;
         } finally {
             if(null != urlStream) {

@@ -7,7 +7,6 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Logger;
 
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
@@ -15,6 +14,7 @@ import net.jxta.endpoint.MessageReceiver;
 import net.jxta.endpoint.MessengerEvent;
 import net.jxta.endpoint.MessengerEventListener;
 import net.jxta.exception.PeerGroupException;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
@@ -42,7 +42,7 @@ import org.jboss.netty.util.HashedWheelTimer;
  */
 public class NettyTransportServer implements NettyChannelRegistry, MessageReceiver, TransportServerComponent {
 
-    private static final Logger LOG = Logger.getLogger(NettyTransportServer.class.getName());
+    private static final Logger LOG = Logging.getLogger(NettyTransportServer.class.getName());
     
     private ServerBootstrap serverBootstrap;
     private Channel serverChannel;
@@ -141,7 +141,7 @@ public class NettyTransportServer implements NettyChannelRegistry, MessageReceiv
         
         if(listener == null) {
 
-            Logging.logCheckedSevere(LOG, "Transport registration failed for netty transport server, protocol=", addrTranslator.getProtocolName());
+            Logging.logCheckedError(LOG, "Transport registration failed for netty transport server, protocol=", addrTranslator.getProtocolName());
             return false;
 
         }
@@ -197,7 +197,7 @@ public class NettyTransportServer implements NettyChannelRegistry, MessageReceiv
         @Override
         public void childChannelOpen(ChannelHandlerContext ctx, ChildChannelStateEvent e) throws Exception {
             
-            Logging.logCheckedFine(LOG, String.format("Incoming connection for transport %s from %s to %s (handled by %s)",
+            Logging.logCheckedDebug(LOG, String.format("Incoming connection for transport %s from %s to %s (handled by %s)",
                   getProtocolName(),
                   e.getChildChannel().getRemoteAddress(),
                   e.getChildChannel().getLocalAddress(),
@@ -213,7 +213,7 @@ public class NettyTransportServer implements NettyChannelRegistry, MessageReceiv
             // BindExceptions are transformed into ChannelBindExceptions by the netty
             // ServerBootstrap, and handled in in bindServerChannel()
             if(!(e.getCause() instanceof BindException)) {
-                LOG.warning("Unexpected exception on server channel for {} protocol:\n{}" + 
+                LOG.warnParams("Unexpected exception on server channel for {} protocol:\n{}", 
                         new Object[] { getProtocolName(), e.getCause() });
             }
         }

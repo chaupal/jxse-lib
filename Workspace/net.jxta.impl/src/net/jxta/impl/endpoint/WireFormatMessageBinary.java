@@ -86,8 +86,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.jxta.document.MimeMediaType;
 import net.jxta.endpoint.ByteArrayMessageElement;
@@ -98,9 +96,10 @@ import net.jxta.endpoint.WireFormatMessage;
 import net.jxta.endpoint.WireFormatMessageFactory;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.endpoint.router.EndpointRouterMessage;
+import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
-import net.jxta.membership.pse.IPSECredential;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.util.LimitInputStream;
 
@@ -118,10 +117,7 @@ import net.jxta.util.LimitInputStream;
  */
 public class WireFormatMessageBinary implements WireFormatMessage {
 
-    /*
-     *  Log4J Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(WireFormatMessageBinary.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(WireFormatMessageBinary.class.getName());
 
     // Flag bits
     protected static final byte HAS_TYPE = 0x01;
@@ -214,7 +210,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
             } catch (EOFException failed) {
 
-                Logging.logCheckedFiner(LOG, "EOF reading message at first byte of header.\n" + failed);
+            	// LOGGING: was Finer
+                Logging.logCheckedDebug(LOG, "EOF reading message at first byte of header.\n" + failed);
                 throw failed;
 
             }
@@ -227,7 +224,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 IOException failure = new IOException(
                         "Not a message (incorrect signature '" + msgsig[0] + msgsig[1] + msgsig[2] + msgsig[3] + "') ");
 
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -236,7 +233,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             if (dis.readByte() != MESSAGE_VERSION) {
 
                 IOException failure = new IOException("Message not version " + MESSAGE_VERSION);
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -246,7 +243,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             if (namespaceCnt > 253) {
 
                 IOException failure = new IOException("Message contains too many namespaces (>253)");
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -273,7 +270,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 }
             }
 
-            Logging.logCheckedFiner(LOG, "Read Message Header with ", (namespaceCnt + 2), " namespaces from ", dis);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Read Message Header with ", (namespaceCnt + 2), " namespaces from ", dis);
 
             return id2namespace;
         }
@@ -299,7 +297,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 IOException failure = new IOException(
                         "Not a message (incorrect signature '" + msgsig[0] + msgsig[1] + msgsig[2] + msgsig[3] + "') ");
 
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -308,19 +306,20 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             if (buffer.get() != MESSAGE_VERSION) {
 
                 IOException failure = new IOException("Message not version " + MESSAGE_VERSION);
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
 
             int namespaceCnt = buffer.getShort();
 
-            Logging.logCheckedFiner(LOG, MessageFormat.format("Message defines {0} namespaces buffer stats{1}", namespaceCnt, buffer.toString()));
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, MessageFormat.format("Message defines {0} namespaces buffer stats{1}", namespaceCnt, buffer.toString()));
 
             if (namespaceCnt > 253) {
 
                 IOException failure = new IOException(MessageFormat.format("Message contains too many namespaces ({0} >253)", namespaceCnt));
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -347,7 +346,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 }
             }
 
-            Logging.logCheckedFiner(LOG, "Read Message Header with ", (namespaceCnt + 2), " namespaces from ", buffer);
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Read Message Header with ", (namespaceCnt + 2), " namespaces from ", buffer);
 
             return id2namespace;
         }
@@ -356,7 +356,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
          * Read in a message element from the provided data stream.
          *
          * @param dis the data stream to read from
-         * @param is  todo
+         * @param is the underlying inputstream that dis is based on
          * @return object array containing two objects, index[0] contains an
          *         Integer which identifies the namespace to which this element belongs
          *         and index[1] contains a MessageElement. If null is returned then
@@ -384,7 +384,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             if (elsig[0] != 'j' || elsig[1] != 'x' || elsig[2] != 'e' || elsig[3] != 'l') {
 
                 IOException failure = new IOException("Not a message element (incorrect signature '" + elsig[0] + elsig[1] + elsig[2] + elsig[3] + "') ");
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -415,7 +415,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
             int dataLen = dis.readInt();
 
-            Logging.logCheckedFiner(LOG, "element : nsid = ", nsid, " name = \'", name, "\' type = \'", type, "\' flags = ",
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "element : nsid = ", nsid, " name = \'", name, "\' type = \'", type, "\' flags = ",
                         Integer.toBinaryString(flags), " datalen = ", dataLen);
 
             Object[] res = new Object[2];
@@ -436,7 +437,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 value = new byte[dataLen];
                 String mayFail = null;
 
-                if (Logging.SHOW_WARNING && LOG.isLoggable(Level.WARNING)) {
+                if (Logging.SHOW_WARNING && LOG.isWarnEnabled()) {
                     mayFail = is.toString();
                 }
 
@@ -496,7 +497,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             if (elsig[0] != 'j' || elsig[1] != 'x' || elsig[2] != 'e' || elsig[3] != 'l') {
 
                 IOException failure = new IOException("Not a message element (incorrect signature '" + elsig[0] + elsig[1] + elsig[2] + elsig[3] + "') ");
-                Logging.logCheckedSevere(LOG, failure);
+                Logging.logCheckedError(LOG, failure);
                 throw failure;
 
             }
@@ -527,7 +528,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
             int dataLen = buffer.getInt();
 
-            Logging.logCheckedFiner(LOG, "element : nsid = ", nsid, " name = \'", name,
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "element : nsid = ", nsid, " name = \'", name,
                     "\' type = \'", type, "\' flags = ", Integer.toBinaryString(flags),
                     " datalen = ", dataLen);
 
@@ -550,7 +552,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             } else {
 
                 value = new byte[dataLen];
-                Logging.logCheckedFiner(LOG, MessageFormat.format("expecting {0} bytes, Buffer stats {1}", dataLen, buffer.toString()));
+                // LOGGING: was Finer
+                Logging.logCheckedDebug(LOG, MessageFormat.format("expecting {0} bytes, Buffer stats {1}", dataLen, buffer.toString()));
                 buffer.get(value);
 
             }
@@ -650,7 +653,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             return enforceCbjxOnIncoming(paramMsg, paramType, readBytes(paramBuf), readBytes(paramBuf), readBytes(paramBuf), paramGroup, false);
         }
 
-        @SuppressWarnings("rawtypes")
+        @SuppressWarnings("unchecked")
 		private static Message enforceCbjxOnIncoming(Message paramMsg, MimeMediaType paramType, byte[] tempCertFromWire, byte[] tempSrcFromWire, byte[] tempSigFromWire, PeerGroup paramGroup, boolean isTLS) throws IOException
         {
             paramMsg.setMessageProperty(EndpointServiceImpl.MESSAGE_LOOPBACK, false);
@@ -676,8 +679,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 if(tempVerified)
                 {
                     EndpointAddress tempEA = new EndpointAddress(new String(tempSrcFromWire));
-                    @SuppressWarnings("unchecked")
-					Set<EndpointAddress> tempSet = (Set)paramMsg.getMessageProperty(EndpointServiceImpl.VERIFIED_ADDRESS_SET);
+                    Set<EndpointAddress> tempSet = (Set<EndpointAddress>)paramMsg.getMessageProperty(EndpointServiceImpl.VERIFIED_ADDRESS_SET);
                     if(tempSet==null)
                     {
                         tempSet = new HashSet<EndpointAddress>();
@@ -688,8 +690,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                     } else {
                         tempSet.add(tempEA);
                     }
-                    @SuppressWarnings("unchecked")
-					Set<X509Certificate> tempCertSet = (Set)paramMsg.getMessageProperty(EndpointServiceImpl.MESSAGE_SIGNER_SET);
+                    Set<X509Certificate> tempCertSet = (Set<X509Certificate>)paramMsg.getMessageProperty(EndpointServiceImpl.MESSAGE_SIGNER_SET);
                     if(tempCertSet==null)
                     {
                         tempCertSet = new HashSet<X509Certificate>();
@@ -735,13 +736,13 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                             }
                             else
                             {
-                                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, "EndpointRouterMsg declared src address does not match the sender's address. tempMsgERM.getSrcAddress()="+tempMsgERM.getSrcAddress()+", tempEASuposedToBe="+tempEASuposedToBe);
+                                LOG.error("EndpointRouterMsg declared src address does not match the sender's address. tempMsgERM.getSrcAddress()="+tempMsgERM.getSrcAddress()+", tempEASuposedToBe="+tempEASuposedToBe);
                                 return emptyMsg();
                             }
                         }
                         else
                         {
-                            Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, "EndpointRouterMsg signature cannot be verified.");
+                            LOG.error("EndpointRouterMsg signature cannot be verified.");
                             return emptyMsg();
                         }
                     }
@@ -749,23 +750,23 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 }
                 else
                 {
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, "The signature of the message from the wire cannot be verified.");
+                    LOG.error("The signature of the message from the wire cannot be verified.");
                     return emptyMsg();
                 }
             } catch (NoSuchAlgorithmException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
                 return emptyMsg();
             } catch (CertificateException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
                 return emptyMsg();
             } catch (InvalidKeyException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
                 return emptyMsg();
             } catch (NoSuchProviderException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
                 return emptyMsg();
             } catch (SignatureException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
                 return emptyMsg();
             }
         }
@@ -777,8 +778,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
         private Message fromWireExternal(InputStream is, MimeMediaType type, MimeMediaType contentEncoding, boolean paramDisableCbjx, PeerGroup paramGroup, boolean isEnforce, boolean isTls) throws IOException {
             Message msg = new Message();
 
-            if (Logging.SHOW_FINE && LOG.isLoggable(Level.FINE)) {
-                LOG.fine("Reading " + msg + " from " + is);
+            if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                LOG.debug("Reading " + msg + " from " + is);
             }
 
             DataInputStream dis = new DataInputStream(is);
@@ -787,15 +788,17 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
             int elementCnt = dis.readShort();
 
-            if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                LOG.finer("Message element count " + elementCnt + " from " + is);
+            // LOGGING: was FINER
+            if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                LOG.debug("Message element count " + elementCnt + " from " + is);
             }
 
             int eachElement = 0;
 
             do {
-                if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                    LOG.finer("Read element " + eachElement + " of " + elementCnt + " from " + is + " for " + msg);
+            	// LOGGING: was FINER
+                if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                    LOG.debug("Read element " + eachElement + " of " + elementCnt + " from " + is + " for " + msg);
                 }
 
                 Object[] anElement;
@@ -803,11 +806,9 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 try {
                     anElement = readMessageElement(dis, is);
                 } catch (IOException failed) {
-                    if (Logging.SHOW_SEVERE && LOG.isLoggable(Level.SEVERE)) {
-                        LOG.log(Level.SEVERE
-                                ,
-                                "Failure reading element " + eachElement + " of " + elementCnt + " from " + is + " for " + msg
-                                ,
+                    if (Logging.SHOW_ERROR && LOG.isErrorEnabled()) {
+                        LOG.error("Failure reading element " + eachElement + " of " +
+                        		elementCnt + " from " + is + " for " + msg,
                                 failed);
                     }
 
@@ -821,8 +822,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 String namespace = (String) idToNamespace.get(anElement[0]);
 
                 if (null == namespace) {
-                    if (Logging.SHOW_SEVERE && LOG.isLoggable(Level.SEVERE)) {
-                        LOG.severe("Element identified a namespace which was not defined for this message.");
+                    if (Logging.SHOW_ERROR && LOG.isErrorEnabled()) {
+                        LOG.error("Element identified a namespace which was not defined for this message.");
                     }
 
                     throw new IOException("Element identified a namespace which was not defined for this message.");
@@ -831,8 +832,9 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 msg.addMessageElement(namespace, (MessageElement) anElement[1]);
                 eachElement++;
 
-                if (Logging.SHOW_FINE && LOG.isLoggable(Level.FINER)) {
-                    LOG.finer(
+                // LOGGING: was FINER
+                if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                    LOG.debug(
                             "Add element (name=\'" + ((MessageElement) anElement[1]).getElementName() + "\') #" + eachElement
                             + " of #" + elementCnt + " elements from " + dis.toString());
                 }
@@ -863,23 +865,25 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             // FIXME 20020504 bondolo@jxta.org  Ignores type and contentEncoding completely.
             Message msg = new Message();
 
-            if (Logging.SHOW_FINE && LOG.isLoggable(Level.FINE)) {
-                LOG.fine("Reading " + msg + " from " + buffer);
+            if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                LOG.debug("Reading " + msg + " from " + buffer);
             }
 
-            HashMap<Integer, String> idToNamespace = readHeader(buffer);
+            HashMap<Integer,String> idToNamespace = readHeader(buffer);
 
             int elementCnt = buffer.getShort();
 
-            if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                LOG.finer("Message element count " + elementCnt + " from " + buffer);
+            // LOGGING: was FINER
+            if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                LOG.debug("Message element count " + elementCnt + " from " + buffer);
             }
 
             int eachElement = 0;
 
             do {
-                if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                    LOG.finer("Read element " + eachElement + " of " + elementCnt + " from " + buffer + " for " + msg);
+            	// LOGGING: was FINER
+                if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                    LOG.debug("Read element " + eachElement + " of " + elementCnt + " from " + buffer + " for " + msg);
                 }
 
                 Object[] anElement;
@@ -887,12 +891,13 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 try {
                     anElement = readMessageElement(buffer);
 
-                    if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                        LOG.finer(MessageFormat.format("Read element of size {0}, [{1}] {2}", anElement.length, anElement.toString(),buffer.toString()));
+                    // LOGGING: was FINER
+                    if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                        LOG.debugParams("Read element of size {}, [{}] {}", anElement.length, anElement.toString(), buffer.toString());
                     }
                 } catch (IOException failed) {
-                    if (Logging.SHOW_SEVERE && LOG.isLoggable(Level.SEVERE)) {
-                        LOG.log(Level.SEVERE,"Failure reading element " + eachElement + " of " + elementCnt + " from " + buffer + " for " + msg,failed);
+                    if (Logging.SHOW_ERROR && LOG.isErrorEnabled()) {
+                        LOG.error("Failure reading element " + eachElement + " of " + elementCnt + " from " + buffer + " for " + msg, failed);
                     }
                     throw failed;
                 }
@@ -904,8 +909,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 String namespace = (String) idToNamespace.get(anElement[0]);
 
                 if (null == namespace) {
-                    if (Logging.SHOW_SEVERE && LOG.isLoggable(Level.SEVERE)) {
-                        LOG.severe("Element identified a namespace which was not defined for this message.");
+                    if (Logging.SHOW_ERROR && LOG.isErrorEnabled()) {
+                        LOG.error("Element identified a namespace which was not defined for this message.");
                     }
                     throw new IOException("Element identified a namespace which was not defined for this message.");
                 }
@@ -913,8 +918,9 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 msg.addMessageElement(namespace, (MessageElement) anElement[1]);
                 eachElement++;
 
-                if (Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)) {
-                    LOG.finer("Add element (name=\'" + ((MessageElement) anElement[1]).getElementName() + "\') #" + eachElement+ " of #" + elementCnt + " elements from " + buffer.toString());
+                // LOGGING: was FINER
+                if (Logging.SHOW_DEBUG && LOG.isDebugEnabled()) {
+                    LOG.debug("Add element (name=\'" + ((MessageElement) anElement[1]).getElementName() + "\') #" + eachElement+ " of #" + elementCnt + " elements from " + buffer.toString());
                 }
             } while (((0 == elementCnt) || (eachElement < elementCnt)));
 
@@ -963,7 +969,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
         final MimeMediaType type;
 
-        final List<BinaryElementProxy> elements = new ArrayList<BinaryElementProxy>();
+        final List<binaryElementProxy> elements = new ArrayList<binaryElementProxy>();
 
         final Map<String, Integer> namespaceIDs = new HashMap<String, Integer>();
 
@@ -995,7 +1001,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
                 MessageElement anElement = eachElement.next();
                 byte namespaceid = namespaceIDs.get(eachElement.getNamespace()).byteValue();
 
-                elements.add(new BinaryElementProxy(namespaceid, anElement));
+                elements.add(new binaryElementProxy(namespaceid, anElement));
             }
 
             buildHeader();
@@ -1039,11 +1045,12 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
             partBuffers.add(ByteBuffer.wrap(header));
 
-            for (BinaryElementProxy anElement : elements) {
+            for (binaryElementProxy anElement : elements) {
                 partBuffers.addAll(Arrays.asList(anElement.getByteBuffers()));
             }
 
-            Logging.logCheckedFiner(LOG, MessageFormat.format("Returning {0} buffers for {1}", partBuffers.size(), message));
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, MessageFormat.format("Returning {0} buffers for {1}", partBuffers.size(), message));
 
             return partBuffers.toArray(new ByteBuffer[partBuffers.size()]);
 
@@ -1057,7 +1064,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             try {
                 try {
                     PSEMembershipService tempPSE = (PSEMembershipService) this.group.getMembershipService();
-                    IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
+                    PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
 
                     //Cert
                     byte[] tempCert = tempCred.getCertificate().getEncoded();
@@ -1089,19 +1096,19 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
                 } catch (InvalidKeyException ex){
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 } catch (SignatureException ex) {
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 } catch (CertificateEncodingException ex) {
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 }
 
                 tempDOS.flush();
 
             } catch (IOException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
                 return localByteBuffers;
             }
 
@@ -1119,13 +1126,13 @@ public class WireFormatMessageBinary implements WireFormatMessage {
          */
         public InputStream getStream() throws IOException {
 
-            Logging.logCheckedFine(LOG, "Getting stream for ", message);
+            Logging.logCheckedDebug(LOG, "Getting stream for ", message);
 
             List<InputStream> streamParts = new ArrayList<InputStream>();
 
             streamParts.add(new ByteArrayInputStream(header));
 
-            for (BinaryElementProxy anElement : elements) {
+            for (binaryElementProxy anElement : elements) {
                 streamParts.add(anElement.getStream());
             }
             if(this.disableCbjx)
@@ -1139,7 +1146,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
             InputStream theStream = new SequenceInputStream(Collections.enumeration(streamParts));
 
-            Logging.logCheckedFiner(LOG, MessageFormat.format("Returning {0}@{1} for {2}", theStream.getClass().getName(),
+            // LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, MessageFormat.format("Returning {0}@{1} for {2}", theStream.getClass().getName(),
                         System.identityHashCode(theStream), message));
 
             return theStream;
@@ -1154,7 +1162,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             try {
                 try {
                     PSEMembershipService tempPSE = (PSEMembershipService) this.group.getMembershipService();
-                    IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
+                    PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
 
                     //Cert
                     byte[] tempCert = tempCred.getCertificate().getEncoded();
@@ -1186,19 +1194,19 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
                 } catch (InvalidKeyException ex){
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 } catch (SignatureException ex) {
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 } catch (CertificateEncodingException ex) {
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 }
 
                 tempDOS.flush();
 
             } catch (IOException ex) {
-                Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                LOG.error(null, ex);
             }
 
             streamParts.add(new ByteArrayInputStream(baos.toByteArray()));
@@ -1210,16 +1218,16 @@ public class WireFormatMessageBinary implements WireFormatMessage {
          */
         public void sendToStream(OutputStream sendTo) throws IOException {
 
-            Logging.logCheckedFine(LOG, "Sending ", message, " to ",
+            Logging.logCheckedDebug(LOG, "Sending ", message, " to ",
                     sendTo.getClass().getName(), "@", System.identityHashCode(sendTo));
 
             DataOutputStream tempDOS = new DataOutputStream(sendTo);
             tempDOS.write(header);
 
-            Iterator<BinaryElementProxy> eachElement = elements.listIterator();
+            Iterator<binaryElementProxy>  eachElement = elements.listIterator();
 
             while (eachElement.hasNext()) {
-                BinaryElementProxy anElement = (BinaryElementProxy) eachElement.next();
+                binaryElementProxy anElement = (binaryElementProxy) eachElement.next();
 
                 anElement.sendToStream(tempDOS);
             }
@@ -1241,7 +1249,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             {
                 try {
                     PSEMembershipService tempPSE = (PSEMembershipService) this.group.getMembershipService();
-                    IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
+                    PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
 
                     //Cert
                     byte[] tempCert = tempCred.getCertificate().getEncoded();
@@ -1273,13 +1281,13 @@ public class WireFormatMessageBinary implements WireFormatMessage {
 
                 } catch (InvalidKeyException ex){
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 } catch (SignatureException ex) {
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 } catch (CertificateEncodingException ex) {
                     tempDOS.writeInt(0);
-                    Logger.getLogger(WireFormatMessageBinary.class.getName()).log(Level.SEVERE, null, ex);
+                    LOG.error(null, ex);
                 }
 
                 tempDOS.flush();
@@ -1406,8 +1414,8 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             long size = 0;
 
             size += header.length;
-            for (BinaryElementProxy element : elements) {
-                BinaryElementProxy anElement = element;
+            for (binaryElementProxy element : elements) {
+                binaryElementProxy anElement = element;
 
                 size += anElement.getByteLength();
             }
@@ -1501,16 +1509,16 @@ public class WireFormatMessageBinary implements WireFormatMessage {
      * Proxy for a message element. Handles the serialization of the element
      * meta information.
      */
-    static class BinaryElementProxy {
+    static class binaryElementProxy {
         final byte namespaceid;
 
-        BinaryElementProxy sig;
+        binaryElementProxy sig;
 
         MessageElement element;
 
         byte[] header;
 
-        BinaryElementProxy(byte namespaceid, MessageElement element) throws IOException {
+        binaryElementProxy(byte namespaceid, MessageElement element) throws IOException {
             this.namespaceid = namespaceid;
 
             this.element = element;
@@ -1518,7 +1526,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             MessageElement tempSig = element.getSignature();
 
             if (null != tempSig) {
-                this.sig = new BinaryElementProxy(namespaceid, tempSig);
+                this.sig = new binaryElementProxy(namespaceid, tempSig);
             }
 
             buildHeader();

@@ -65,6 +65,7 @@ import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredTextDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peer.PeerID;
 import net.jxta.protocol.SrdiMessage;
@@ -74,17 +75,13 @@ import java.net.URISyntaxException;
 import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * SrdiMessageImpl provides the SRDI message binding
  */
 public class SrdiMessageImpl extends SrdiMessage {
 
-    /**
-     * The Log4J debugging category.
-     */
-    private final static Logger LOG = Logger.getLogger(SrdiMessageImpl.class.getName());
+    private final static Logger LOG = Logging.getLogger(SrdiMessageImpl.class.getName());
 
     /**
      * PeerID element name
@@ -133,12 +130,12 @@ public class SrdiMessageImpl extends SrdiMessage {
      *
      * @param root the underlying document
      */
-    public SrdiMessageImpl(Element<?>  root) {
+    public SrdiMessageImpl(Element<?> root) {
         if (!XMLElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
         }
 
-        XMLElement<?>  doc = (XMLElement<?> ) root;
+        XMLElement<?> doc = (XMLElement<?>) root;
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -216,16 +213,16 @@ public class SrdiMessageImpl extends SrdiMessage {
     /**
      * @param doc the element
      */
- 	public void readIt(XMLElement<?> doc) {
+    public void readIt(XMLElement<?> doc) {
 
         String key;
         String value;
         long expiration;
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
-            XMLElement<?>  elem = (XMLElement<?> ) elements.nextElement();
+            XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
 
             if (elem.getName().equals(pidTag)) {
                 try {
@@ -270,7 +267,7 @@ public class SrdiMessageImpl extends SrdiMessage {
 
                 } else {
 
-                    Logging.logCheckedFine(LOG, "SrdiMessage Entry with a Null value");
+                    Logging.logCheckedDebug(LOG, "SrdiMessage Entry with a Null value");
 
                 }
             }
@@ -283,18 +280,18 @@ public class SrdiMessageImpl extends SrdiMessage {
      * @param encodeAs the mime type encoding
      * @return document represtation of this object
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType encodeAs) {
 
-        StructuredTextDocument adv = (StructuredTextDocument<?> )
+        StructuredTextDocument adv = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(encodeAs, getMessageType());
 
         if (adv instanceof Attributable) {
             ((Attributable) adv).addAttribute("xmlns:jxta", "http://jxta.org");
         }
 
-        Element<?>  e;
+        Element<?> e;
         Iterator<Entry> eachEntry = getEntries().iterator();
         PeerID peerid = getPeerID();
 

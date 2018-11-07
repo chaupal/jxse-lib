@@ -58,6 +58,7 @@ package net.jxta.impl.rendezvous;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.HashSet;
@@ -71,8 +72,7 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.XMLDocument;
@@ -91,6 +91,7 @@ import net.jxta.impl.rendezvous.rendezvousMeter.RendezvousServiceMonitor;
 import net.jxta.impl.rendezvous.rpv.PeerView;
 import net.jxta.impl.rendezvous.rpv.PeerViewElement;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.meter.MonitorResources;
 import net.jxta.peer.PeerID;
@@ -114,10 +115,7 @@ import net.jxta.service.Service;
  */
 public final class RendezVousServiceImpl implements RendezVousService {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(RendezVousServiceImpl.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(RendezVousServiceImpl.class.getName());
 
     private final static long rdv_watchdog_interval_default = 5 * TimeUtils.AMINUTE; // 5 Minutes
 
@@ -255,7 +253,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
             config = RdvConfigAdv.RendezVousConfiguration.AD_HOC;
         }
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
             StringBuilder configInfo = new StringBuilder("Configuring RendezVous Service : " + assignedID);
 
             if (implAdvertisement != null) {
@@ -322,7 +320,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
 
         if (!rdvProviderSwitchStatus.compareAndSet(true, true)) {
 
-            Logging.logCheckedSevere(LOG, "Unable to start rendezvous provider.");
+            Logging.logCheckedError(LOG, "Unable to start rendezvous provider.");
             return -1;
 
         }
@@ -555,7 +553,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
             if (!rdvProviderSwitchStatus.compareAndSet(false, true)) {
 
                 IOException failed = new IOException("Currently switching rendezvous configuration. try again later.");
-                Logging.logCheckedSevere(LOG, "Failed to start rendezvous\n", failed);
+                Logging.logCheckedError(LOG, "Failed to start rendezvous\n", failed);
                 throw failed;
 
             }
@@ -599,7 +597,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
         if (!rdvProviderSwitchStatus.compareAndSet(false, true)) {
 
             IOException failed = new IOException("Currently switching rendezvous configuration. try again later.");
-            Logging.logCheckedSevere(LOG, "Failed to stop rendezvous\n", failed);
+            Logging.logCheckedError(LOG, "Failed to stop rendezvous\n", failed);
 
         }
 
@@ -851,11 +849,11 @@ public final class RendezVousServiceImpl implements RendezVousService {
      */
     public final void generateEvent(int type, ID regarding) {
 
-        Iterator<RendezvousListener> eachListener = new ArrayList<>(eventListeners).iterator();
+        Iterator<?> eachListener = Arrays.asList(eventListeners.toArray()).iterator();
 //        RendezvousEvent event = new RendezvousEvent(getInterface(), type, regarding);
         RendezvousEvent event = new RendezvousEvent(this, type, regarding);
 
-        Logging.logCheckedFine(LOG, "Calling listeners for ", event);
+        Logging.logCheckedDebug(LOG, "Calling listeners for ", event);
 
         while (eachListener.hasNext()) {
 
@@ -933,7 +931,7 @@ public final class RendezVousServiceImpl implements RendezVousService {
 
             } catch (Throwable all) {
 
-                Logging.logCheckedSevere(LOG, "Uncaught Throwable in Timer : " + Thread.currentThread().getName(), "\n", all);
+                Logging.logCheckedError(LOG, "Uncaught Throwable in Timer : " + Thread.currentThread().getName(), "\n", all);
 
             }
         }
@@ -947,7 +945,8 @@ public final class RendezVousServiceImpl implements RendezVousService {
             found = msgIds.contains(id);
         }
 
-        Logging.logCheckedFiner(LOG, id, " = ", found);
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, id, " = ", found);
 
         return found;
 
@@ -977,7 +976,8 @@ public final class RendezVousServiceImpl implements RendezVousService {
             messagesReceived++;
         }
 
-        Logging.logCheckedFiner(LOG, "Added Message ID : ", id);
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, "Added Message ID : ", id);
 
         return true;
     }

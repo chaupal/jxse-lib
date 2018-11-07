@@ -76,8 +76,8 @@ import java.util.LinkedList;
  **/
 public class ResolverServiceMetric implements ServiceMetric {
     private ResolverMetric resolverMetric;
-    private LinkedList<QueryHandlerMetric> queryHandlerMetrics = new LinkedList<>();
-    private LinkedList<SrdiHandlerMetric> srdiHandlerMetrics = new LinkedList<>();
+    private LinkedList<QueryHandlerMetric> queryHandlerMetrics = new LinkedList<QueryHandlerMetric>();
+    private LinkedList<SrdiHandlerMetric> srdiHandlerMetrics = new LinkedList<SrdiHandlerMetric>();
     private ModuleClassID moduleClassID = MonitorResources.resolverServiceMonitorClassID;
 
     public ResolverServiceMetric() {}
@@ -189,7 +189,7 @@ public class ResolverServiceMetric implements ServiceMetric {
     }
 
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 			

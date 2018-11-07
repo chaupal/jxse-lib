@@ -56,7 +56,9 @@
 
 package net.jxta.impl.id.unknown;
 
+import net.jxta.content.ContentID;
 import net.jxta.id.IDFactory;
+import net.jxta.peergroup.PeerGroupID;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -88,7 +90,7 @@ final class Instantiator implements IDFactory.Instantiator {
     /**
      * {@inheritDoc}
      **/
-    public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, byte[] seed) {
+    public net.jxta.content.ContentID newContentI(net.jxta.peergroup.PeerGroupID groupID, byte[] seed) {
         throw new ProviderException("unsupported id type");
     }
 
@@ -105,6 +107,11 @@ final class Instantiator implements IDFactory.Instantiator {
     public net.jxta.content.ContentID newContentID(net.jxta.peergroup.PeerGroupID groupID, byte[] seed, InputStream in) throws IOException {
         throw new ProviderException("unsupported id type");
     }
+    
+	@Override
+	public ContentID newContentID(PeerGroupID groupID, byte[] seed) {
+        throw new ProviderException("unsupported id type");
+	}
 
     /**
      * {@inheritDoc}
@@ -287,4 +294,4 @@ final class Instantiator implements IDFactory.Instantiator {
         return result;
 
     }
-}
+       }

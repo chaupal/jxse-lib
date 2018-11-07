@@ -58,6 +58,7 @@ package net.jxta.impl.protocol;
 
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.*;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.DiscoveryResponseMsg;
 import net.jxta.protocol.PeerAdvertisement;
@@ -66,7 +67,6 @@ import java.io.StringReader;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Enumeration;
 import java.util.Vector;
-import java.util.logging.Logger;
 
 /**
  *  DiscoveryResponse.
@@ -112,7 +112,7 @@ import java.util.logging.Logger;
  */
 public class DiscoveryResponse extends DiscoveryResponseMsg {
 
-    private final static transient Logger LOG = Logger.getLogger(DiscoveryResponse.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(DiscoveryResponse.class.getName());
 
     private final static String countTag = "Count";
     private final static String expirationTag = "Expiration";
@@ -150,8 +150,8 @@ public class DiscoveryResponse extends DiscoveryResponseMsg {
     /**
      * {@inheritDoc}
      */
+    @Override
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	@Override
     public Document getDocument(MimeMediaType asMimeType) {
 
         StructuredTextDocument adv = (StructuredTextDocument<?>)
@@ -185,7 +185,7 @@ public class DiscoveryResponse extends DiscoveryResponseMsg {
         }
 
         Enumeration<String> advs = getResponses();
-        Enumeration<Long> exps = getExpirations();
+        Enumeration<?> exps = getExpirations();
 
         try {
             while (advs.hasMoreElements()) {
@@ -221,7 +221,7 @@ public class DiscoveryResponse extends DiscoveryResponseMsg {
         Vector<Long> exps = new Vector<Long>();
 
         try {
-            Enumeration<? extends Element<?>> elements = doc.getChildren();
+            Enumeration<?> elements = doc.getChildren();
 
             while (elements.hasMoreElements()) {
                 XMLElement<?> elem = (XMLElement<?>) elements.nextElement();
@@ -263,7 +263,7 @@ public class DiscoveryResponse extends DiscoveryResponseMsg {
                     String aResponse = elem.getTextValue();
 
                     if (null == aResponse) {
-                        Logging.logCheckedFine(LOG, "Discarding an empty response tag");
+                        Logging.logCheckedDebug(LOG, "Discarding an empty response tag");
                         continue;
                     }
 
@@ -281,7 +281,7 @@ public class DiscoveryResponse extends DiscoveryResponseMsg {
                     } else {
 
                         // if there are no attribute use DEFAULT_EXPIRATION
-                        Logging.logCheckedFine(LOG,
+                        Logging.logCheckedDebug(LOG,
                             "Received an old-style DiscoveryResponse.\n You received a response from a peer that does \nnot support advertisement aging. \nSetting expiration to DiscoveryService.DEFAULT_EXPIRATION ");
                         exp = DiscoveryService.DEFAULT_EXPIRATION;
 

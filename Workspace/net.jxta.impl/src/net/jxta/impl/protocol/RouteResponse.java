@@ -110,7 +110,7 @@ public class RouteResponse{
      * @param doc the element
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	public RouteResponse(XMLElement doc) {
+    public RouteResponse(XMLElement doc) {
 
         String doctype = doc.getName();
 
@@ -221,7 +221,7 @@ public class RouteResponse{
      * return a Document representation of this object
      */
     @SuppressWarnings({ "unchecked", "rawtypes" })
-	public Document getDocument(MimeMediaType asMimeType) {
+    public Document getDocument(MimeMediaType asMimeType) {
         if (null == getSrcRoute()) {
             throw new IllegalStateException("Missing source route.");
         }

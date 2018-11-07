@@ -61,6 +61,7 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.WireFormatMessageFactory;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.pse.PSEUtils;
 import net.jxta.peergroup.PeerGroup;
@@ -75,7 +76,6 @@ import java.net.SocketTimeoutException;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 
@@ -88,7 +88,7 @@ public class ReliableInputStream extends InputStream implements Incoming {
     /**
      *  Logger
      */
-    private static final Logger LOG = Logger.getLogger(ReliableInputStream.class.getName());
+    private static final Logger LOG = Logging.getLogger(ReliableInputStream.class.getName());
 
     /**
      *  Connection we are working for.

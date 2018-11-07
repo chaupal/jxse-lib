@@ -69,6 +69,7 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.document.XMLDocument;
 import net.jxta.id.IDFactory;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
 import net.jxta.platform.ModuleClassID;
 // import net.jxta.peergroup.PeerGroupFactory;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -77,7 +78,6 @@ import net.jxta.credential.AuthenticationCredential;
 import net.jxta.credential.Credential;
 import net.jxta.membership.MembershipService;
 import net.jxta.impl.membership.pse.PSEUtils.IssuerInfo;
-import net.jxta.impl.peergroup.IModuleDefinitions;
 import net.jxta.impl.peergroup.StdPeerGroupParamAdv;
 import net.jxta.impl.protocol.PSEConfigAdv;
 

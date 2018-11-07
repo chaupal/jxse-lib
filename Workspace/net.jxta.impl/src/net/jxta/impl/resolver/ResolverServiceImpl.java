@@ -75,6 +75,7 @@ import net.jxta.impl.resolver.resolverMeter.ResolverMeter;
 import net.jxta.impl.resolver.resolverMeter.ResolverMeterBuildSettings;
 import net.jxta.impl.resolver.resolverMeter.ResolverServiceMonitor;
 import net.jxta.impl.resolver.resolverMeter.SrdiHandlerMeter;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
 import net.jxta.meter.MonitorResources;
@@ -103,10 +104,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
+
 import net.jxta.endpoint.router.RouteController;
 
 /**
@@ -118,10 +118,7 @@ import net.jxta.endpoint.router.RouteController;
  */
 public class ResolverServiceImpl implements ResolverService {
 
-    /**
-     * Logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(ResolverServiceImpl.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(ResolverServiceImpl.class.getName());
 
     /**
      * Resolver query endpoint postfix
@@ -164,6 +161,11 @@ public class ResolverServiceImpl implements ResolverService {
 
     private ResolverServiceMonitor resolverServiceMonitor;
     private ResolverMeter resolverMeter;
+
+    /**
+     * the resolver interface object
+     */
+    //private ResolverService resolverInterface = null;
 
     /**
      * Encapsulates current Membership Service credential.
@@ -209,7 +211,7 @@ public class ResolverServiceImpl implements ResolverService {
 
             if (MembershipService.DEFAULT_CREDENTIAL_PROPERTY.equals(evt.getPropertyName())) {
 
-                Logging.logCheckedFine(LOG, "New default credential event");
+                Logging.logCheckedDebug(LOG, "New default credential event");
 
                 synchronized (ResolverServiceImpl.this) {
                     Credential cred = (Credential) evt.getNewValue();
@@ -273,7 +275,7 @@ public class ResolverServiceImpl implements ResolverService {
         }
 
         // Tell tell the world about our configuration.
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring Resolver Service : " + assignedID);
 
@@ -330,26 +332,26 @@ public class ResolverServiceImpl implements ResolverService {
             queryListener = new DemuxQuery();
 
             if (!endpoint.addIncomingMessageListener(queryListener, handlerName, outQueName)) {
-                Logging.logCheckedSevere(LOG, "Cannot register listener (already registered)");
+                Logging.logCheckedError(LOG, "Cannot register listener (already registered)");
             }
 
             // Register Response Listener
             responseListener = new DemuxResponse();
 
             if (!endpoint.addIncomingMessageListener(responseListener, handlerName, inQueName)) {
-                Logging.logCheckedSevere(LOG, "Cannot register listener (already registered)");
+                Logging.logCheckedError(LOG, "Cannot register listener (already registered)");
             }
 
             // Register SRDI Listener
             srdiListener = new DemuxSrdi();
 
             if (!endpoint.addIncomingMessageListener(srdiListener, handlerName, srdiQueName)) {
-                Logging.logCheckedSevere(LOG, "Cannot register listener (already registered)");
+                Logging.logCheckedError(LOG, "Cannot register listener (already registered)");
             }
 
         } catch (Exception e) {
 
-            Logging.logCheckedSevere(LOG, "failed to add listeners\n", e);
+            Logging.logCheckedError(LOG, "failed to add listeners\n", e);
             return -1;
 
         }
@@ -482,7 +484,7 @@ public class ResolverServiceImpl implements ResolverService {
      */
     public void sendQuery(String destPeer, ResolverQueryMsg query) {
 
-        Logging.logCheckedFine(LOG, "sending query to resolver handler: ", query.getHandlerName());
+        Logging.logCheckedDebug(LOG, "sending query to resolver handler: ", query.getHandlerName());
 
         // NOTE: Add route information about the issuing peer, so the
         // resolver query responding peer can respond to the issuer without
@@ -505,11 +507,11 @@ public class ResolverServiceImpl implements ResolverService {
                     query.setSrcPeerRoute(route.clone());
                 }
 
-                Logging.logCheckedFine(LOG, "Sending query with route info to ", destPeer);
+                Logging.logCheckedDebug(LOG, "Sending query with route info to ", destPeer);
 
             } else {
 
-                Logging.logCheckedFine(LOG, "No route control--could not set local route on query");
+                Logging.logCheckedDebug(LOG, "No route control--could not set local route on query");
 
             }
         }
@@ -700,7 +702,7 @@ public class ResolverServiceImpl implements ResolverService {
         // hopCount is used to determine forward counts independent of any other TTL
         if (query.getHopCount() > 3) {
 
-            Logging.logCheckedFine(LOG, "discarding ResolverQuery. HopCount exceeded : ", query.getHopCount());
+            Logging.logCheckedDebug(LOG, "discarding ResolverQuery. HopCount exceeded : ", query.getHopCount());
 
             if (ResolverMeterBuildSettings.RESOLVER_METERING && (resolverMeter != null)) {
                 resolverMeter.propagationQueryDropped(query);
@@ -736,8 +738,8 @@ public class ResolverServiceImpl implements ResolverService {
 
         } catch (IOException e) {
 
-            if (Logging.SHOW_WARNING && LOG.isLoggable(Level.WARNING)) {
-                LOG.log(Level.WARNING, "Failure propagating query\n", e);
+            if (Logging.SHOW_WARNING && LOG.isWarnEnabled()) {
+                LOG.warn("Failure propagating query\n", e);
 
                 if (ResolverMeterBuildSettings.RESOLVER_METERING && (resolverMeter != null)) {
                     resolverMeter.queryPropagationError(query);
@@ -761,7 +763,7 @@ public class ResolverServiceImpl implements ResolverService {
 
         if (query.getHopCount() > 2) {
 
-            Logging.logCheckedFine(LOG, "Discarding query #", query.getQueryId(), " hopCount > 2 : ", query.getHopCount());
+            Logging.logCheckedDebug(LOG, "Discarding query #", query.getQueryId(), " hopCount > 2 : ", query.getHopCount());
 
             // query has been forwarded too many times stop
             if (ResolverMeterBuildSettings.RESOLVER_METERING && (resolverServiceMonitor != null)) {
@@ -777,7 +779,7 @@ public class ResolverServiceImpl implements ResolverService {
 
         if (theHandler == null) {
 
-            Logging.logCheckedFine(LOG, "Discarding query #", query.getQueryId(), ", no handler for :", queryHandlerName);
+            Logging.logCheckedDebug(LOG, "Discarding query #", query.getQueryId(), ", no handler for :", queryHandlerName);
 
             // If this peer is a rendezvous peer, it needs to repropagate the query to other rendezvous peer that
             // may have a handler.
@@ -787,7 +789,7 @@ public class ResolverServiceImpl implements ResolverService {
             return ResolverService.Repropagate;
         }
 
-        Logging.logCheckedFine(LOG, "Handing query #", query.getQueryId(), " to : ", queryHandlerName);
+        Logging.logCheckedDebug(LOG, "Handing query #", query.getQueryId(), " to : ", queryHandlerName);
 
         QueryHandlerMeter queryHandlerMeter = null;
         long startTime = 0;
@@ -861,7 +863,7 @@ public class ResolverServiceImpl implements ResolverService {
 
         }
 
-        Logging.logCheckedFine(LOG, "Process response to query #", resp.getQueryId(), " with ", handlerName);
+        Logging.logCheckedDebug(LOG, "Process response to query #", resp.getQueryId(), " with ", handlerName);
 
         QueryHandlerMeter queryHandlerMeter = null;
         long startTime = 0;
@@ -962,7 +964,7 @@ public class ResolverServiceImpl implements ResolverService {
 
         }
 
-        Logging.logCheckedFine(LOG, "Processing an SRDI msg for : ", handlerName, " in Group ID:", group.getPeerGroupID());
+        Logging.logCheckedDebug(LOG, "Processing an SRDI msg for : ", handlerName, " in Group ID:", group.getPeerGroupID());
 
         SrdiHandler theHandler = getSrdiHandler(handlerName);
         if (theHandler != null) {
@@ -993,10 +995,10 @@ public class ResolverServiceImpl implements ResolverService {
 
         } else {
 
-            if (Logging.SHOW_WARNING && LOG.isLoggable(Level.WARNING) && group.isRendezvous()) {
-                LOG.warning("No srdi handler registered :" + handlerName + " for Group ID:" + group.getPeerGroupID());
+            if (Logging.SHOW_WARNING && LOG.isWarnEnabled() && group.isRendezvous()) {
+                LOG.warn("No srdi handler registered :" + handlerName + " for Group ID:" + group.getPeerGroupID());
             } else {
-                Logging.logCheckedFine(LOG, "No srdi handler registered :", handlerName, " for Group ID:", group.getPeerGroupID());
+                Logging.logCheckedDebug(LOG, "No srdi handler registered :", handlerName, " for Group ID:", group.getPeerGroupID());
             }
 
             if (ResolverMeterBuildSettings.RESOLVER_METERING && (resolverMeter != null)) {
@@ -1041,7 +1043,8 @@ public class ResolverServiceImpl implements ResolverService {
 
         if (route == null) {
 
-            Logging.logCheckedFiner(LOG, "No route info available for ", destPeer);
+        	// LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "No route info available for ", destPeer);
 
         } else {
 
@@ -1052,17 +1055,19 @@ public class ResolverServiceImpl implements ResolverService {
 
             } else {
 
-                Logging.logCheckedFiner(LOG, "Added route for ", route.getDestPeerID());
+            	// LOGGING: was Finer
+                Logging.logCheckedDebug(LOG, "Added route for ", route.getDestPeerID());
 
             }
         }
 
-        Logging.logCheckedFiner(LOG, "Creating a messenger immediate for :", destAddress);
+        // LOGGING: was Finer
+        Logging.logCheckedDebug(LOG, "Creating a messenger immediate for :", destAddress);
 
         messenger = endpoint.getMessengerImmediate(destAddress, route);
 
         if (null == messenger) {
-            Logging.logCheckedFine(LOG, "Failed creating messenger for ", destAddress);
+            Logging.logCheckedDebug(LOG, "Failed creating messenger for ", destAddress);
             return false;
         }
 
@@ -1094,7 +1099,7 @@ public class ResolverServiceImpl implements ResolverService {
         }
 
         // Send the message
-        Logging.logCheckedFine(LOG, "Sending ", msg, " to ", destAddress, " ", tagName);
+        Logging.logCheckedDebug(LOG, "Sending ", msg, " to ", destAddress, " ", tagName);
 
         // XXX 20040924 bondolo Convert this to ListenerAdaptor
         messenger.sendMessage(msg, null, null, new FailureListener(dest));
@@ -1120,7 +1125,7 @@ public class ResolverServiceImpl implements ResolverService {
          */
         public void processIncomingMessage(Message message, EndpointAddress srcAddr, EndpointAddress dstAddr) {
 
-            Logging.logCheckedFine(LOG, "Demuxing a query message from ", srcAddr);
+            Logging.logCheckedDebug(LOG, "Demuxing a query message from ", srcAddr);
 
             MessageElement element = message.getMessageElement("jxta", outQueName);
 
@@ -1169,7 +1174,7 @@ public class ResolverServiceImpl implements ResolverService {
 
             if (ResolverService.Repropagate == res) {
 
-                Logging.logCheckedFine(LOG, "Repropagating query ", message, " from ", srcAddr);
+                Logging.logCheckedDebug(LOG, "Repropagating query ", message, " from ", srcAddr);
                 repropagateQuery(message, query);
 
             }
@@ -1187,13 +1192,13 @@ public class ResolverServiceImpl implements ResolverService {
          */
         public void processIncomingMessage(Message message, EndpointAddress srcAddr, EndpointAddress dstAddr) {
 
-            Logging.logCheckedFine(LOG, "Demuxing a response from ", srcAddr);
+            Logging.logCheckedDebug(LOG, "Demuxing a response from ", srcAddr);
 
             MessageElement element = message.getMessageElement("jxta", inQueName);
 
             if (null == element) {
 
-                Logging.logCheckedFine(LOG, "Message does not contain a response. Discarding message");
+                Logging.logCheckedDebug(LOG, "Message does not contain a response. Discarding message");
 
                 if (ResolverMeterBuildSettings.RESOLVER_METERING && (resolverMeter != null)) {
                     resolverMeter.invalidResponseDiscarded(srcAddr);
@@ -1246,7 +1251,7 @@ public class ResolverServiceImpl implements ResolverService {
          */
         public void processIncomingMessage(Message message, EndpointAddress srcAddr, EndpointAddress dstAddr) {
 
-            Logging.logCheckedFine(LOG, "Demuxing an SRDI message from : ", srcAddr);
+            Logging.logCheckedDebug(LOG, "Demuxing an SRDI message from : ", srcAddr);
 
             MessageElement element = message.getMessageElement("jxta", srdiQueName);
 

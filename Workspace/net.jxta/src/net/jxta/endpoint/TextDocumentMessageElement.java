@@ -58,6 +58,7 @@ package net.jxta.endpoint;
 
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.TextDocument;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -67,7 +68,6 @@ import java.io.Reader;
 import java.io.UnsupportedEncodingException;
 import java.io.Writer;
 import java.lang.ref.SoftReference;
-import java.util.logging.Logger;
 
 /**
  * A Message Element using JXTA TextDocument for the element data.
@@ -77,7 +77,7 @@ public class TextDocumentMessageElement extends TextMessageElement {
     /**
      * Log4J Logger
      */
-    private static final Logger LOG = Logger.getLogger(TextDocumentMessageElement.class.getName());
+    private static final Logger LOG = Logging.getLogger(TextDocumentMessageElement.class.getName());
 
     /**
      * The data for this element.

@@ -66,7 +66,8 @@ import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledFuture;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Logger;
+
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.protocol.PipeAdvertisement;
@@ -82,11 +83,9 @@ import net.jxta.protocol.PipeAdvertisement;
  * to transfers already in progress.
  */
 public class ActiveTransferTracker {
-    /**
-     * Logger.
-     */
-    private static final Logger LOG =
-            Logger.getLogger(ActiveTransferTracker.class.getName());
+
+	private static final Logger LOG =
+            Logging.getLogger(ActiveTransferTracker.class.getName());
 
     /**
      * Maximum number of clients to serve concurrently.
@@ -187,14 +186,14 @@ public class ActiveTransferTracker {
                     result = new ActiveTransfer(group, share, destination);
                     newSession = true;
                     clients.put(key, result);
-                    Logging.logCheckedFine(LOG, "Added client node: ", key);
+                    Logging.logCheckedDebug(LOG, "Added client node: ", key);
                 }
             }
         }
 
         // Too many clients to serve this request.
         if (result == null) {
-            Logging.logCheckedFine(LOG, "Cound not add client node.  Too many clients.");
+            Logging.logCheckedDebug(LOG, "Cound not add client node.  Too many clients.");
             throw(new TooManyClientsException());
         }
 
@@ -211,7 +210,7 @@ public class ActiveTransferTracker {
 
         if (gcTask == null || gcTask.isDone()) {
 
-            Logging.logCheckedFine(LOG, "Starting GC task");
+            Logging.logCheckedDebug(LOG, "Starting GC task");
 
             gcTask = schedExec.scheduleAtFixedRate(new Runnable() {
                 public void run() {
@@ -233,12 +232,13 @@ public class ActiveTransferTracker {
             for (Map.Entry<Object, ActiveTransfer> entry : clients.entrySet()) {
 
                 ActiveTransfer session = entry.getValue();
-                Logging.logCheckedFine(LOG, "Closing client session: ", entry.getKey());
+                Logging.logCheckedDebug(LOG, "Closing client session: ", entry.getKey());
 
                 try {
                     session.close();
                 } catch (IOException iox) {
-                    Logging.logCheckedFinest(LOG, "Ignoring exception\n", iox);
+                    // LOGGING: was Finest
+                    Logging.logCheckedDebug(LOG, "Ignoring exception\n", iox);
                 }
                 toNotify.add(session);
             }
@@ -246,11 +246,12 @@ public class ActiveTransferTracker {
 
             try {
                 if (gcTask != null) {
-                    Logging.logCheckedFine(LOG, "Stopping GC task");
+                    Logging.logCheckedDebug(LOG, "Stopping GC task");
                     gcTask.cancel(false);
                 }
             } catch (IllegalStateException isx) {
-                Logging.logCheckedFinest(LOG, "Ignoring exception\n" + isx);
+                // LOGGING: was Finest
+                Logging.logCheckedDebug(LOG, "Ignoring exception\n" + isx);
             } finally {
                 gcTask = null;
             }
@@ -276,7 +277,8 @@ public class ActiveTransferTracker {
         List<ActiveTransfer> toNotify = null;
         ActiveTransfer session;
 
-        Logging.logCheckedFinest(LOG, "clientGC");
+        // LOGGING: was Finest
+        Logging.logCheckedDebug(LOG, "clientGC");
 
         synchronized(this) {
 
@@ -289,12 +291,13 @@ public class ActiveTransferTracker {
 
                 if (session.isIdle()) {
 
-                    Logging.logCheckedFine(LOG, "Closing client session: ", entry.getKey());
+                    Logging.logCheckedDebug(LOG, "Closing client session: ", entry.getKey());
 
                     try {
                         session.close();
                     } catch (IOException iox) {
-                        Logging.logCheckedFinest(LOG, "Ignoring exception\n", iox);
+                        // LOGGING: was Finest
+                        Logging.logCheckedDebug(LOG, "Ignoring exception\n", iox);
                     }
 
                     if (toNotify == null) {

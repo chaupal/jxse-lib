@@ -59,6 +59,7 @@ package net.jxta.impl.endpoint.msgframing;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.EOFException;
@@ -73,7 +74,6 @@ import java.nio.ByteBuffer;
 import java.text.MessageFormat;
 import java.util.Arrays;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Contains a JXTA connection Welcome Message. The Welcome Message is sent by
@@ -84,7 +84,7 @@ import java.util.logging.Logger;
  * <li>The address to which the local peer believes it is connected.</li>
  * <li>The local peer's return address, the source address.</li>
  * <li>The local peer's peer id.</li>
- * <li>A flag which controls propagation behaviour for this conneciton.</li>
+ * <li>A flag which controls propagation behaviour for this connection.</li>
  * </ul>
  *
  * @see <a href="https://jxta-spec.dev.java.net/nonav/JXTAProtocols.html#trans-tcpipt"
@@ -92,10 +92,7 @@ import java.util.logging.Logger;
  */
 public class WelcomeMessage {
 
-    /**
-     * Log4J Logger
-     */
-    private static final Logger LOG = Logger.getLogger(WelcomeMessage.class.getName());
+    private static final Logger LOG = Logging.getLogger(WelcomeMessage.class.getName());
 
     /**
      * The Welcome Message Signature/Preamble
@@ -270,13 +267,13 @@ public class WelcomeMessage {
     public boolean read(ByteBuffer buffer) throws IOException {
         int limit = buffer.limit();
 
-        Logging.logCheckedFine(LOG, MessageFormat.format("Reading a buffer of size :{0}", limit));
+        Logging.logCheckedDebug(LOG, MessageFormat.format("Reading a buffer of size :{0}", limit));
 
         if (limit == 0) throw new IOException(MessageFormat.format("Invalid welcome message. Invalid length {0}", limit));
 
         int eomPos = findEom(buffer, 0, limit);
 
-        Logging.logCheckedFine(LOG, MessageFormat.format("Buffer size :{0} Welcome End-Of-Message pos :{1}", limit, eomPos));
+        Logging.logCheckedDebug(LOG, MessageFormat.format("Buffer size :{0} Welcome End-Of-Message pos :{1}", limit, eomPos));
 
         if (eomPos < 0) return false;
 
@@ -289,7 +286,7 @@ public class WelcomeMessage {
             // skip <cr><ln>
             buffer.position(eomPos + 2);
 
-            Logging.logCheckedFine(LOG, MessageFormat.format("buffer stats :{0}", buffer.toString()));
+            Logging.logCheckedDebug(LOG, MessageFormat.format("buffer stats :{0}", buffer.toString()));
 
         } catch (BufferUnderflowException buf) {
 
@@ -425,7 +422,7 @@ public class WelcomeMessage {
             preferredMessageVersion = 0;
         }
 
-        Logging.logCheckedFine(LOG, "Successfuly parsed a welcome message :", getWelcomeString());
+        Logging.logCheckedDebug(LOG, "Successfuly parsed a welcome message :", getWelcomeString());
 
     }
 
@@ -449,7 +446,7 @@ public class WelcomeMessage {
      */
     public ByteBuffer getByteBuffer() throws IOException {
 
-        Logging.logCheckedFine(LOG, MessageFormat.format("Sending welcome message of size:{0}", welcomeBytes.length + 2));
+        Logging.logCheckedDebug(LOG, MessageFormat.format("Sending welcome message of size:{0}", welcomeBytes.length + 2));
 
         ByteBuffer buffer = ByteBuffer.allocate(welcomeBytes.length + 2);
 

@@ -59,6 +59,7 @@ package net.jxta.impl.protocol;
 import net.jxta.document.*;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.RdvAdvertisement;
 
@@ -70,7 +71,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.UUID;
-import java.util.logging.Logger;
 
 /**
  * A Leasing Protocol Response Message.
@@ -108,10 +108,7 @@ import java.util.logging.Logger;
  */
 public class LeaseResponseMsg {
 
-    /**
-     *  Log4J Logger
-     **/
-    private final static transient Logger LOG = Logger.getLogger(LeaseResponseMsg.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(LeaseResponseMsg.class.getName());
 
     private final static String OFFERED_LEASE_ATTR = "offeredLease";
 
@@ -182,13 +179,13 @@ public class LeaseResponseMsg {
 
         XMLElement<?> doc = (XMLElement<?>) root;
 
-        if (!doc.getName().equals(getMessageType())) {
+       if (!doc.getName().equals(getMessageType())) {
             throw new IllegalArgumentException(
                     "Could not construct : " + getClass().getName() + " from doc containing a '" + doc.getName()
                     + "'. Should be : " + getMessageType());
         }
 
-        Enumeration<Attribute> eachAttr = doc.getAttributes();
+        Enumeration<?> eachAttr = doc.getAttributes();
 
         while (eachAttr.hasMoreElements()) {
 
@@ -223,7 +220,7 @@ public class LeaseResponseMsg {
             }
         }
 
-        Enumeration<? extends Element<?>> elements = doc.getChildren();
+        Enumeration<?> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
 
@@ -455,7 +452,7 @@ public class LeaseResponseMsg {
 
         if (SERVER_ADV_TAG.equals(elem.getName())) {
 
-            Enumeration<Attribute> eachAttr = elem.getAttributes();
+            Enumeration<?> eachAttr = elem.getAttributes();
 
             while (eachAttr.hasMoreElements()) {
 
@@ -487,7 +484,7 @@ public class LeaseResponseMsg {
 
             long expiration = Long.MIN_VALUE;
 
-            Enumeration<Attribute> eachAttr = elem.getAttributes();
+            Enumeration<?> eachAttr = elem.getAttributes();
 
             while (eachAttr.hasMoreElements()) {
 

@@ -63,17 +63,17 @@ import net.jxta.document.*;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PeerGroupAdvertisement;
 import net.jxta.service.Service;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.*;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  * Implements the {@link net.jxta.access.AccessService} using a simple ACL
@@ -119,10 +119,7 @@ import java.util.logging.Logger;
  */
 public class SimpleACLAccessService implements AccessService {
 
-    /**
-     *  Logger.
-     */
-    private final static Logger LOG = Logger.getLogger(SimpleACLAccessService.class.getName());
+    private final static Logger LOG = Logging.getLogger(SimpleACLAccessService.class.getName());
 
     /**
      * Well known access specification identifier: the simple ACL access service
@@ -201,7 +198,7 @@ public class SimpleACLAccessService implements AccessService {
         /**
          * {@inheritDoc}
          */
-        @SuppressWarnings({ "rawtypes", "unchecked" })
+        @SuppressWarnings({ "unchecked", "rawtypes" })
 		public StructuredDocument<?> getDocument(MimeMediaType as) throws Exception {
             StructuredDocument doc = StructuredDocumentFactory.newStructuredDocument(as, "jxta:Cred");
 
@@ -300,7 +297,7 @@ public class SimpleACLAccessService implements AccessService {
                         "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
             }
 
-            Enumeration<? extends Element<?>> elements = doc.getChildren();
+            Enumeration<?> elements = doc.getChildren();
 
             while (elements.hasMoreElements()) {
 
@@ -354,7 +351,7 @@ public class SimpleACLAccessService implements AccessService {
         this.group = group;
         implAdvertisement = (ModuleImplAdvertisement) implAdv;
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
             StringBuilder configInfo = new StringBuilder("Configuring Access Service : " + assignedID);
 
             configInfo.append("\n\tImplementation:");
@@ -376,7 +373,7 @@ public class SimpleACLAccessService implements AccessService {
             throw new PeerGroupException("parameters for group access controls missing.");
         }
 
-        Enumeration<? extends Element<?>> allACLS = myParam.getChildren();
+        Enumeration<?> allACLS = myParam.getChildren();
 
         while (allACLS.hasMoreElements()) {
             TextElement<?> anACL = (TextElement<?>) allACLS.nextElement();
@@ -400,7 +397,7 @@ public class SimpleACLAccessService implements AccessService {
             }
 
             String identities = etcPasswd.substring(nextDelim + 1);
-            Set<String> allowed = new HashSet<>();
+            Set<String> allowed = new HashSet<String>();
 
             StringTokenizer eachIdentity = new StringTokenizer(identities, ",");
 
@@ -414,7 +411,7 @@ public class SimpleACLAccessService implements AccessService {
                 allowed.add(anIdentity);
             }
 
-            Logging.logCheckedFine(LOG, "Adding operation  : \'", ((null == operation) ? "<<DEFAULT>>" : operation),
+            Logging.logCheckedDebug(LOG, "Adding operation  : \'", ((null == operation) ? "<<DEFAULT>>" : operation),
                 "\' with ", allowed.size(), " identities.");
 
             ACLs.put(operation, allowed);

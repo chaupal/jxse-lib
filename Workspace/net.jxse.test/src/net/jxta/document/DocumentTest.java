@@ -115,7 +115,8 @@ public final class DocumentTest extends TestCase {
             }
         }
 
-        public void spew(XMLElement element) {
+        @SuppressWarnings({ "unchecked", "rawtypes" })
+		public void spew(XMLElement element) {
             System.out.println(element.getValue());
 
             Enumeration<XMLElement<?>> children = element.getChildren();
@@ -128,7 +129,8 @@ public final class DocumentTest extends TestCase {
         }
     }
 
-    private void _test(StructuredDocumentFactory.Instantiator instantiator, MimeMediaType type) throws Exception {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	private void _test(StructuredDocumentFactory.Instantiator instantiator, MimeMediaType type) throws Exception {
         final String useDocType = "Test";
         StructuredTextDocument doc = null;
 
@@ -412,7 +414,8 @@ public final class DocumentTest extends TestCase {
         }
     }
 
-    public void _testLiteXMLEmptyElement(StructuredDocumentFactory.TextInstantiator instantiator, MimeMediaType type) {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public void _testLiteXMLEmptyElement(StructuredDocumentFactory.TextInstantiator instantiator, MimeMediaType type) {
         try {
             String doc = "<?xml version=\"1.0\"?><whatever/>";
 
@@ -503,7 +506,8 @@ public final class DocumentTest extends TestCase {
         LiteXMLBug doesNotWork = new LiteXMLBug(DOES_NOT_WORK);
     }
 
-    public void testIssue1282() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public void testIssue1282() {
 
         try {
             // create document
@@ -563,7 +567,8 @@ public final class DocumentTest extends TestCase {
         }
     }
 
-    public void testIssue1372() {
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	public void testIssue1372() {
         XMLDocument document = null;
         XMLDocument document2 = null;
 

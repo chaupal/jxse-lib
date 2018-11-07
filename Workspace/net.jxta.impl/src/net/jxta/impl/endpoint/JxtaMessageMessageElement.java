@@ -60,13 +60,13 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageElement;
 import net.jxta.endpoint.WireFormatMessageFactory;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 
 /**
  * A Message Element using a JXTA Message as the element data
@@ -76,10 +76,7 @@ import java.util.logging.Logger;
  **/
 public class JxtaMessageMessageElement extends MessageElement {
 
-    /**
-     *  Log4J Logger
-     **/
-    private final static transient Logger LOG = Logger.getLogger(JxtaMessageMessageElement.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(JxtaMessageMessageElement.class.getName());
 
     /**
      *  The Message which is the data for this message element.
@@ -154,7 +151,7 @@ public class JxtaMessageMessageElement extends MessageElement {
 
                 } catch (IOException fatal) {
 
-                    Logging.logCheckedSevere(LOG, "MessageElements could not be compared.\n", fatal);
+                    Logging.logCheckedError(LOG, "MessageElements could not be compared.\n", fatal);
                     IllegalStateException failure = new IllegalStateException("MessageElements could not be compared.");
                     failure.initCause(fatal);
                     throw failure;

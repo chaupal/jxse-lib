@@ -55,6 +55,18 @@
  */
 package net.jxta.impl.endpoint.servlethttp;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
+import java.net.InetAddress;
+import java.net.InetSocketAddress;
+import java.util.Collections;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Properties;
+
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.MessageReceiver;
@@ -62,39 +74,23 @@ import net.jxta.endpoint.MessengerEvent;
 import net.jxta.endpoint.MessengerEventListener;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.InetAddress;
-import java.util.Collections;
-import java.util.Iterator;
-import java.util.List;
-import java.util.Properties;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.handler.HandlerCollection;
+import org.eclipse.jetty.server.handler.ResourceHandler;
+import org.eclipse.jetty.servlet.ServletContextHandler;
+import org.eclipse.jetty.servlet.ServletHandler;
+import org.eclipse.jetty.util.thread.QueuedThreadPool;
 
-import org.mortbay.http.HttpContext;
-import org.mortbay.http.HttpServer;
-import org.mortbay.http.SocketListener;
-import org.mortbay.http.handler.ResourceHandler;
-import org.mortbay.jetty.servlet.ServletHandler;
-import org.mortbay.util.InetAddrPort;
-import org.mortbay.util.Log;
-import org.mortbay.util.LoggerLogSink;
 
 /**
  * Simple Message Receiver for server side.
  */
 class HttpMessageReceiver implements MessageReceiver {
 
-    /**
-     *  logger
-     */
-    private final static transient Logger LOG = Logger.getLogger(HttpMessageReceiver.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(HttpMessageReceiver.class.getName());
 
     /**
      * the relative URI of where the message receiver servlet will be mounted.
@@ -104,7 +100,7 @@ class HttpMessageReceiver implements MessageReceiver {
     /**
      * The ServletHttpTransport that created this MessageReceiver.
      */
-    final ServletHttpTransport servletHttpTransport;
+    private final ServletHttpTransport servletHttpTransport;
 
     /**
      * The public addresses for the this transport.
@@ -129,28 +125,28 @@ class HttpMessageReceiver implements MessageReceiver {
     /**
      *  The Jetty HTTP Server instance.
      */
-    private final HttpServer server;
-    private final ServletHandler handler;
-    private final SocketListener listener;
+    private final Server server;
 
     /**
      * The listener to invoke when making an incoming messenger.
      */
     private MessengerEventListener messengerEventListener;
 
-    public HttpMessageReceiver(ServletHttpTransport servletHttpTransport, List<EndpointAddress> publicAddresses, InetAddress useInterface, int port) throws PeerGroupException {
+
+    public HttpMessageReceiver(ServletHttpTransport servletHttpTransport, List<EndpointAddress> publicAddresses, InetAddress useInterface, int port, ClassLoader classLoader) throws PeerGroupException {
 
         this.servletHttpTransport = servletHttpTransport;
         this.publicAddresses = publicAddresses;
+        
 
         // read settings from the properties file
         Properties prop = getJxtaProperties(
                 new File(new File(servletHttpTransport.getEndpointService().getGroup().getStoreHome()), "jxta.properties"));
         initFromProperties(prop);
 
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
-            StringBuilder configInfo = new StringBuilder("Configuring HTTP Servlet Message Transport : " + servletHttpTransport.assignedID);
+            StringBuilder configInfo = new StringBuilder("Configuring HTTP Servlet Message Transport : " + servletHttpTransport.getAssignedID());
 
             configInfo.append("\n\tMin threads=").append(MIN_LISTENER_THREADS);
             configInfo.append("\n\tMax threads=").append(MAX_LISTENER_THREADS);
@@ -160,92 +156,64 @@ class HttpMessageReceiver implements MessageReceiver {
 
         }
 
-        // Configure Jetty Logging
-        if (!(Logging.SHOW_FINER && LOG.isLoggable(Level.FINER))) {
-            Log.instance().disableLog();
-        }
+        // Initialize the Jetty HTTP Server
+        InetSocketAddress addrPort = new InetSocketAddress(useInterface, port);
+        server = new Server(addrPort);
 
-        // Setup the logger to match the rest of JXTA unless explicitly configured.
-        // "LOG_CLASSES" is a Jetty thing.
-        if (System.getProperty("LOG_CLASSES") == null) {
-            LoggerLogSink logSink = new LoggerLogSink();
-            Logger jettyLogger = Logger.getLogger(org.mortbay.http.HttpServer.class.getName());
+        // Jetty 9 does initialise a QueuedThreadPool for us, so we wouldn't need to create one above.
 
-            logSink.setLogger(jettyLogger);
+        final QueuedThreadPool threadPool = (QueuedThreadPool) server.getThreadPool();
+        threadPool.setMinThreads(MIN_LISTENER_THREADS);
+        threadPool.setMaxThreads(MAX_LISTENER_THREADS);
+        // Jetty 9:
+        threadPool.setIdleTimeout((int) MAX_THREAD_IDLE_DURATION); 
 
-            try {
-
-                logSink.start();
-                Log.instance().add(logSink);
-
-            } catch (Exception ex) {
-
-                Logging.logCheckedSevere(LOG, "Could not configure LoggerLogSink");
-
-            }
-        }
-
-        // SPT - these methods call log internally.  If they are called before we add our JUL as a logSink (above)
-        //       then a default STDERR logSink will also be added as default: org.mortbay.util.OutputStreamLogSink
-        org.mortbay.util.Code.setDebug(Logging.SHOW_FINER && LOG.isLoggable(Level.FINER));
-        org.mortbay.util.Code.setSuppressWarnings(!(Logging.SHOW_WARNING && LOG.isLoggable(Level.WARNING)));
-        org.mortbay.util.Code.setSuppressStack(!(Logging.SHOW_FINER && LOG.isLoggable(Level.FINER)));
-
-        // Initialize the Jetty HttpServer
-        server = new HttpServer();
-
-        // Create the listener and attach it to server.
-        InetAddrPort addrPort = new InetAddrPort(useInterface, port);
-
-        listener = new SocketListener(addrPort);
-
-        listener.setMinThreads(MIN_LISTENER_THREADS);
-        listener.setMaxThreads(MAX_LISTENER_THREADS);
-        listener.setMaxIdleTimeMs((int) MAX_THREAD_IDLE_DURATION);
-
-        server.addListener(listener);
-
-        // Create a context for the handlers at the root, then add servlet
-        // handler for the specified servlet class and add it to the context
-        HttpContext handlerContext = server.getContext("/");
-
-        handler = new ServletHandler();
-
-        handler.setUsingCookies(false);
-        handler.initialize(handlerContext);
-
-        // Use peer group class loader (useful for HttpMessageServlet)
-        handlerContext.setClassLoader(servletHttpTransport.getEndpointService().getGroup().getLoader());
-        handlerContext.addHandler(handler);
-
+        final HandlerCollection handlers = new HandlerCollection();
+        
+        // Create a context/servlet handler at the root for the specified
+        // servlet class and add it to the list of handlers the server manages.
+        final ServletContextHandler servletContextHandler = new ServletContextHandler();
+        // By default, no session tracking (cookies) is used.
+        servletContextHandler.setContextPath("/");
+        // The ClassLoader used to load classes by the HttpContext, from
+        // the peer group (useful for HttpMessageServlet).
+        servletContextHandler.setClassLoader(classLoader);
+        servletContextHandler.setHandler(new ServletHandler());
+        servletContextHandler.addServlet(HttpMessageServlet.class.getName(), MSG_RECEIVER_RELATIVE_URI);
+        servletContextHandler.setAttribute("HttpMessageReceiver", this);
+        
+        handlers.addHandler(servletContextHandler);
+        
         // Set up support for downloading midlets.
+        // TODO need a test for midlet downloading
         if (System.getProperty("net.jxta.http.allowdownload") != null) {
-            HttpContext context = server.addContext("/midlets/*");
+        	final ServletContextHandler resourceContextHandler = new ServletContextHandler();
+        	resourceContextHandler.setContextPath("/midlets/*");
+        	resourceContextHandler.setResourceBase("./midlets/");
+        	resourceContextHandler.setHandler(new ResourceHandler());
+        	
+        	handlers.addHandler(resourceContextHandler);
 
-            context.setResourceBase("./midlets/");
-            // context.setDirAllowed(false);
+        	// MJG these were commented out... not sure about them....
+        	// context.setDirAllowed(false);
             // context.setServingResources(true);
 
             // String methods[] = {"GET"};
-            ResourceHandler resHandler = new ResourceHandler();
-
             // resHandler.setAllowedMethods(methods);
-            context.addHandler(resHandler);
         }
-
-        handler.addServlet(MSG_RECEIVER_RELATIVE_URI, HttpMessageServlet.class.getName());
+        
+        server.setHandler(handlers);
     }
 
-    synchronized void start() throws PeerGroupException {
+	synchronized void start() throws PeerGroupException {
 
         try {
 
             server.start();
-            handler.getServletContext().setAttribute("HttpMessageReceiver", this);
 
         } catch (Exception e) {
 
-            Logging.logCheckedSevere(LOG, "Could not start server\n", e);
+            Logging.logCheckedError(LOG, "Could not start server\n", e);
             PeerGroupException failure = new PeerGroupException("Could not start server");
             failure.initCause(e);
             throw failure;
@@ -272,7 +240,11 @@ class HttpMessageReceiver implements MessageReceiver {
 
         } catch (InterruptedException e) {
 
-            Logging.logCheckedSevere(LOG, "Interrupted during stop()\n", e);
+            Logging.logCheckedError(LOG, "Interrupted during stop()\n", e);
+
+        } catch (Exception e) {
+
+            Logging.logCheckedError(LOG, "Exception during stop()\n", e);
 
         }
 
@@ -284,7 +256,7 @@ class HttpMessageReceiver implements MessageReceiver {
      * Notify messenger listener that we are ready.
      * 
      * @param newMessenger new messenger
-     * @param connAddr conenction endpoint address
+     * @param connAddr connection endpoint address
      * @return {@code true} if the listener claimed the messenger, {@code false}
      *  otherwise
      */
@@ -305,7 +277,7 @@ class HttpMessageReceiver implements MessageReceiver {
      * {@inheritDoc}
      */
     public String getProtocolName() {
-        return servletHttpTransport.HTTP_PROTOCOL_NAME;
+        return servletHttpTransport.getConfiguredHttpProtocolName();
     }
 
     /**
@@ -315,6 +287,10 @@ class HttpMessageReceiver implements MessageReceiver {
         return servletHttpTransport.getEndpointService();
     }
 
+    /**
+     * Get the ServletHttpTransport used by this receiver.
+     * @return the 'parent' ServletHttpTransport.
+     */
     ServletHttpTransport getServletHttpTransport() {
         return servletHttpTransport;
     }
@@ -332,7 +308,7 @@ class HttpMessageReceiver implements MessageReceiver {
 
         try {
             in = new FileInputStream(fromFile);
-            Logging.logCheckedFine(LOG, "Read properties from ", fromFile.getPath());
+            Logging.logCheckedDebug(LOG, "Read properties from ", fromFile.getPath());
         } catch (FileNotFoundException e) {
             return null;
         }
@@ -343,7 +319,7 @@ class HttpMessageReceiver implements MessageReceiver {
 
         } catch (IOException e) {
 
-            Logging.logCheckedSevere(LOG, "Error reading ", fromFile.getPath(), "\n", e);
+            Logging.logCheckedError(LOG, "Error reading ", fromFile.getPath(), "\n", e);
 
         } finally {
 

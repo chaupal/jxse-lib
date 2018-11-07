@@ -72,7 +72,7 @@ import java.security.ProviderException;
 public class CodatID extends net.jxta.impl.id.UUID.CodatID {
 	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * Internal constructor
      */
     protected CodatID() {

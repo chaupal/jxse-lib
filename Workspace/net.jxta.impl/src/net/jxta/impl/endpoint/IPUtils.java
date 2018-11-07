@@ -55,9 +55,11 @@
  */
 package net.jxta.impl.endpoint;
 
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import javax.net.ServerSocketFactory;
+
 import java.io.IOException;
 import java.net.BindException;
 import java.net.Inet6Address;
@@ -73,17 +75,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * Utility methods for use by IP based transports.
  */
 public final class IPUtils {
 
-    /**
-     * Logger
-     */
-    private final static Logger LOG = Logger.getLogger(IPUtils.class.getName());
+    private final static Logger LOG = Logging.getLogger(IPUtils.class.getName());
 
     final static String IPV4ANYADDRESS = "0.0.0.0";
     final static String IPV6ANYADDRESS = "::";
@@ -167,7 +165,7 @@ public final class IPUtils {
 
         if (LOOPBACK == null || ANYADDRESS == null) {
 
-            Logging.logCheckedSevere(LOG, "failure initializing statics. Neither IPV4 nor IPV6 seem to work.");
+            Logging.logCheckedError(LOG, "failure initializing statics. Neither IPV4 nor IPV6 seem to work.");
             throw new IllegalStateException("failure initializing statics. Neither IPV4 nor IPV6 seem to work.");
 
         }
@@ -229,7 +227,8 @@ public final class IPUtils {
         // if nothing suitable was found then return loopback address.
         if (allAddr.isEmpty() || Boolean.getBoolean("net.jxta.impl.IPUtils.localOnly")) {
 
-            Logging.logCheckedFiner(LOG, "Adding loopback interfaces");
+        	// LOGGING: was Finer
+            Logging.logCheckedDebug(LOG, "Adding loopback interfaces");
 
             if (null != LOOPBACKV4) {
                 allAddr.add(LOOPBACKV4);
@@ -240,7 +239,7 @@ public final class IPUtils {
             }
         }
 
-        Logging.logCheckedFine(LOG, "Returning ", allAddr.size(), " addresses.");
+        Logging.logCheckedDebug(LOG, "Returning ", allAddr.size(), " addresses.");
 
         return allAddr;
     }

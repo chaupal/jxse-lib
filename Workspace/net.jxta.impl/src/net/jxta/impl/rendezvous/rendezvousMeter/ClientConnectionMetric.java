@@ -336,7 +336,7 @@ public class ClientConnectionMetric implements DocumentSerializable {
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
         state = null;
 
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 

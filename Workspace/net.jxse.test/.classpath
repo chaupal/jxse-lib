@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry excluding="net/jxta/impl/loader/JxtaLoaderModulemanagerTest.java|net/jxta/impl/peergroup/PeerGroupTest.java|net/jxta/impl/endpoint/servlethttp/CharacteriseHttpMessageReceiverTest.java|net/jxta/protocol/ResolverMsgTest.java" kind="src" path="src"/>
+	<classpathentry excluding="net/jxta/impl/loader/JxtaLoaderModulemanagerTest.java|net/jxta/impl/endpoint/servlethttp/CharacteriseHttpMessageReceiverTest.java|net/jxta/protocol/ResolverMsgTest.java" kind="src" path="src"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmock-2.5.1/jmock-junit3-2.5.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmock-2.5.1/hamcrest-core-1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="lib/jmock-2.5.1/hamcrest-library-1.1.jar"/>

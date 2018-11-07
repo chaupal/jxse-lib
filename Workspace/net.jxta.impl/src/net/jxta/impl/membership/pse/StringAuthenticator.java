@@ -61,8 +61,11 @@ import net.jxta.id.ID;
 import net.jxta.membership.Authenticator;
 import net.jxta.membership.MembershipService;
 import net.jxta.peer.PeerID;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
+
 import javax.crypto.EncryptedPrivateKeyInfo;
+
 import java.io.IOException;
 import java.net.URI;
 import java.security.KeyStoreException;
@@ -71,7 +74,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import java.util.logging.Logger;
 
 /**
  * An authenticator associated with the PSE membership service.
@@ -81,10 +83,7 @@ import java.util.logging.Logger;
  **/
 public class StringAuthenticator implements Authenticator {
 
-    /**
-     * Log
-     */
-    private static final Logger LOG = Logger.getLogger(StringAuthenticator.class.getName());
+    private static final Logger LOG = Logging.getLogger(StringAuthenticator.class.getName());
 
     /**
      * The Membership Service which generated this authenticator.
@@ -199,10 +198,10 @@ public class StringAuthenticator implements Authenticator {
      **/
     synchronized public boolean isReadyForJoin() {
         if (null != seedCert) {
-            Logging.logCheckedFine(LOG, "seed certificate:\n", seedCert.toString());
+            Logging.logCheckedDebug(LOG, "seed certificate:\n", seedCert.toString());
             return null != PSEUtils.pkcs5_Decrypt_pbePrivateKey(key_password, seedCert.getPublicKey().getAlgorithm(), seedKey);
         } else {
-            Logging.logCheckedFine(LOG, "null seed certificate");
+            Logging.logCheckedDebug(LOG, "null seed certificate");
             return source.getPSEConfig().validPasswd(identity, store_password, key_password);
         }
     }
@@ -251,7 +250,7 @@ public class StringAuthenticator implements Authenticator {
 
                 // XXX bondolo 20040329 it may be appropriate to login
                 // something other than a peer id.
-                List<ID> peersOnly = new ArrayList<>();
+                List<ID> peersOnly = new ArrayList<ID>();
 
                 Iterator<ID> eachKey = Arrays.asList(allkeys).iterator();
 

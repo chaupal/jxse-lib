@@ -56,7 +56,10 @@
 
 package net.jxta.impl.id.binaryID;
 
+import net.jxta.content.ContentID;
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.platform.ModuleClassID;
+import net.jxta.platform.ModuleSpecID;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -159,7 +162,7 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
         switch (id.type()) {
 
         case BinaryID.flagCodatID:
-            result = new ContentBinaryID(encoded);
+            result = new CodatBinaryID(encoded);
             break;
 
         case BinaryID.flagPeerGroupID:
@@ -208,22 +211,46 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
      *
      * @throws UnsupportedOperationException This form is not supported. Use CODAT from UUID package instead.
      */
-    public net.jxta.content.ContentID newContentID(final net.jxta.peergroup.PeerGroupID groupID) {
+    public net.jxta.codat.CodatID newCodatID(final net.jxta.peergroup.PeerGroupID groupID) {
         PeerGroupID parentGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
 
-        return new net.jxta.impl.id.binaryID.ContentBinaryID(parentGroupID, randomID(), false);
+        return new net.jxta.impl.id.binaryID.CodatBinaryID(parentGroupID, randomID(), false);
         // throw new UnsupportedOperationException("This form is not supported. Use CODAT from UUID package instead.");
     }
 
+	@Override
+	public ContentID newContentID(PeerGroupID groupID) {
+        throw new UnsupportedOperationException(
+                "This form is not supported. Use Content from UUID package instead.");
+ 	}
+
+	@Override
+	public ContentID newContentID(PeerGroupID groupID, byte[] seed) {
+        throw new UnsupportedOperationException(
+                "This form is not supported. Use Content from UUID package instead.");
+ 	}
+
+	@Override
+	public ContentID newContentID(PeerGroupID groupID, InputStream in) throws IOException {
+        throw new UnsupportedOperationException(
+                "This form is not supported. Use Content from UUID package instead.");
+ 	}
+
+	@Override
+	public ContentID newContentID(PeerGroupID groupID, byte[] seed, InputStream in) throws IOException {
+        throw new UnsupportedOperationException(
+                "This form is not supported. Use Content from UUID package instead.");
+ 	}
+
     /**
      * {@inheritDoc}
      *
      * @throws UnsupportedOperationException This form is not supported. Use CODAT from UUID package instead.
      */
-    public net.jxta.content.ContentID newContentID(final net.jxta.peergroup.PeerGroupID groupID, byte[] seed) {
+    public net.jxta.codat.CodatID newCodatID(final net.jxta.peergroup.PeerGroupID groupID, byte[] seed) {
         PeerGroupID parentGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
 
-        return new net.jxta.impl.id.binaryID.ContentBinaryID(parentGroupID, seed, false);
+        return new net.jxta.impl.id.binaryID.CodatBinaryID(parentGroupID, seed, false);
     }
 
     /**
@@ -231,10 +258,10 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
      *
      * @throws UnsupportedOperationException This form is not supported. Use CODAT from UUID package instead.
      */
-    public net.jxta.content.ContentID newContentID(final net.jxta.peergroup.PeerGroupID groupID, InputStream in) throws IOException {
+    public net.jxta.codat.CodatID newCodatID(final net.jxta.peergroup.PeerGroupID groupID, InputStream in) throws IOException {
         PeerGroupID parentGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
 
-        return new net.jxta.impl.id.binaryID.ContentBinaryID(parentGroupID, randomID(), false);
+        return new net.jxta.impl.id.binaryID.CodatBinaryID(parentGroupID, randomID(), false);
     }
 
     /**
@@ -242,10 +269,10 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
      *
      * @throws UnsupportedOperationException This form is not supported. Use CODAT from UUID package instead.
      */
-    public net.jxta.content.ContentID newContentID(final net.jxta.peergroup.PeerGroupID groupID, byte[] idValue, InputStream in) throws IOException {
+    public net.jxta.codat.CodatID newCodatID(final net.jxta.peergroup.PeerGroupID groupID, byte[] idValue, InputStream in) throws IOException {
         PeerGroupID parentGroupID = (PeerGroupID) IDFormat.translateFromWellKnown(groupID);
 
-        return new net.jxta.impl.id.binaryID.ContentBinaryID(parentGroupID, idValue, false);
+        return new net.jxta.impl.id.binaryID.CodatBinaryID(parentGroupID, idValue, false);
     }
 
     /**
@@ -413,7 +440,7 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
      *
      * @throws UnsupportedOperationException This form is not supported because a binary ID is meant to be created with a random ID.
      */
-    public net.jxta.platform.ModuleClassID newModuleClassID() {
+    public ModuleClassID newModuleClassID() {
         throw new UnsupportedOperationException(
                 "This form is not supported because a binary ID is meant to be created with a random ID. Use UUID package instead.");
     }
@@ -423,7 +450,7 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
      *
      * @throws UnsupportedOperationException This form is not supported because a binary ID is meant to be created with a random ID.
      */
-    public net.jxta.platform.ModuleClassID newModuleClassID(final net.jxta.platform.ModuleClassID classID) {
+    public ModuleClassID newModuleClassID(final ModuleClassID classID) {
         throw new UnsupportedOperationException(
                 "This form is not supported because a binary ID is meant to be created with a random ID. Use UUID package instead.");
     }
@@ -433,9 +460,8 @@ public final class Instantiator implements net.jxta.id.IDFactory.Instantiator {
      *
      * @throws UnsupportedOperationException This form is not supported because a binary ID is meant to be created with a random ID. Use UUID instead.
      */
-    public net.jxta.platform.ModuleSpecID newModuleSpecID(final net.jxta.platform.ModuleClassID classID) {
+    public ModuleSpecID newModuleSpecID(final ModuleClassID classID) {
         throw new UnsupportedOperationException(
                 "This form is not supported because a binary ID is meant to be created with a random ID. Use UUID package instead.");
     }
-
 }

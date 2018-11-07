@@ -77,8 +77,8 @@ import java.util.LinkedList;
  */
 public class RendezvousServiceMetric implements ServiceMetric {
     private RendezvousMetric rendezvousMetric;
-    private LinkedList<RendezvousConnectionMetric> rendezvousConnectionMetrics = new LinkedList<>();
-    private LinkedList<ClientConnectionMetric> clientConnectionMetrics = new LinkedList<>();
+    private LinkedList<RendezvousConnectionMetric> rendezvousConnectionMetrics = new LinkedList<RendezvousConnectionMetric>();
+    private LinkedList<ClientConnectionMetric> clientConnectionMetrics = new LinkedList<ClientConnectionMetric>();
     private ModuleClassID moduleClassID = MonitorResources.rendezvousServiceMonitorClassID;
 
     /**
@@ -217,7 +217,7 @@ public class RendezvousServiceMetric implements ServiceMetric {
      * {@inheritDoc}
      */
     public void initializeFrom(Element<?> element) throws DocumentSerializationException {
-        for (Enumeration<? extends Element<?>> e = element.getChildren(); e.hasMoreElements();) {
+        for (Enumeration<?> e = element.getChildren(); e.hasMoreElements();) {
             Element<?> childElement = (TextElement<?>) e.nextElement();
             String tagName = (String) childElement.getKey();
 			
@@ -296,7 +296,7 @@ public class RendezvousServiceMetric implements ServiceMetric {
         }
 
         if (includeClientConnectionMetrics) {
-            for (Iterator<ClientConnectionMetric> i = otherRendezvousServiceMetric.getClientConnectionMetrics(); i.hasNext();) {
+            for (Iterator<?> i = otherRendezvousServiceMetric.getClientConnectionMetrics(); i.hasNext();) {
                 ClientConnectionMetric otherClientConnectionMetric = (ClientConnectionMetric) i.next();
                 ClientConnectionMetric clientConnectionMetric = getClientConnectionMetric(otherClientConnectionMetric.getPeerID());
 				

@@ -62,11 +62,13 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.CopyOnWriteArraySet;
+
 import net.jxta.document.Advertisement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
+
 import static net.jxta.impl.content.ModuleLifecycleState.*;
 
 /**

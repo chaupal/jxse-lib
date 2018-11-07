@@ -89,8 +89,6 @@ import java.util.Enumeration;
 import java.util.Iterator;
 import java.util.List;
 import java.util.NoSuchElementException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import net.jxta.credential.AuthenticationCredential;
 import net.jxta.credential.Credential;
@@ -104,12 +102,14 @@ import net.jxta.document.XMLDocument;
 import net.jxta.document.XMLElement;
 import net.jxta.document.XMLSignature;
 import net.jxta.document.XMLSignatureInfo;
+import net.jxta.endpoint.tls.IPSECredentialBridge;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.exception.ProtocolNotSupportedException;
 import net.jxta.id.ID;
 import net.jxta.impl.membership.pse.PSEUtils.IssuerInfo;
 import net.jxta.impl.protocol.Certificate;
 import net.jxta.impl.protocol.PSEConfigAdv;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.membership.Authenticator;
 import net.jxta.membership.MembershipService;
@@ -120,6 +120,8 @@ import net.jxta.membership.pse.IPSECredential;
 import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
+import net.jxta.platform.IModuleDefinitions;
+import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PeerAdvertisement;
@@ -130,12 +132,15 @@ import net.jxta.service.Service;
  *
  *  @see net.jxta.membership.MembershipService
  **/
-public final class PSEMembershipService implements MembershipService, IPSEMembershipService {
+public final class PSEMembershipService implements IPSEMembershipService, MembershipService {
+
+    private final static transient Logger LOG = Logging.getLogger(PSEMembershipService.class.getName());
 
     /**
-     *  Log4J Logger
-     **/
-    private final static transient Logger LOG = Logger.getLogger(PSEMembershipService.class.getName());
+     * Well known service specification identifier: pse membership
+     */
+    public final static ModuleSpecID pseMembershipSpecID = (ModuleSpecID) ID.create(
+            URI.create(ID.URIEncodingName + ":" + ID.URNNamespace + ":uuid-DeadBeefDeafBabaFeedBabe000000050306"));
 
     /**
      * the peergroup to which this service is associated.
@@ -155,7 +160,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
     /**
      * The current set of principals associated with this peer within this peergroup.
      **/
-    private final List<PSECredential> principals = new ArrayList<PSECredential>();
+    private final List<IPSECredential> principals = new ArrayList<>();
 
     /**
      * The set of AuthenticationCredentials which were used to establish the principals.
@@ -175,7 +180,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
     /**
      *  the default credential
      **/
-    private PSECredential defaultCredential = null;
+    private IPSECredential defaultCredential = null;
 
     /**
      *  The configuration we are using.
@@ -207,58 +212,40 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         support = new PropertyChangeSupport(getInterface());
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#addPropertyChangeListener(java.beans.PropertyChangeListener)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#addPropertyChangeListener(java.beans.PropertyChangeListener)
-	 */
-    @Override
-	public void addPropertyChangeListener(PropertyChangeListener listener) {
+    /**
+     *  @inheritDoc
+     **/
+    public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
-	 */
-    @Override
-	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+    /**
+     *  @inheritDoc
+     **/
+    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         support.addPropertyChangeListener(propertyName, listener);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#removePropertyChangeListener(java.beans.PropertyChangeListener)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#removePropertyChangeListener(java.beans.PropertyChangeListener)
-	 */
-    @Override
-	public void removePropertyChangeListener(PropertyChangeListener listener) {
+    /**
+     *  @inheritDoc
+     **/
+    public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
-	 */
-    @Override
-	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+    /**
+     *  @inheritDoc
+     **/
+    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         support.removePropertyChangeListener(propertyName, listener);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#init(net.jxta.peergroup.PeerGroup, net.jxta.id.ID, net.jxta.document.Advertisement)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#init(net.jxta.peergroup.PeerGroup, net.jxta.id.ID, net.jxta.document.Advertisement)
-	 */
-    @Override
-	public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
+    /**
+     * {@inheritDoc}
+     * @param impl
+     * @throws net.jxta.exception.PeerGroupException
+     **/
+    public void init(PeerGroup group, ID assignedID, Advertisement impl) throws PeerGroupException {
         this.group = group;
         this.assignedID = assignedID;
         this.implAdvertisement = (ModuleImplAdvertisement) impl;
@@ -273,8 +260,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         if (null != param) {
             try {
                 paramsAdv = AdvertisementFactory.newAdvertisement((XMLElement<?>) param);
-            } catch (NoSuchElementException ignored) {
-                ;
+            } catch (NoSuchElementException ignored) {                
             }
 
             if (!(paramsAdv instanceof PSEConfigAdv)) {
@@ -288,16 +274,26 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         }
 
         peerSecurityEngine = getDefaultPSESecurityEngineFactory().getInstance(this, config);
-
-        authenticatorEngine = getDefaultPSEAuthenticatorEngineFactory().getInstance(this, config);
-        
+        authenticatorEngine = getDefaultPSEAuthenticatorEngineFactory().getInstance(this, config);        
         peerValidationEngine = getDefaultPSEPeerValidationEngineFactory().getInstance(this, config);
+        KeyStoreManager storeManager = getDefaultKeyStoreManagerFactory().getInstance(this, config);        
+        try {            
+            String membershipPassword = "hoi"; // TODO CPgetPrivateKey();           
+            pseStore = new PSEConfig(storeManager, membershipPassword.toCharArray());
+            pseStore.initialize();            
+        } catch (IOException ex) {                    
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Failed to retrieve network manager configuration!");
+            stringBuilder.append(ex.getLocalizedMessage());
+            LOG.error(stringBuilder.toString());                                       
+        } catch (KeyStoreException ex) {
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("Key store is not initialized!");
+            stringBuilder.append(ex.getLocalizedMessage());
+            LOG.error(stringBuilder.toString());                                       
+        }                
 
-        KeyStoreManager storeManager = getDefaultKeyStoreManagerFactory().getInstance(this, config);
-
-        pseStore = new PSEConfig(storeManager, null);
-
-        if (Logging.SHOW_CONFIG && LOG.isLoggable(Level.CONFIG)) {
+        if (Logging.SHOW_CONFIG && LOG.isConfigEnabled()) {
 
             StringBuilder configInfo = new StringBuilder("Configuring PSE Membership Service : " + assignedID);
 
@@ -319,93 +315,63 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
             configInfo.append("\n\t\tPSE KeyStore provider : ").append((null != config.getKeyStoreProvider()) ? config.getKeyStoreProvider() : "<default>");
 
             LOG.config(configInfo.toString());
-        }
-
-        resign();
+        }        
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getInterface()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getInterface()
-	 */
-    @Override
-	public Service getInterface() {
+    /**
+     * {@inheritDoc}
+     **/
+    public Service getInterface() {
         return this;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getImplAdvertisement()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getImplAdvertisement()
-	 */
-    @Override
-	public Advertisement getImplAdvertisement() {
+    /**
+     * {@inheritDoc}
+     **/
+    public Advertisement getImplAdvertisement() {
         return implAdvertisement;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#startApp(java.lang.String[])
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#startApp(java.lang.String[])
-	 */
-    @Override
-	public int startApp(String[] arg) {
-
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Currently this service starts by itself and does not expect
+     * arguments.
+     */
+    public int startApp(String[] arg) {
         Logging.logCheckedInfo(LOG, "PSE Membmership Service started.");
-
         return 0;
 
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#stopApp()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#stopApp()
-	 */
-    @Override
-	public void stopApp() {
-
+    /**
+     * {@inheritDoc}
+     **/
+    public void stopApp() {
         resign();
-
         Logging.logCheckedInfo(LOG, "PSE Membmership Service stopped.");
 
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getGroup()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getGroup()
-	 */
-    @Override
-	public PeerGroup getGroup() {
+    public PeerGroup getGroup() {
         return group;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getAssignedID()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getAssignedID()
-	 */
-    @Override
-	public ID getAssignedID() {
+    public ID getAssignedID() {
         return assignedID;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#apply(net.jxta.credential.AuthenticationCredential)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#apply(net.jxta.credential.AuthenticationCredential)
-	 */
-    @Override
-	public Authenticator apply(AuthenticationCredential application) throws ProtocolNotSupportedException {
+    /**
+     * {@inheritDoc}
+     *
+     * <p/>Supports methods <code>"StringAuthentication"</code>,
+     * <code>"DialogAuthentication"</code>,
+     * <code>"EngineAuthentication"</code> and
+     * <code>"InteractiveAuthentication"</code> (an alias for
+     * <code>"DialogAuthentication"</code>)
+     * @throws net.jxta.exception.ProtocolNotSupportedException
+     **/
+    public Authenticator apply(AuthenticationCredential application) throws ProtocolNotSupportedException {
 
         String method = application.getMethod();
 
@@ -474,14 +440,10 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         }
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getDefaultCredential()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getDefaultCredential()
-	 */
-    @Override
-	public Credential getDefaultCredential() {
+    /**
+     * {@inheritDoc}
+     **/
+    public Credential getDefaultCredential() {
         return defaultCredential;
     }
 
@@ -492,7 +454,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      *  @param newDefault the new default credential. May also be
      *  <code>null</code> if no default is desired.
      **/
-    private void setDefaultCredential(PSECredential newDefault) {
+    private void setDefaultCredential(IPSECredential newDefault) {
 
         Credential oldDefault = defaultCredential;
 
@@ -519,9 +481,9 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
 
                 StructuredDocumentUtils.copyElements(paramDoc, paramDoc, peerCertsAsDoc, "RootCert");
 
-                peeradv.putServiceParam(PeerGroup.peerGroupClassID, paramDoc);
+                peeradv.putServiceParam(IModuleDefinitions.peerGroupClassID, paramDoc);
             } else {
-                peeradv.removeServiceParam(PeerGroup.peerGroupClassID);
+                peeradv.removeServiceParam(IModuleDefinitions.peerGroupClassID);
             }
 
         } catch (Exception ignored) {
@@ -530,27 +492,19 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         support.firePropertyChange("defaultCredential", oldDefault, newDefault);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getCurrentCredentials()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getCurrentCredentials()
-	 */
-    @Override
-	public Enumeration<Credential> getCurrentCredentials() {
+    /**
+     * {@inheritDoc}
+     **/
+    public Enumeration<Credential> getCurrentCredentials() {
         List<Credential> credList = new ArrayList<Credential>(principals);
 
         return Collections.enumeration(credList);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#join(net.jxta.membership.Authenticator)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#join(net.jxta.membership.Authenticator)
-	 */
-    @Override
-	public Credential join(Authenticator authenticated) throws PeerGroupException {
+    /**
+     * {@inheritDoc}
+     **/
+    public Credential join(Authenticator authenticated) throws PeerGroupException {
 
         if (this != authenticated.getSourceService()) {
             throw new ClassCastException("This is not my authenticator!");
@@ -560,7 +514,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
             throw new PeerGroupException("Authenticator not ready to join!");
         }
 
-        PSECredential newCred;
+        IPSECredential newCred;
 
         char[] store_password = null;
         ID identity;
@@ -707,15 +661,11 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         return newCred;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#resign()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#resign()
-	 */
-    @Override
-	public void resign() {
-        Iterator<?> eachCred = Arrays.asList(principals.toArray()).iterator();
+    /**
+     * {@inheritDoc}
+     **/
+    public void resign() {
+        Iterator<Object> eachCred = Arrays.asList(principals.toArray()).iterator();
 
         synchronized (this) {
             principals.clear();
@@ -734,37 +684,25 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         }
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#makeCredential(net.jxta.document.Element)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#makeCredential(net.jxta.document.Element)
-	 */
-    @Override
-	public Credential makeCredential(Element<?> element) {
+    /**
+     * {@inheritDoc}
+     **/
+    public Credential makeCredential(Element<?> element) {
 
         return new PSECredential(this, element);
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getPSEConfig()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getPSEConfig()
-	 */
-    @Override
-	public IPSEConfig getPSEConfig() {
+    /**
+     *  Returns the key store object associated with this PSE Membership Service.
+     **/
+    public IPSEConfig getPSEConfig() {
         return pseStore;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getPeerGroup()
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getPeerGroup()
-	 */
-    @Override
-	public PeerGroup getPeerGroup() {
+    /**
+     *  Returns the PeerGroup associated with this PSE Membership Service.
+     **/
+    public PeerGroup getPeerGroup() {
         return group;
     }
     
@@ -780,7 +718,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      **/
     X509Certificate[] generateServiceCertificate(ID assignedID, PSECredential credential) throws  IOException, KeyStoreException, InvalidKeyException, SignatureException {
 
-        Logging.logCheckedFine(LOG, "Generating new service cert for ", assignedID);
+        Logging.logCheckedDebug(LOG, "Generating new service cert for ", assignedID);
 
         IssuerInfo serviceinfo = peerSecurityEngine.generateCertificate(credential);
 
@@ -800,24 +738,22 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
 
         getPSEConfig().setKey(assignedID, serviceChain, serviceinfo.subjectPkey, keyPass);
 
-        Logging.logCheckedFine(LOG, "Generated new service cert");
+        Logging.logCheckedDebug(LOG, "Generated new service cert");
 
         return serviceChain;
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#getServiceCredential(net.jxta.id.ID, net.jxta.impl.membership.pse.PSECredential)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#getServiceCredential(net.jxta.id.ID, net.jxta.impl.membership.pse.PSECredential)
-	 */
-    @Override
-	public PSECredential getServiceCredential(ID assignedID, IPSECredential cred) throws IOException, PeerGroupException, InvalidKeyException, SignatureException {
+    /**
+     *  Recover the service credential for the assigned ID given an authenticated local credential.
+     *
+     *  @param assignedID   The assigned ID of the service credential.
+     *  @param credential   The issuer credential for the service credential.
+     **/
+    public IPSECredential getServiceCredential(ID assignedID, IPSECredential credential) throws IOException, PeerGroupException, InvalidKeyException, SignatureException {
 
-    	PSECredential credential = (PSECredential) cred;
-    	PSECredential pseCredential = null;
+        PSECredential pseCredential = null;
 
-        Logging.logCheckedFine(LOG, "Getting service redential for ", assignedID);
+        Logging.logCheckedDebug(LOG, "Getting service redential for ", assignedID);
 
         Authenticator authenticate = null;
 
@@ -853,7 +789,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
             }
 
             PSECredentialBridge pseCredentialBridge = new PSECredentialBridge();
-            credential.pseKeyBridge(pseCredentialBridge);
+            credential.tlsKeyBridge(pseCredentialBridge);
             PrivateKey privateKey = pseCredentialBridge.privateKey;
 
             // make a new service certificate
@@ -880,7 +816,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
 
         return pseCredential;
     }
-    final static class PSECredentialBridge {
+    final static class PSECredentialBridge implements IPSECredentialBridge{
         private java.security.PrivateKey privateKey = null;
         private PSECredentialBridge() {
 
@@ -890,14 +826,31 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         }
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#signAdvertisement(net.jxta.document.XMLDocument, boolean, boolean)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#signAdvertisement(net.jxta.document.XMLDocument, boolean, boolean)
-	 */
-    @Override
-	public IPSEAdvertisementSignatureToken signAdvertisement(XMLDocument<?> advertismentDocument, boolean includePublicKey, boolean includePeerID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
+    /**
+     * Signs an advertisement for publication. The signed document needs to have
+     * at least one key reference included - either the encoded key that was used
+     * when signing or the peerid (so that the verifying peer can look up the key
+     * in the PSEMembershipService keystore). If both the public key and the peerid
+     * are sent then the receiving peer can use the enclosed key with the option
+     * of occasionally verifying the key via the keystore.
+     *
+     * The returned PSEAdvertismentSignatureToken contains two XMLElement classes.
+     * Both elements are appended to the advertisement during publication:
+     * XMLSignatureInfo contains a digest of the original advertisement and key info
+     * XMLSignature contains a digest of XMLSignatureInfo and a signature of that digest
+     * Refer to the following for reasoning:
+     * http://java.sun.com/developer/technicalArticles/xml/dig_signatures/
+     *
+     * @param advertismentDocument
+     * @param includePublicKey
+     * @param includePeerID
+     * @return PSEAdvertismentSignatureToken
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws IOException
+     */
+    public IPSEAdvertisementSignatureToken signAdvertisement(XMLDocument<?> advertismentDocument, boolean includePublicKey, boolean includePeerID) throws NoSuchAlgorithmException, InvalidKeyException, SignatureException, IOException {
 
         MessageDigest messageDigest = MessageDigest.getInstance("SHA-1");
 
@@ -920,7 +873,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
 
         XMLSignature xmlSignature = new XMLSignature(xmlSignatureInfoElementDigest, xmlSignatureInfoElementSignature);
 
-        IPSEAdvertisementSignatureToken pseAdvertismentSignatureToken = new PSEAdvertismentSignatureToken(xmlSignatureInfo, xmlSignature);
+        PSEAdvertisementSignatureToken pseAdvertismentSignatureToken = new PSEAdvertisementSignatureToken(xmlSignatureInfo, xmlSignature);
 
         return pseAdvertismentSignatureToken;
     }
@@ -928,50 +881,67 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
     /**
      * PSEAdvertismentSignatureToken returned by signAdvertisement
      */
-    public class PSEAdvertismentSignatureToken implements IPSEAdvertisementSignatureToken {
+    public class PSEAdvertisementSignatureToken implements IPSEAdvertisementSignatureToken{
         private XMLSignatureInfo xmlSignatureInfo;
         private XMLSignature xmlSignature;
-        private PSEAdvertismentSignatureToken(XMLSignatureInfo xmlSignatureInfo, XMLSignature xmlSignature) {
+        private PSEAdvertisementSignatureToken(XMLSignatureInfo xmlSignatureInfo, XMLSignature xmlSignature) {
             this.xmlSignatureInfo = xmlSignatureInfo;
             this.xmlSignature = xmlSignature;
         }
-        /* (non-Javadoc)
-		 * @see net.jxta.impl.membership.pse.IPSEAdvertisementSignatureToken#getXMLSignatureInfo()
-		 */
-        @Override
-		public XMLSignatureInfo getXMLSignatureInfo() {
+        /**
+         * If the advertisement is validated with the signature then true
+         *
+         * @return boolean isValid
+         */
+        public XMLSignatureInfo getXMLSignatureInfo() {
             return xmlSignatureInfo;
         }
-        /* (non-Javadoc)
-		 * @see net.jxta.impl.membership.pse.IPSEAdvertisementSignatureToken#getXMLSignature()
-		 */
-        @Override
-		public XMLSignature getXMLSignature() {
+        /**
+         * If the peerid that signed the advertisment is present in the
+         * membership keystore then true
+         *
+         * @return boolean isMember
+         */
+        public XMLSignature getXMLSignature() {
             return xmlSignature;
         }
     }
 
     private static List<String> advertisementIgnoredElements = null;
     static {
-        advertisementIgnoredElements = new ArrayList<>();
+        advertisementIgnoredElements = new ArrayList<String>();
         advertisementIgnoredElements.add("XMLSignatureInfo");
         advertisementIgnoredElements.add("XMLSignature");
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#validateAdvertisement(net.jxta.document.XMLDocument, boolean)
-	 */
-	/* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#validateAdvertisement(net.jxta.document.XMLDocument, boolean)
-	 */
-	@Override
-	public IPSEAdvertisementValidationToken validateAdvertisement(XMLDocument<?> advertismentDocument, boolean verifyKeyWithKeystore) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, KeyStoreException, IOException, SignatureException {
+    /**
+     * Validates a signed advertisement and returns a PSEAdvertismentValidationToken
+     * which specifies whether:
+     * 1. The signature is good
+     * 2. The enclosed peerid is present in the peergroups PSEMembership keystore
+     * 3. The enclosed public key is the same as the key in the keystore
+     * If there is no enclosed public key then an attempt is made to use the key in
+     * the keystore if a peerid is enclosed.
+     * If ignoreKeystore is true then a comparison of the enclosed key and the keystore
+     * key is not undertaken.
+     * If there is no key and no peerid enclosed then the signature will, obviously, fail.
+     * @param advertismentDocument
+     * @param verifyKeyWithKeystore
+     * @return PSEAdvertismentValidationToken
+     * @throws NoSuchAlgorithmException
+     * @throws InvalidKeySpecException
+     * @throws InvalidKeyException
+     * @throws KeyStoreException
+     * @throws IOException
+     * @throws SignatureException
+     */
+    public IPSEAdvertisementValidationToken validateAdvertisement(XMLDocument<?> advertismentDocument, boolean verifyKeyWithKeystore) throws NoSuchAlgorithmException, InvalidKeySpecException, InvalidKeyException, KeyStoreException, IOException, SignatureException {
 
         XMLElement<?> xmlSignatureInfoElement = null;
         XMLSignatureInfo xmlSignatureInfo = null;
         XMLSignature xmlSignature = null;
 
-        Enumeration<? extends Element<?>> eachElem = advertismentDocument.getChildren();
+        Enumeration<?> eachElem = advertismentDocument.getChildren();
 
         while (eachElem.hasMoreElements()) {
 
@@ -1074,37 +1044,44 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
             this.isMember = isMember;
             this.isCorrectMembershipKey = isCorrectMembershipKey;
         }
-        /* (non-Javadoc)
-		 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#isValid()
-		 */
-        @Override
-		public boolean isValid() {
+        /**
+         * If the advertisement is validated with the signature then true
+         *
+         * @return boolean isValid
+         */
+        public boolean isValid() {
             return isValid;
         }
-        /* (non-Javadoc)
-		 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#isMember()
-		 */
-        @Override
-		public boolean isMember() {
+        /**
+         * If the peerid that signed the advertisment is present in the
+         * membership keystore then true
+         *
+         * @return boolean isMember
+         */
+        public boolean isMember() {
             return isMember;
         }
-        /* (non-Javadoc)
-		 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#isCorrectMembershipKey()
-		 */
-        @Override
-		public boolean isCorrectMembershipKey() {
+        /**
+         * If the publickey (corresponding to the peerid) in the keystore is
+         * identical to the public key supplied with the advertisement then
+         * true
+         *
+         * @return boolean isValid
+         */
+        public boolean isCorrectMembershipKey() {
             return isCorrectMembershipKey;
         }
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#validateOffererCredential(net.jxta.impl.membership.pse.PSECredential, java.lang.String[])
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#validateOffererCredential(net.jxta.impl.membership.pse.IPSECredential, java.lang.String[])
-	 */
-    @Override
-	public void validateOffererCredential(IPSECredential accessServiceOffererCredential, String[] aliases) throws CertPathValidatorException {
+    /**
+     *
+     * AccessService support
+     *
+     * @param accessServiceOffererCredential
+     * @param peerids
+     * @throws CertPathValidatorException
+     */
+    public void validateOffererCredential( IPSECredential accessServiceOffererCredential, String[] aliases) throws CertPathValidatorException {
 
         if(accessServiceOffererCredential == null)
             throw new CertPathValidatorException("accessServiceOffererCredential is null");
@@ -1131,31 +1108,32 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
             pathValidator.validate(certPath, params);
 
         } catch(KeyStoreException storeExp) {
-            LOG.log(Level.WARNING, storeExp.getMessage(), storeExp);
+            LOG.warn(storeExp.getMessage(), storeExp);
             throw new CertPathValidatorException("Trusted Certificates could not be verified.");
         } catch(CertificateException certExp) {
-            LOG.log(Level.WARNING, certExp.getMessage(), certExp);
+            LOG.warn(certExp.getMessage(), certExp);
             throw new CertPathValidatorException("Certificates could not be validated.");
         } catch(NoSuchAlgorithmException noAlgExp) {
-            LOG.log(Level.WARNING, noAlgExp.getMessage(), noAlgExp);
+            LOG.warn(noAlgExp.getMessage(), noAlgExp);
             throw new CertPathValidatorException("Problem with Certificate Algorithm");
         } catch(CertPathValidatorException validateExp) {
-            LOG.log(Level.WARNING, validateExp.getMessage(), validateExp);
+            LOG.warn(validateExp.getMessage(), validateExp);
             throw validateExp;
         } catch(InvalidAlgorithmParameterException paramExp) {
-            LOG.log(Level.WARNING, paramExp.getMessage(), paramExp);
+            LOG.warn(paramExp.getMessage(), paramExp);
             throw new CertPathValidatorException("Problem with Certificate Algorithm");
         }
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#validateOffererCredential(net.jxta.impl.membership.pse.PSECredential)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#validateOffererCredential(net.jxta.impl.membership.pse.IPSECredential)
-	 */
-    @Override
-	public void validateOffererCredential(IPSECredential accessServiceOffererCredential) throws CertPathValidatorException {
+    /**
+     *
+     * AccessService support
+     *
+     * @param accessServiceOffererCredential
+     * @param peerids
+     * @throws CertPathValidatorException
+     */
+    public void validateOffererCredential(IPSECredential accessServiceOffererCredential) throws CertPathValidatorException {
 
         if(accessServiceOffererCredential == null)
             throw new CertPathValidatorException("accessServiceOffererCredential is null");
@@ -1175,31 +1153,33 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
             pathValidator.validate(certPath, params);
 
         } catch(KeyStoreException storeExp) {
-            LOG.log(Level.WARNING, storeExp.getMessage(), storeExp);
+            LOG.warn(storeExp.getMessage(), storeExp);
             throw new CertPathValidatorException("Trusted Certificates could not be verified.");
         } catch(CertificateException certExp) {
-            LOG.log(Level.WARNING, certExp.getMessage(), certExp);
+            LOG.warn(certExp.getMessage(), certExp);
             throw new CertPathValidatorException("Certificates could not be validated.");
         } catch(NoSuchAlgorithmException noAlgExp) {
-            LOG.log(Level.WARNING, noAlgExp.getMessage(), noAlgExp);
+            LOG.warn(noAlgExp.getMessage(), noAlgExp);
             throw new CertPathValidatorException("Problem with Certificate Algorithm");
         } catch(CertPathValidatorException validateExp) {
-            LOG.log(Level.WARNING, validateExp.getMessage(), validateExp);
+            LOG.warn(validateExp.getMessage(), validateExp);
             throw validateExp;
         } catch(InvalidAlgorithmParameterException paramExp) {
-            LOG.log(Level.WARNING, paramExp.getMessage(), paramExp);
+            LOG.warn(paramExp.getMessage(), paramExp);
             throw new CertPathValidatorException("Problem with Certificate Algorithm");
         }
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#validatePeer(net.jxta.peer.PeerID)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#validatePeer(net.jxta.peer.PeerID)
-	 */
-    @Override
-	public void validatePeer(PeerID peerID) throws CertPathValidatorException, KeyStoreException, IOException {
+    /**
+     * validatePeer Validates the certificate chain in the keystore of a peer
+     * against a CA - the user must install a PSEPeerValidationEngineFactory for
+     * this to be useful
+     * @param peerID
+     * @throws CertPathValidatorException
+     * @throws KeyStoreException
+     * @throws IOException
+     */
+    public void validatePeer(PeerID peerID) throws CertPathValidatorException, KeyStoreException, IOException {
         X509Certificate[] certList = pseStore.getTrustedCertificateChain(peerID);
         peerValidationEngine.validatePeer(peerID, certList);
     }
@@ -1223,7 +1203,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      * @see KeyStoreManager
      */
     public interface PSEKeyStoreManagerFactory {
-        KeyStoreManager getInstance(IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
+        KeyStoreManager getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
     }
     /**
      *   Returns the default Authenticator Engine Factory.
@@ -1234,26 +1214,24 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         synchronized (PSEMembershipService.class) {
             if (defaultKeyStoreManagerFactory == null) {
                 defaultKeyStoreManagerFactory = new PSEKeyStoreManagerFactory() {
-                    public KeyStoreManager getInstance(           IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
+                    public KeyStoreManager getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
 
                         URI location = config.getKeyStoreLocation();
-                        KeyStoreManager store_manager;
+                        KeyStoreManager storeManager;
 
                         try {
                             if (null == location) {
-                                store_manager = new CMKeyStoreManager(config.getKeyStoreType(), config.getKeyStoreProvider()
-                                        ,
-                                        service.getGroup(), service.getAssignedID());
+                                storeManager = new CMKeyStoreManager(config.getKeyStoreType(), config.getKeyStoreProvider(), service.getGroup(), service.getAssignedID());                                
                             } else {
                                 if (!location.isAbsolute()) {
                                     // Resolve the location of the keystore relative to our prefs location.
                                     location = service.getPeerGroup().getStoreHome().resolve(location);
                                 }
 
-                                store_manager = new URIKeyStoreManager(config.getKeyStoreType(), config.getKeyStoreProvider(), location);
+                                storeManager = new URIKeyStoreManager(config.getKeyStoreType(), config.getKeyStoreProvider(), location);
                             }
 
-                            return store_manager;
+                            return storeManager;
                         } catch (java.security.NoSuchProviderException not_available) {
                             throw new PeerGroupException("Requested KeyStore provider not available", not_available);
                         } catch (java.security.KeyStoreException bad) {
@@ -1286,7 +1264,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      * @see PSEPeerAuthenticatorEngine
      */
     public interface PSEAuthenticatorEngineFactory {
-        PSEAuthenticatorEngine getInstance(IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
+        PSEAuthenticatorEngine getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
     }
     /**
      *   Returns the default Authenticator Engine Factory.
@@ -1297,7 +1275,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         synchronized (PSEMembershipService.class) {
             if (defaultAuthenticatorEngineFactory == null) {
                 defaultAuthenticatorEngineFactory = new PSEAuthenticatorEngineFactory() {
-                    public PSEAuthenticatorEngine getInstance(IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
+                    public PSEAuthenticatorEngine getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
                         return null;
                     }
                 };
@@ -1326,7 +1304,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      * @see PSEPeerSecurityEngine
      */
     public interface PSESecurityEngineFactory {
-        PSEPeerSecurityEngine getInstance(IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
+        PSEPeerSecurityEngine getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
     }
     /**
      *   Returns the default Security Engine Factory.
@@ -1337,7 +1315,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         synchronized (PSEMembershipService.class) {
             if (defaultSecurityEngineFactory == null) {
                 defaultSecurityEngineFactory = new PSESecurityEngineFactory() {
-                    public PSEPeerSecurityEngine getInstance( IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
+                    public PSEPeerSecurityEngine getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
                         return new PSEPeerSecurityEngineDefault();
                     }
                 };
@@ -1351,22 +1329,19 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      **/
     private static class PSEPeerSecurityEngineDefault implements PSEPeerSecurityEngine {
 
-        /**
-         *  Log4J Logger
-         **/
-        private static final Logger LOG = Logger.getLogger(PSEPeerSecurityEngineDefault.class.getName());
+        private static final Logger LOG = Logging.getLogger(PSEPeerSecurityEngineDefault.class.getName());
 
         /**
          *   {@inheritDoc}
          **/
-        public byte[] sign(String algorithm, PSECredential credential, InputStream bis)  throws InvalidKeyException, SignatureException, IOException {
+        public byte[] sign(String algorithm, IPSECredential credential, InputStream bis)  throws InvalidKeyException, SignatureException, IOException {
 
             if (null == algorithm) {
                 algorithm = getSignatureAlgorithm();
             }
 
             PSECredentialBridge pseCredentialBridge = new PSECredentialBridge();
-            credential.pseKeyBridge(pseCredentialBridge);
+            credential.tlsKeyBridge(pseCredentialBridge);
             PrivateKey privateKey = pseCredentialBridge.privateKey;
             return PSEUtils.computeSignature(algorithm, privateKey, bis);
         }
@@ -1385,10 +1360,10 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         /**
          *   {@inheritDoc}
          **/
-        public IssuerInfo generateCertificate(PSECredential credential) throws SecurityException {
+        public IssuerInfo generateCertificate( IPSECredential credential) throws SecurityException {
 
             PSECredentialBridge pseCredentialBridge = new PSECredentialBridge();
-            credential.pseKeyBridge(pseCredentialBridge);
+            credential.tlsKeyBridge(pseCredentialBridge);
             PrivateKey privateKey = pseCredentialBridge.privateKey;
 
             // we need a new cert.
@@ -1404,14 +1379,14 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
                     cname = cname.substring(0, cname.length() - 3);
             }
 
-            Logging.logCheckedFine(LOG, "Generating new service cert for \'", cname, "\'");
+            Logging.logCheckedDebug(LOG, "Generating new service cert for \'", cname, "\'");
 
             // generate the service cert and private key
             IssuerInfo serviceinfo = PSEUtils.genCert(cname, info);
 
             // IssuerInfo serviceinfo = membership.genCert( cname, info, "SHA1withRSA" );
 
-            Logging.logCheckedFine(LOG, "Generated new service cert for \'", cname, "\'");
+            Logging.logCheckedDebug(LOG, "Generated new service cert for \'", cname, "\'");
 
             return serviceinfo;
         }
@@ -1451,13 +1426,15 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         return peerSecurityEngine.sign(bridge.getSignatureAlgorithm(), bridge.getPSECredential(), bridge.getInputStream());
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#signWireFormatMessageBinary(net.jxta.impl.endpoint.WireFormatMessageBinary.WireFormatMessageBinarySignatureBridge)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#signWireFormatMessageBinary(net.jxta.impl.endpoint.WireFormatMessageBinary.WireFormatMessageBinarySignatureBridge)
-	 */
-	public byte[] signWireFormatMessageBinary(net.jxta.impl.endpoint.WireFormatMessageBinary.WireFormatMessageBinarySignatureBridge bridge) throws InvalidKeyException, SignatureException, IOException, SecurityException {
+    /**
+     * Support for WireFormatMessageBinary message signing
+     * @param bridge
+     * @return
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws IOException
+     */
+    public byte[] signWireFormatMessageBinary(net.jxta.impl.endpoint.WireFormatMessageBinary.WireFormatMessageBinarySignatureBridge bridge) throws InvalidKeyException, SignatureException, IOException, SecurityException {
         if (!this.getClass().getClassLoader().equals(bridge.getClass().getClassLoader()))
             throw new SecurityException("Illegal attempt to signWireFormatMessageBinary - wrong classloader");
         if (peerSecurityEngine == null)
@@ -1465,13 +1442,16 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         return peerSecurityEngine.sign(bridge.getSignatureAlgorithm(), defaultCredential, bridge.getInputStream());
     }
 
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEMembershipService#signEndpointRouterMessage(net.jxta.impl.endpoint.router.EndpointRouterMessage.EndpointRouterMessageSignatureBridge)
-	 */
-    /* (non-Javadoc)
-	 * @see net.jxta.impl.membership.pse.IPSEAdvertisementValidationToken#signEndpointRouterMessage(net.jxta.impl.endpoint.router.EndpointRouterMessage.EndpointRouterMessageSignatureBridge)
-	 */
-	public byte[] signEndpointRouterMessage(net.jxta.impl.endpoint.router.EndpointRouterMessage.EndpointRouterMessageSignatureBridge bridge) throws InvalidKeyException, SignatureException, IOException, SecurityException {
+    /**
+     *
+     * Support for EndpointRouterMessage message signing
+     * @param bridge
+     * @return
+     * @throws InvalidKeyException
+     * @throws SignatureException
+     * @throws IOException
+     */
+    public byte[] signEndpointRouterMessage(net.jxta.impl.endpoint.router.EndpointRouterMessage.EndpointRouterMessageSignatureBridge bridge) throws InvalidKeyException, SignatureException, IOException, SecurityException {
         if (!this.getClass().getClassLoader().equals(bridge.getClass().getClassLoader()))
             throw new SecurityException("Illegal attempt to signEndpointRouterMessage - wrong classloader");
         if (peerSecurityEngine == null)
@@ -1498,7 +1478,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
      * @see PSEPeerValidationEngine
      */
     public interface PSEPeerValidationEngineFactory {
-        PSEPeerValidationEngine getInstance(IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
+        PSEPeerValidationEngine getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException;
     }
     /**
      *   Returns the default Peer Validation Engine Factory.
@@ -1509,7 +1489,7 @@ public final class PSEMembershipService implements MembershipService, IPSEMember
         synchronized (PSEMembershipService.class) {
             if (defaultPeerValidationEngineFactory == null) {
                 defaultPeerValidationEngineFactory = new PSEPeerValidationEngineFactory() {
-                    public PSEPeerValidationEngine getInstance( IPSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
+                    public PSEPeerValidationEngine getInstance(PSEMembershipService service, PSEConfigAdv config) throws PeerGroupException {
                         return new PSEPeerValidationEngineDefault();
                     }
                 };

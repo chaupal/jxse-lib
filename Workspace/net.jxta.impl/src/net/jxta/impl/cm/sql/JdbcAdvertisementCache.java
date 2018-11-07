@@ -70,8 +70,9 @@ import java.sql.Statement;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.logging.Logger;
+
 import javax.sql.ConnectionPoolDataSource;
+
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.Document;
@@ -84,6 +85,7 @@ import net.jxta.impl.cm.CacheUtils;
 import net.jxta.impl.cm.DeltaTracker;
 import net.jxta.impl.util.TimeUtils;
 import net.jxta.impl.util.threads.TaskManager;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.protocol.SrdiMessage.Entry;
 
@@ -101,7 +103,7 @@ import net.jxta.protocol.SrdiMessage.Entry;
  */
 public abstract class JdbcAdvertisementCache extends AbstractAdvertisementCache {
 
-	private static final Logger LOG = Logger.getLogger(JdbcAdvertisementCache.class.getName());
+	private static final Logger LOG = Logging.getLogger(JdbcAdvertisementCache.class.getName());
 	private static final int MAX_CONNECTIONS = 16;
 	
 	private static final String CREATE_RECORD_TABLE_SQL 
@@ -187,7 +189,7 @@ public abstract class JdbcAdvertisementCache extends AbstractAdvertisementCache 
                     try {
                         connPool.dispose();
                     } catch (SQLException e1) {
-                        Logging.logCheckedSevere(LOG, "Failed to dispose database pool when recovering from configuring database\n", e1);
+                        Logging.logCheckedError(LOG, "Failed to dispose database pool when recovering from configuring database\n", e1);
                     }
 
                     IOException wrapper = new IOException("Failed to configure database properly");
@@ -242,14 +244,14 @@ public abstract class JdbcAdvertisementCache extends AbstractAdvertisementCache 
                         try {
                             conn.rollback();
                         } catch(SQLException e) {
-                            Logging.logCheckedSevere(LOG, "Failed to roll back connection\n", e);
+                            Logging.logCheckedError(LOG, "Failed to roll back connection\n", e);
                         }
                     }
 			
                     try {
                         conn.close();
                     } catch(SQLException e) {
-                        Logging.logCheckedSevere(LOG, "Failed to close connection\n", e);
+                        Logging.logCheckedError(LOG, "Failed to close connection\n", e);
                     }
 		}
 	}
@@ -261,7 +263,7 @@ public abstract class JdbcAdvertisementCache extends AbstractAdvertisementCache 
             try {
                 st.close();
             } catch(SQLException e) {
-                Logging.logCheckedSevere(LOG, "Failed to close statement\n", e);
+                Logging.logCheckedError(LOG, "Failed to close statement\n", e);
             }
 
 	}
@@ -272,7 +274,7 @@ public abstract class JdbcAdvertisementCache extends AbstractAdvertisementCache 
 		try {
 		    rs.close();
 		} catch(SQLException e) {
-                    Logging.logCheckedSevere(LOG, "Failed to close result set\n", e);
+                    Logging.logCheckedError(LOG, "Failed to close result set\n", e);
 		}
 
 	}
@@ -835,7 +837,7 @@ public abstract class JdbcAdvertisementCache extends AbstractAdvertisementCache 
 
             } catch(SQLException e) {
 
-                Logging.logCheckedSevere(LOG, "Failed to shut down database\n", e);
+                Logging.logCheckedError(LOG, "Failed to shut down database\n", e);
                 IOException wrapper = new IOException("Failed to shut down database");
                 wrapper.initCause(e);
                 throw wrapper;

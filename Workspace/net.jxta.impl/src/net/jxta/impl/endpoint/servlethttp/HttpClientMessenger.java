@@ -68,6 +68,7 @@ import net.jxta.impl.endpoint.EndpointServiceImpl;
 import net.jxta.impl.endpoint.transportMeter.TransportBindingMeter;
 import net.jxta.impl.endpoint.transportMeter.TransportMeterBuildSettings;
 import net.jxta.impl.util.TimeUtils;
+import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 
 import java.io.EOFException;
@@ -80,8 +81,6 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *  Simple messenger that simply posts a message to a URL.
@@ -91,10 +90,7 @@ import java.util.logging.Logger;
  */
 final class HttpClientMessenger extends BlockingMessenger {
 
-    /**
-     *  Logger.
-     */
-    private final static transient Logger LOG = Logger.getLogger(HttpClientMessenger.class.getName());
+    private final static transient Logger LOG = Logging.getLogger(HttpClientMessenger.class.getName());
 
     /**
      *  Minimum amount of time between poll
@@ -145,7 +141,7 @@ final class HttpClientMessenger extends BlockingMessenger {
     /**
      * The ServletHttpTransport that created this object.
      */
-    private final ServletHttpTransport servletHttpTransport;
+    private final ServletHttpTransportImpl servletHttpTransport;
 
     /**
      *  The Return Address element we will add to all messages we send.
@@ -176,7 +172,7 @@ final class HttpClientMessenger extends BlockingMessenger {
      *  @param srcAddr The source address.
      *  @param destAddr The destination address.
      */
-    HttpClientMessenger(ServletHttpTransport servletHttpTransport, EndpointAddress srcAddr, EndpointAddress destAddr) throws IOException {
+    HttpClientMessenger(ServletHttpTransportImpl servletHttpTransport, EndpointAddress srcAddr, EndpointAddress destAddr) throws IOException {
 
         // We do use self destruction.
         super(servletHttpTransport.getEndpointService().getGroup().getPeerGroupID(), 
@@ -186,7 +182,6 @@ final class HttpClientMessenger extends BlockingMessenger {
 
         this.servletHttpTransport = servletHttpTransport;
 
-        EndpointAddress srcAddress = srcAddr;
         this.srcAddressElement = new StringMessageElement(EndpointServiceImpl.MESSAGE_SOURCE_NAME, srcAddr.toString(), null);
 
         String protoAddr = destAddr.getProtocolAddress();
@@ -206,7 +201,7 @@ final class HttpClientMessenger extends BlockingMessenger {
 
         senderURL = new URL("http", host, port, "/");
 
-        logicalDest = retreiveLogicalDestinationAddress();
+        logicalDest = retrieveLogicalDestinationAddress();
 
         // Start receiving messages from the other peer
         poller = new MessagePoller(srcAddr.getProtocolAddress(), destAddr);
@@ -258,7 +253,7 @@ final class HttpClientMessenger extends BlockingMessenger {
 
         super.close();
 
-        Logging.logCheckedFine(LOG, "Close messenger to ", senderURL);
+        Logging.logCheckedDebug(LOG, "Close messenger to ", senderURL);
 
         MessagePoller stopPoller = poller;
 
@@ -325,11 +320,11 @@ final class HttpClientMessenger extends BlockingMessenger {
     /**
      *  Connects to the http server and retrieves the Logical Destination Address
      */
-    private EndpointAddress retreiveLogicalDestinationAddress() throws IOException {
+    private EndpointAddress retrieveLogicalDestinationAddress() throws IOException {
         long beginConnectTime = 0;
         long connectTime = 0;
 
-        Logging.logCheckedFine(LOG, "Ping (", senderURL, ")");
+        Logging.logCheckedDebug(LOG, "Ping (", senderURL, ")");
 
         if (TransportMeterBuildSettings.TRANSPORT_METERING) {
             beginConnectTime = TimeUtils.timeNow();
@@ -410,7 +405,7 @@ final class HttpClientMessenger extends BlockingMessenger {
 
             EndpointAddress remoteAddress = new EndpointAddress("jxta", uniqueIdString.trim(), null, null);
 
-            Logging.logCheckedFine(LOG, "Ping (", senderURL, ") -> ", remoteAddress);
+            Logging.logCheckedDebug(LOG, "Ping (", senderURL, ") -> ", remoteAddress);
 
             return remoteAddress;
 
@@ -445,7 +440,7 @@ final class HttpClientMessenger extends BlockingMessenger {
         for (int connectAttempt = 1; connectAttempt <= CONNECT_RETRIES; connectAttempt++) {
 
             if (connectAttempt > 1) {
-                Logging.logCheckedFine(LOG, "Retrying connection to ", senderURL);
+                Logging.logCheckedDebug(LOG, "Retrying connection to ", senderURL);
             }
 
             // open a connection to the other end
@@ -485,7 +480,7 @@ final class HttpClientMessenger extends BlockingMessenger {
                     // in believing that the connection is still open and thus breaks
                     // when attempting to make a second transaction. We should not have to but it
                     // seems that it befalls us to retry.
-                    Logging.logCheckedFine(LOG, "HTTP 1.0 proxy seems in use");
+                    Logging.logCheckedDebug(LOG, "HTTP 1.0 proxy seems in use");
 
                     // maybe a retry will help.
                     continue;
@@ -498,8 +493,8 @@ final class HttpClientMessenger extends BlockingMessenger {
                 // warning and treat it as OK.71
                 if (responseCode == -1) {
 
-                    if (neverWarned && Logging.SHOW_WARNING && LOG.isLoggable(Level.WARNING)) {
-                        LOG.warning("Obsolete HTTP proxy does not issue HTTP_OK response. Assuming OK");
+                    if (neverWarned && Logging.SHOW_WARNING && LOG.isWarnEnabled()) {
+                        LOG.warn("Obsolete HTTP proxy does not issue HTTP_OK response. Assuming OK");
                         neverWarned = false;
                     }
 
@@ -563,12 +558,12 @@ final class HttpClientMessenger extends BlockingMessenger {
 
         MessagePoller(String pollAddress, EndpointAddress destAddr) {
 
-            Logging.logCheckedFine(LOG, "new MessagePoller for ", senderURL);
+            Logging.logCheckedDebug(LOG, "new MessagePoller for ", senderURL);
 
             /*
              * query string is of the format ?{response timeout},{extra response timeout},{dest address}
              *
-             * The timeout's are expressed in milliseconds. -1 means do not wait
+             * The timeouts are expressed in milliseconds. -1 means do not wait
              * at all, 0 means wait forever.
              */
             try {
@@ -620,7 +615,7 @@ final class HttpClientMessenger extends BlockingMessenger {
          */
         protected boolean isStopped() {
 
-            Logging.logCheckedFine(LOG, this, " ", senderURL, " --> ", (stopped ? "stopped" : "running"));
+            Logging.logCheckedDebug(LOG, this, " ", senderURL, " --> ", (stopped ? "stopped" : "running"));
             return stopped;
 
         }
@@ -639,7 +634,7 @@ final class HttpClientMessenger extends BlockingMessenger {
                 long noReconnectBefore = 0;
                 HttpURLConnection conn = null;
 
-                Logging.logCheckedInfo(LOG, "Message polling beings for ", pollingURL);
+                Logging.logCheckedInfo(LOG, "Message polling begins for ", pollingURL);
 
                 int connectAttempt = 1;
 
@@ -648,9 +643,9 @@ final class HttpClientMessenger extends BlockingMessenger {
 
                     if (conn == null) {
 
-                        Logging.logCheckedFine(LOG, "Opening new connection to ", pollingURL);
+                        Logging.logCheckedDebug(LOG, "Opening new connection to ", pollingURL);
 
-                        conn = (HttpURLConnection) pollingURL.openConnection(); // Incomming data channel
+                        conn = (HttpURLConnection) pollingURL.openConnection(); // Incoming data channel
 
                         conn.setRequestMethod("GET");
                         conn.setDoOutput(false);
@@ -673,7 +668,7 @@ final class HttpClientMessenger extends BlockingMessenger {
                     try {
 
                         if (untilNextConnect > 0) {
-                            Logging.logCheckedFine(LOG, "Delaying for ", untilNextConnect, "ms before reconnect to ", senderURL);
+                            Logging.logCheckedDebug(LOG, "Delaying for ", untilNextConnect, "ms before reconnect to ", senderURL);
                             Thread.sleep(untilNextConnect);
                         }
 
@@ -688,17 +683,18 @@ final class HttpClientMessenger extends BlockingMessenger {
                     try {
 
                         if (connectAttempt > 1) {
-                            Logging.logCheckedFine(LOG, "Reconnect attempt for ", senderURL);
+                            Logging.logCheckedDebug(LOG, "Reconnect attempt for ", senderURL);
                         }
 
                         // Always connect (no cost if connected).
                         conn.connect();
 
-                        Logging.logCheckedFine(LOG, "Waiting for response code from ", senderURL);
+                        Logging.logCheckedDebug(LOG, "Waiting for response code from ", senderURL);
 
                         int responseCode = conn.getResponseCode();
 
-                        Logging.logCheckedFiner(LOG,
+                        // LOGGING: was Finer
+                        Logging.logCheckedDebug(LOG,
                                     "Response ", responseCode, " for Connection : ", senderURL, "\n\tContent-Type : ",
                                     conn.getHeaderField("Content-Type"), "\tContent-Length : ",
                                     conn.getHeaderField("Content-Length"), "\tTransfer-Encoding : ",
@@ -707,11 +703,11 @@ final class HttpClientMessenger extends BlockingMessenger {
                         connectTime = TimeUtils.timeNow();
                         noReconnectBefore = TimeUtils.toAbsoluteTimeMillis(MIMIMUM_POLL_INTERVAL, connectTime);
 
-			if (0 == conn.getContentLength()) {
-			    conn.disconnect();
-			    conn = null;
-			    continue;
-			}
+                        if (0 == conn.getContentLength()) {
+                            conn.disconnect();
+                            conn = null;
+                            continue;
+                        }
 
                         if (HttpURLConnection.HTTP_NO_CONTENT == responseCode) {
                             // the connection timed out.
@@ -760,9 +756,11 @@ final class HttpClientMessenger extends BlockingMessenger {
 
                         } else {
 
-                            Logging.logCheckedFine(LOG, "Failed connecting to ", senderURL);
+                            Logging.logCheckedDebug(LOG, "Failed connecting to ", senderURL);
 
-                            if (null != conn) conn.disconnect();
+                            if (null != conn) {
+                            	conn.disconnect();
+                            }
 
                             conn = null;
                             connectAttempt++;
@@ -780,9 +778,11 @@ final class HttpClientMessenger extends BlockingMessenger {
 
                         } else {
 
-                            Logging.logCheckedFine(LOG, "Failed connecting to ", senderURL);
+                            Logging.logCheckedDebug(LOG, "Failed connecting to ", senderURL);
 
-                            if (null != conn) conn.disconnect();
+                            if (null != conn) {
+                            	conn.disconnect();
+                            }
 
                             conn = null;
                             connectAttempt++;
@@ -807,7 +807,7 @@ final class HttpClientMessenger extends BlockingMessenger {
                                         TimeUtils.timeNow() - messageReceiveStart);
                             }
 
-                            Logging.logCheckedFine(LOG, "Received ", incomingMsg, " from ", senderURL);
+                            Logging.logCheckedDebug(LOG, "Received ", incomingMsg, " from ", senderURL);
                             servletHttpTransport.group.getTaskManager().getExecutorService().execute(new MessageProcessor(incomingMsg));
 
                             // note that we received a message
@@ -843,9 +843,11 @@ final class HttpClientMessenger extends BlockingMessenger {
                         // clutter the screen with scary messages. When the
                         // message layer believes it's serious, it prints the
                         // scary message already.
-                        Logging.logCheckedFine(LOG, "Failed to read message from ", senderURL, "\n", e);
+                        Logging.logCheckedDebug(LOG, "Failed to read message from ", senderURL, "\n", e);
 
-                        if (null != conn) conn.disconnect();
+                        if (null != conn) {
+                        	conn.disconnect();
+                        }
 
                         conn = null;
 
@@ -860,7 +862,7 @@ final class HttpClientMessenger extends BlockingMessenger {
 
             } catch (Throwable argh) {
 
-                Logging.logCheckedSevere(LOG, "Poller exiting because of uncaught exception\n", argh);
+                Logging.logCheckedError(LOG, "Poller exiting because of uncaught exception\n", argh);
                 stop();
 
             } finally {
@@ -887,7 +889,7 @@ final class HttpClientMessenger extends BlockingMessenger {
 
         public void run() {
 
-            Logging.logCheckedFine(LOG, "Demuxing ", msg, " from ", senderURL);
+            Logging.logCheckedDebug(LOG, "Demuxing ", msg, " from ", senderURL);
             servletHttpTransport.getEndpointService().processIncomingMessage(msg);
 
         }
