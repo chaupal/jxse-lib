@@ -57,6 +57,7 @@
 package net.jxta.impl.util;
 
 import junit.framework.*;
+import net.jxta.impl.util.seeding.URISeedingManager;
 
 import java.net.*;
 import java.util.*;

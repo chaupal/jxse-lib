@@ -38,8 +38,6 @@ import net.jxta.peergroup.PeerGroupID;
 import net.jxta.test.util.JUnitRuleMockery;
 import net.jxta.test.util.MessageUtil;
 
-import org.apache.log4j.BasicConfigurator;
-import org.apache.log4j.Level;
 import org.jmock.Expectations;
 import org.jmock.lib.concurrent.Synchroniser;
 import org.junit.After;
@@ -177,8 +175,7 @@ public class CharacteriseHttpMessageReceiverTest {
 		httpMessageReceiver = new HttpMessageReceiver(
 				mockServletHttpContext, 
 				Arrays.asList(new EndpointAddress("urn:jxta:test#service/param")), 
-				InetAddress.getLocalHost(), port, 
-				Thread.currentThread().getContextClassLoader());
+				InetAddress.getLocalHost(), port);
 		assertThat(portOpen(), equalTo(false));
 
 		// expectations of HttpMessageReceiver's start

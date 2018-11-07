@@ -55,12 +55,11 @@
  */
 package net.jxta.peergroup;
 
-import net.jxta.platform.LightWeightPeerGroup;
-import net.jxta.platform.NetPeerGroupFactory;
 import net.jxta.protocol.PeerGroupAdvertisement;
 import net.jxta.protocol.PeerAdvertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.id.IDFactory;
+import net.jxta.impl.peergroup.NetPeerGroupFactory;
 import junit.framework.*;
 
 import org.junit.Ignore;

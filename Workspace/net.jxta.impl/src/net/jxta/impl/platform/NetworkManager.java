@@ -98,6 +98,7 @@ public class NetworkManager implements RendezvousListener {
      * Logger
      */
     private final static transient Logger LOG = Logger.getLogger(NetworkManager.class.getName());
+	public static final String DEFAULT_INSTANCE_HOME = null;
 
 //    protected final transient URI publicSeedingRdvURI = URI.create("http://rdv.jxtahosts.net/cgi-bin/rendezvous.cgi?3");
 //    protected final transient URI publicSeedingRelayURI = URI.create("http://rdv.jxtahosts.net/cgi-bin/relays.cgi?3");

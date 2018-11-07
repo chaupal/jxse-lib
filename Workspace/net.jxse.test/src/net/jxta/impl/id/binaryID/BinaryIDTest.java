@@ -63,6 +63,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import net.jxta.codat.CodatID;
+import net.jxta.content.ContentID;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 
@@ -414,8 +415,8 @@ public final class BinaryIDTest extends TestCase {
 
     public void testCodatID() {
         try {
-            CodatID first = IDFactory.newCodatID(IDFactory.newPeerGroupID());
-            CodatID second = IDFactory.newCodatID(IDFactory.newPeerGroupID());
+            ContentID first = IDFactory.newContentID(IDFactory.newPeerGroupID());
+            ContentID second = IDFactory.newContentID(IDFactory.newPeerGroupID());
             CodatID third;
             ID interloper = IDFactory.newPeerID(IDFactory.newPeerGroupID());
             String  asString;

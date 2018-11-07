@@ -56,8 +56,6 @@
 
 package net.jxse.impl.osgi;
 
-import net.jxse.impl.osgi.JxseOSGiFelixFrameworkLauncher;
-
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

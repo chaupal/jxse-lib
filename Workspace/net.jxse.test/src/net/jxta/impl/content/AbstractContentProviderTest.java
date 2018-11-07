@@ -1,5 +1,5 @@
 /*
- * Copyright (c) 2001 Sun Microsystems, Inc.  All rights reserved.
+   * Copyright (c) 2001 Sun Microsystems, Inc.  All rights reserved.
  *
  * Redistribution and use in source and binary forms, with or without
  * modification, are permitted provided that the following conditions
@@ -83,11 +83,11 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.XMLElement;
 import net.jxta.id.IDFactory;
+import net.jxta.impl.platform.JxtaApplication;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.JxtaApplication;
-import net.jxta.platform.NetworkConfigurator;
-import net.jxta.platform.NetworkManager;
-import net.jxta.platform.NetworkManager.ConfigMode;
+import net.jxta.impl.platform.NetworkConfigurator;
+import net.jxta.impl.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager.ConfigMode;
 import net.jxta.protocol.ContentShareAdvertisement;
 import net.jxta.test.util.DelegateClassLoader;
 import net.jxta.test.util.TempDir;

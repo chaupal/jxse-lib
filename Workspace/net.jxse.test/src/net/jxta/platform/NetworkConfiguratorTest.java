@@ -62,6 +62,7 @@ import junit.framework.TestSuite;
 import junit.framework.TestCase;
 import junit.framework.Test;
 import net.jxta.exception.ConfiguratorException;
+import net.jxta.impl.platform.NetworkConfigurator;
 
 /**
  *  A JUnit test for NetworkConfigurator

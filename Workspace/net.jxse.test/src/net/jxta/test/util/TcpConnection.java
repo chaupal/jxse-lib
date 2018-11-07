@@ -61,12 +61,12 @@ import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Collections;
 import java.util.List;
+import java.util.logging.Logger;
 import java.util.ArrayList;
 import java.io.EOFException;
 import java.io.IOException;
 import java.io.InterruptedIOException;
 
-import net.jxta.logging.Logger;
 import net.jxta.logging.Logging;
 import net.jxta.document.MimeMediaType;
 import net.jxta.endpoint.EndpointAddress;
@@ -91,7 +91,6 @@ public class TcpConnection implements Runnable {
     private EndpointAddress dstAddress = null;
     private EndpointAddress fullDstAddress = null;
     private transient InetAddress inetAddress = null;
-    private boolean initiator;
     private transient WatchedInputStream<Object> inputStream = null;
     private transient WelcomeMessage itsWelcome = null;
 
@@ -120,7 +119,7 @@ public class TcpConnection implements Runnable {
      *  only one outgoing message per connection.
      */
     private transient Object writeLock = "Write Lock";
-    private final static Logger LOG = Logging.getLogger(TcpConnection.class.getName());
+    private final static Logger LOG = Logger.getLogger(TcpConnection.class.getName());
     private MessageListener listener = null;
     private final static MimeMediaType appMsg = new MimeMediaType("application/x-jxta-msg");
 
@@ -133,8 +132,6 @@ public class TcpConnection implements Runnable {
      *@throws  IOException     for failures in creating the connection.
      */
     public TcpConnection(EndpointAddress destaddr, InetAddress from, PeerID id, MessageListener listener) throws IOException {
-
-        initiator = true;
 
         this.listener = listener;
         this.fullDstAddress = destaddr;
@@ -187,7 +184,6 @@ public class TcpConnection implements Runnable {
 
             Logging.logCheckedInfo(LOG, "Connection from " + incSocket.getInetAddress().getHostAddress() + ":" + incSocket.getPort());
 
-            initiator = false;
             this.listener = listener;
             inetAddress = incSocket.getInetAddress();
             port = incSocket.getPort();
@@ -518,7 +514,7 @@ public class TcpConnection implements Runnable {
 
         } catch (Throwable all) {
 
-            Logging.logCheckedError(LOG, "Uncaught Throwable in thread :" + Thread.currentThread().getName(), all);
+            Logging.logCheckedSevere(LOG, "Uncaught Throwable in thread :" + Thread.currentThread().getName(), all);
 
         }
     }
@@ -539,7 +535,6 @@ public class TcpConnection implements Runnable {
                 throw new IOException("Connection was closed to : " + dstAddress);
             }
 
-            boolean success = false;
             long size = 0;
 
             try {
@@ -566,7 +561,6 @@ public class TcpConnection implements Runnable {
                 outputStream.flush();
 
                 // all done!
-                success = true;
                 setLastUsed(System.currentTimeMillis());
 
             } catch (Throwable failure) {
@@ -610,7 +604,7 @@ public class TcpConnection implements Runnable {
         outputStream.setWatchList(LongCycle);
 
         if ((inputStream == null) || (outputStream == null)) {
-            Logging.logCheckedError(LOG, "   failed getting streams.");
+            Logging.logCheckedSevere(LOG, "   failed getting streams.");
             throw new IOException("Could not get streams");
         }
 

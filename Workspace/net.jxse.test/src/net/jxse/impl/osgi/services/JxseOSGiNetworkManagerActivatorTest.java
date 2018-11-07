@@ -73,8 +73,8 @@ import net.jxta.exception.PeerGroupException;
 import net.jxta.id.IDFactory;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
-import net.jxta.platform.NetworkConfigurator;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkConfigurator;
+import net.jxta.impl.platform.NetworkManager;
 import org.junit.*;
 
 import static org.junit.Assert.*;
@@ -207,8 +207,6 @@ public class JxseOSGiNetworkManagerActivatorTest {
         } catch (PeerGroupException ex) {
             fail(ex.toString());
         } catch (IOException ex) {
-            fail(ex.toString());
-        } catch (ConfiguratorException ex) {
             fail(ex.toString());
         }
 

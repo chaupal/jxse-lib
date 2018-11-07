@@ -57,7 +57,6 @@
 package net.jxta.socket;
 
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 
 import java.io.*;
@@ -69,9 +68,10 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 import net.jxta.credential.Credential;
 import net.jxta.endpoint.Messenger;
+import net.jxta.impl.platform.JxtaApplication;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.impl.util.pipe.reliable.Outgoing;
 import net.jxta.peer.PeerID;
-import net.jxta.platform.JxtaApplication;
 import net.jxta.protocol.PeerAdvertisement;
 
 /**

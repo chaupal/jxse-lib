@@ -251,6 +251,24 @@ public final class Logging {
      * @param inLog a logger
      * @param inMsg the messages to concatenate
      */
+    public static void logCheckedDebug(Logger inLog, Object... inMsg) {
+
+        if (Logging.SHOW_FINE && inLog.isLoggable(Level.FINE)) {
+            StringBuffer Msg = new StringBuffer(getCaller(new Exception().getStackTrace())).append('\n');
+            for (int i=0;i<inMsg.length;i++) Msg.append(checkForThrowables(inMsg[i]));
+            inLog.fine(Msg.toString());
+        }
+
+    }
+
+    /**
+     * This method checks whether {@code SHOW_FINE} is set to {@code true),
+     * and whether the provided logger allows fine messages. If yes, the
+     * message is logged.
+     *
+     * @param inLog a logger
+     * @param inMsg the messages to concatenate
+     */
     public static void logCheckedFine(Logger inLog, Object... inMsg) {
 
         if (Logging.SHOW_FINE && inLog.isLoggable(Level.FINE)) {
@@ -486,5 +504,4 @@ public final class Logging {
         return Result.toString();
 
     }
-
 }

@@ -21,8 +21,9 @@ import net.jxta.peer.PeerInfoService;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.pipe.PipeService;
-import net.jxta.peergroup.core.Module;
-import net.jxta.peergroup.core.ModuleSpecID;
+import net.jxta.platform.JxtaLoader;
+import net.jxta.platform.Module;
+import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ConfigParams;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PeerAdvertisement;
@@ -211,5 +212,11 @@ public class FakePeerGroup implements PeerGroup {
     public TaskManager getTaskManager() {
         throw new RuntimeException("not implemented");
     }
+
+	@Override
+	public JxtaLoader getLoader() {
+		// TODO Auto-generated method stub
+		return null;
+	}
 
 }

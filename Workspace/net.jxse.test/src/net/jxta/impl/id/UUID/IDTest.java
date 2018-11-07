@@ -68,6 +68,7 @@ import junit.framework.TestCase;
 import junit.framework.TestSuite;
 
 import net.jxta.codat.CodatID;
+import net.jxta.content.ContentID;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.peer.PeerID;
@@ -87,8 +88,8 @@ public final class IDTest extends TestCase {
     public void testCodatID() {
         try {
             PeerGroupID seedGroup = IDFactory.newPeerGroupID("uuid");
-            CodatID first = IDFactory.newCodatID(seedGroup);
-            CodatID second = IDFactory.newCodatID(seedGroup);
+            ContentID first = IDFactory.newContentID(seedGroup);
+            ContentID second = IDFactory.newContentID(seedGroup);
             CodatID third;
             ID interloper = IDFactory.newPeerID(IDFactory.newPeerGroupID("uuid"));
             String  asString;

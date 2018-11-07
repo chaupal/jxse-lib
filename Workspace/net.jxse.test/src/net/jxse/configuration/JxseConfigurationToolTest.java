@@ -3,16 +3,17 @@ package net.jxse.configuration;
 
 import org.junit.Rule;
 import org.junit.rules.TemporaryFolder;
-import net.jxta.platform.NetworkConfigurator;
+import net.jxta.impl.platform.NetworkConfigurator;
 import net.jxta.id.IDFactory;
+import net.jxta.impl.platform.JxtaApplication;
 import net.jxta.peer.PeerID;
 import java.io.File;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxse.configuration.JxsePeerConfiguration.ConnectionMode;
 import java.net.URI;
 import java.io.IOException;
-import net.jxta.platform.JxtaApplication;
-import net.jxta.platform.NetworkManager;
+
+import net.jxta.impl.platform.NetworkManager;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

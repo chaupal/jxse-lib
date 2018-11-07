@@ -3,8 +3,7 @@ package net.jxta.impl.loader;
 import java.util.logging.Logger;
 
 import junit.framework.JUnit4TestAdapter;
-import net.jxta.peergroup.core.Module;
-
+import net.jxta.platform.Module;
 import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Before;

@@ -64,12 +64,12 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.StructuredDocumentUtils;
 import net.jxta.document.XMLDocument;
+import net.jxta.impl.peergroup.IModuleDefinitions;
 import net.jxta.impl.protocol.DiscoveryConfigAdv;
 import net.jxta.impl.protocol.GroupConfig;
 import net.jxta.impl.protocol.HTTPAdv;
 import net.jxta.impl.protocol.RdvConfigAdv;
 import net.jxta.impl.protocol.RelayConfigAdv;
-import net.jxta.peergroup.IModuleDefinitions;
 
 import org.junit.Ignore;
 import org.junit.Test;

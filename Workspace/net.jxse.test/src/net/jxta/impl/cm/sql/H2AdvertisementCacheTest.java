@@ -2,7 +2,6 @@ package net.jxta.impl.cm.sql;
 
 import net.jxta.impl.cm.AbstractCmTest;
 import net.jxta.impl.cm.AdvertisementCache;
-import net.jxta.impl.cm.sql.h2.H2AdvertisementCache;
 
 public class H2AdvertisementCacheTest extends AbstractCmTest {
 
