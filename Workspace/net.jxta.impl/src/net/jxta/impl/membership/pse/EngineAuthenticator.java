@@ -61,6 +61,7 @@ import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.membership.Authenticator;
 import net.jxta.membership.MembershipService;
+import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.peer.PeerID;
 import net.jxta.logging.Logging;
 import java.io.IOException;
@@ -90,7 +91,7 @@ public class EngineAuthenticator implements Authenticator {
     /**
      * The Membership Service which generated this authenticator.
      **/
-    transient PSEMembershipService source;
+    transient IPSEMembershipService source;
 
     /**
      * The Authentication which was provided to the Apply operation of the
@@ -138,7 +139,7 @@ public class EngineAuthenticator implements Authenticator {
      *  @param application Anything entered into the identity info section of
      *  the Authentication credential is ignored.
      **/
-    EngineAuthenticator(PSEMembershipService source, AuthenticationCredential application, PSEAuthenticatorEngine authenticatorEngine) {
+    EngineAuthenticator(IPSEMembershipService source, AuthenticationCredential application, PSEAuthenticatorEngine authenticatorEngine) {
         // this( source, application );
 
         this.source = source;
@@ -157,7 +158,7 @@ public class EngineAuthenticator implements Authenticator {
      *  @param application Anything entered into the identity info section of
      *  the Authentication credential is ignored.
      **/
-    EngineAuthenticator(PSEMembershipService source, AuthenticationCredential application) {
+    EngineAuthenticator(IPSEMembershipService source, AuthenticationCredential application) {
         this.source = source;
         this.application = application;
 

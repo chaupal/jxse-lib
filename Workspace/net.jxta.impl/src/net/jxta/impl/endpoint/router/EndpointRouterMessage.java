@@ -84,6 +84,7 @@ import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
+import net.jxta.membership.pse.IPSECredential;
 import net.jxta.protocol.AccessPointAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 
@@ -381,7 +382,7 @@ public class EndpointRouterMessage {
 
             try {
             	if(membershipService instanceof PSEMembershipService) {
-            		PSECredential tempCred = (PSECredential)membershipService.getDefaultCredential();
+            		IPSECredential tempCred = (PSECredential)membershipService.getDefaultCredential();
             		radv.sign(tempCred, true, false);
             	}
                 XMLDocument radvDoc = (XMLDocument) radv.getSignedDocument();
@@ -408,7 +409,7 @@ public class EndpointRouterMessage {
         if(!WireFormatMessageFactory.CBJX_DISABLE && membershipService instanceof PSEMembershipService) {
             try {
             	PSEMembershipService tempPSE = (PSEMembershipService) membershipService;
-                PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
+                IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
 
                 //Payload
                 byte[] tempPayload = address.toURI().toString().getBytes();

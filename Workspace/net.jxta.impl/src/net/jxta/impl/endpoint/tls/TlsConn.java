@@ -61,9 +61,9 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.Messenger;
 import net.jxta.endpoint.WireFormatMessage;
 import net.jxta.endpoint.WireFormatMessageFactory;
-import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.util.TimeUtils;
 import net.jxta.logging.Logging;
+import net.jxta.membership.pse.IPSECredential;
 import net.jxta.util.IgnoreFlushFilterOutputStream;
 
 import javax.net.ssl.SSLContext;
@@ -98,7 +98,7 @@ import java.util.logging.Logger;
  * <p/>net.jxta.impl.endpoint.tls.TMFAlgorithm - if defined provides the name of
  * the trust manager factory algorithm to use.
  */
-class TlsConn {
+class TlsConn implements ITlsConn {
 
     /**
      * Logger
@@ -267,7 +267,11 @@ class TlsConn {
         tlsSocket = newConnect;
     }
     
-    public boolean isClosing() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.endpoint.tls.ITlsConn#isClosing()
+	 */
+    @Override
+	public boolean isClosing() {
 		return closing;
 	}
 
@@ -275,9 +279,9 @@ class TlsConn {
 		return readerThread;
 	}
 
-	/**
-     * @inheritDoc <p/>An implementation which is useful for debugging.
-     */
+	/* (non-Javadoc)
+	 * @see net.jxta.impl.endpoint.tls.ITlsConn#toString()
+	 */
     @Override
     public String toString() {
         return super.toString() + "/" + getHandshakeState() + ":" + (client ? "Client" : "Server") + " for " + destAddr;
@@ -545,10 +549,10 @@ class TlsConn {
     private static class PSECredentialKeyManager implements javax.net.ssl.X509KeyManager {
 
         java.security.PrivateKey privateKey;
-        PSECredential cred;
+        IPSECredential cred;
         KeyStore trusted;
 
-        public PSECredentialKeyManager(PSECredential useCred, KeyStore trusted, java.security.PrivateKey privateKey) {
+        public PSECredentialKeyManager(IPSECredential useCred, KeyStore trusted, java.security.PrivateKey privateKey) {
             this.cred = useCred;
             this.trusted = trusted;
             this.privateKey = privateKey;

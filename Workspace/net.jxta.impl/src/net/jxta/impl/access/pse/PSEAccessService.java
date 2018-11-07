@@ -67,6 +67,8 @@ import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
+import net.jxta.membership.pse.IPSECredential;
+import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
 import net.jxta.platform.ModuleSpecID;
@@ -118,9 +120,9 @@ public class PSEAccessService implements AccessService {
 
         final PSEAccessService source;
 
-        PSECredential op;
+        IPSECredential op;
 
-        protected PSEOperation(PSEAccessService source, PSECredential op) {
+        protected PSEOperation(PSEAccessService source, IPSECredential op) {
             this.source = source;
             this.op = op;
         }
@@ -165,7 +167,7 @@ public class PSEAccessService implements AccessService {
         /**
          * {@inheritDoc}
          */
-        public PSECredential getSubject() {
+        public IPSECredential getSubject() {
             return op;
         }
 
@@ -234,7 +236,7 @@ public class PSEAccessService implements AccessService {
             }
 
             if (elem.getName().equals("Operation")) {
-                op = (PSECredential) source.pseMembership.makeCredential(elem);
+                op = (IPSECredential) source.pseMembership.makeCredential(elem);
 
                 return true;
             }
@@ -361,7 +363,7 @@ public class PSEAccessService implements AccessService {
 
         ModuleImplAdvertisement membershipImplAdv = (ModuleImplAdvertisement) membership.getImplAdvertisement();
 
-        if ((null != membershipImplAdv) && PSEMembershipService.pseMembershipSpecID.equals(membershipImplAdv.getModuleSpecID())
+        if ((null != membershipImplAdv) && IPSEMembershipService.pseMembershipSpecID.equals(membershipImplAdv.getModuleSpecID())
                 && (membership instanceof PSEMembershipService)) {
 
             pseMembership = (PSEMembershipService) membership;
@@ -429,11 +431,11 @@ public class PSEAccessService implements AccessService {
             return AccessResult.DISALLOWED;
         }
 
-        PSECredential offerer = ((PSEOperation) op).getOfferer();
+        IPSECredential offerer = ((PSEOperation) op).getOfferer();
 
         X509Certificate opCerts[] = offerer.getCertificateChain();
 
-        X509Certificate credCerts[] = ((PSECredential) cred).getCertificateChain();
+        X509Certificate credCerts[] = ((IPSECredential) cred).getCertificateChain();
 
         // FIXME 20060409 bondolo THIS IS NOT A VALID TEST. It is a shortcut for
         // PKIX validation and assumes that all presented certificates chains 
@@ -502,7 +504,7 @@ public class PSEAccessService implements AccessService {
             return AccessResult.DISALLOWED;
         }
 
-        PSECredential offerer = ((PSEOperation) op).getOfferer();
+        IPSECredential offerer = ((PSEOperation) op).getOfferer();
         try {
             pseMembership.validateOffererCredential(offerer);
         } catch (CertPathValidatorException ex) {
@@ -538,7 +540,7 @@ public class PSEAccessService implements AccessService {
             return AccessResult.DISALLOWED;
         }
 
-        PSECredential offerer = ((PSEOperation) op).getOfferer();
+        IPSECredential offerer = ((PSEOperation) op).getOfferer();
         try {
             pseMembership.validateOffererCredential(offerer, aliases);
         } catch (CertPathValidatorException ex) {
@@ -565,7 +567,7 @@ public class PSEAccessService implements AccessService {
             throw new IllegalArgumentException("offerer is not a valid credential");
         }
 
-        return new PSEOperation((PSEAccessService) getInterface(), (PSECredential) offerer);
+        return new PSEOperation((PSEAccessService) getInterface(), (IPSECredential) offerer);
     }
 
     /**

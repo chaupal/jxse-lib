@@ -55,11 +55,8 @@
  */
 package net.jxta.impl.util.ternary;
 
-import net.jxta.logging.Logging;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 
@@ -178,12 +175,7 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
 
             deleteNode( node );
         } else {
-
-            if ( Logging.SHOW_WARNING && LOG.isLoggable( Level.WARNING ) ) {
-
-                LOG.log( Level.WARNING,
-                    ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) + "Failed to find node to remove given key: " + key );
-            }
+            LOG.warning( ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) + "Failed to find node to remove given key: " + key );
         }
 
         return nodeData;
@@ -247,15 +239,10 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
             }
 
             if ( ++nodesTraversed > MAX_NODE_TRAVERSALS ) {
-
-                nodesTraversed = 0;
-
-                if ( Logging.SHOW_WARNING && LOG.isLoggable( Level.WARNING ) ) {
-
-                    LOG.log( Level.WARNING,
-                        ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) +
-                        "Excessive node traversal detected.  Tree is either broken or very inefficient!" );
-                }
+            	nodesTraversed = 0;
+            	LOG.warning(
+            			( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) +
+            			"Excessive node traversal detected.  Tree is either broken or very inefficient!" );
             }
         }
     }
@@ -423,13 +410,9 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
             if ( ++nodesTraversed > MAX_NODE_TRAVERSALS ) {
 
                 nodesTraversed = 0;
-
-                if ( Logging.SHOW_WARNING && LOG.isLoggable( Level.WARNING ) ) {
-
-                    LOG.log( Level.WARNING,
+                    LOG.warning(
                         ( ( treeName == null ) ? "" : ( "[" + treeName + "] " ) ) +
                         "Excessive node traversal detected.  Tree is either broken or very inefficient!" );
-                }
             }
         }
     }
@@ -451,11 +434,7 @@ public class TernarySearchTreeImpl<E> implements TernarySearchTree<E> {
 
         while ( node != null ) {
 
-            if ( Logging.SHOW_FINEST && LOG.isLoggable( Level.FINEST ) ) {
-
-                LOG.log( Level.FINEST, "Deleting tree node: " + node );
-            }
-
+               LOG.fine( "Deleting tree node: " + node );
             node = deleteNodeRecursion( node );
         }
     }

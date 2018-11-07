@@ -58,6 +58,7 @@ package net.jxta.impl.protocol;
 
 import net.jxta.document.*;
 import net.jxta.id.ID;
+import net.jxta.membership.pse.IPSECredential;
 import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.util.BASE64InputStream;
 import net.jxta.impl.util.BASE64OutputStream;
@@ -270,7 +271,7 @@ public class SignedAdv extends SignedAdvertisement {
 
                 	byte advbytes[] = bos.toByteArray();
 
-                	Signature verifier = ((PSECredential) signer).getSignatureVerifier("SHA1WITHRSA");
+                	Signature verifier = ((IPSECredential) signer).getSignatureVerifier("SHA1WITHRSA");
 
                 	verifier.update(advbytes);
 
@@ -350,7 +351,7 @@ public class SignedAdv extends SignedAdvertisement {
 
             byte advData[] = bos.toByteArray();
 
-            PSECredential psecred = (PSECredential) signer;
+            IPSECredential psecred = (IPSECredential) signer;
 
             Signature advSigner = psecred.getSigner("SHA1WITHRSA");
 

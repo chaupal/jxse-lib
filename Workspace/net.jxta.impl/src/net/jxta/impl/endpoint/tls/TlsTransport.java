@@ -64,6 +64,7 @@ import net.jxta.endpoint.Message;
 import net.jxta.endpoint.MessageReceiver;
 import net.jxta.endpoint.MessageSender;
 import net.jxta.endpoint.Messenger;
+import net.jxta.endpoint.tls.IPSECredentialBridge;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
@@ -73,6 +74,7 @@ import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.impl.util.TimeUtils;
 import net.jxta.logging.Logging;
 import net.jxta.membership.MembershipService;
+import net.jxta.membership.pse.IPSECredential;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
@@ -661,7 +663,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
         public synchronized void propertyChange(PropertyChangeEvent evt) {
 
             String evtProp = evt.getPropertyName();
-            PSECredential cred = (PSECredential) evt.getNewValue();
+            IPSECredential cred = (IPSECredential) evt.getNewValue();
 
             boolean validCertificate = true;
 
@@ -724,7 +726,7 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
 
                         Logging.logCheckedInfo(LOG, "Setting credential/certfile");
 
-                        credential = cred.getServiceCredential(assignedID);
+                        credential = (PSECredential) cred.getServiceCredential(assignedID);
 
                         if (null != credential) {
                             credentialListener = new credentialPCL();
@@ -748,12 +750,15 @@ public class TlsTransport implements Module, MessageSender, MessageReceiver {
         }
     }
 
-    final public static class PSECredentialBridge {
+    final public static class PSECredentialBridge implements IPSECredentialBridge {
         private java.security.PrivateKey privateKey = null;
         private PSECredentialBridge() {
 
         }
-        public void setPrivateKey(java.security.PrivateKey privateKey) {
+        /* (non-Javadoc)
+		 * @see net.jxta.impl.endpoint.tls.IPSECredentialBridge#setPrivateKey(java.security.PrivateKey)
+		 */
+ 		public void setPrivateKey(java.security.PrivateKey privateKey) {
             this.privateKey = privateKey;
         }
     }

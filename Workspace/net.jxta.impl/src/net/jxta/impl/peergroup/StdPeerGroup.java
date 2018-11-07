@@ -83,7 +83,7 @@ import net.jxta.impl.cm.Srdi;
 import net.jxta.impl.content.ContentServiceImpl;
 import net.jxta.impl.membership.pse.DialogAuthenticator;
 import net.jxta.impl.membership.pse.EngineAuthenticator;
-import net.jxta.impl.membership.pse.PSEMembershipService;
+import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.impl.membership.pse.PSEPeerValidationEngine;
 import net.jxta.impl.membership.pse.StringAuthenticator;
 import net.jxta.logging.Logging;
@@ -212,7 +212,7 @@ public class StdPeerGroup extends GenericPeerGroup {
 
         paramAdv.addService(PeerGroup.resolverClassID, PeerGroup.refResolverSpecID);
 
-        paramAdv.addService(PeerGroup.membershipClassID, PSEMembershipService.pseMembershipSpecID);
+        paramAdv.addService(PeerGroup.membershipClassID, IPSEMembershipService.pseMembershipSpecID);
 
         paramAdv.addService(PeerGroup.accessClassID, PSEAccessService.PSE_ACCESS_SPEC_ID);
 

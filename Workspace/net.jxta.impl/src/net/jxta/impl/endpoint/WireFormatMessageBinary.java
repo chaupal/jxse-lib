@@ -98,9 +98,9 @@ import net.jxta.endpoint.WireFormatMessage;
 import net.jxta.endpoint.WireFormatMessageFactory;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.endpoint.router.EndpointRouterMessage;
-import net.jxta.impl.membership.pse.PSECredential;
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.logging.Logging;
+import net.jxta.membership.pse.IPSECredential;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.util.LimitInputStream;
 
@@ -1057,7 +1057,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             try {
                 try {
                     PSEMembershipService tempPSE = (PSEMembershipService) this.group.getMembershipService();
-                    PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
+                    IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
 
                     //Cert
                     byte[] tempCert = tempCred.getCertificate().getEncoded();
@@ -1154,7 +1154,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             try {
                 try {
                     PSEMembershipService tempPSE = (PSEMembershipService) this.group.getMembershipService();
-                    PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
+                    IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
 
                     //Cert
                     byte[] tempCert = tempCred.getCertificate().getEncoded();
@@ -1241,7 +1241,7 @@ public class WireFormatMessageBinary implements WireFormatMessage {
             {
                 try {
                     PSEMembershipService tempPSE = (PSEMembershipService) this.group.getMembershipService();
-                    PSECredential tempCred = (PSECredential) tempPSE.getDefaultCredential();
+                    IPSECredential tempCred = (IPSECredential) tempPSE.getDefaultCredential();
 
                     //Cert
                     byte[] tempCert = tempCred.getCertificate().getEncoded();

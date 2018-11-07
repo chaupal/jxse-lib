@@ -104,6 +104,7 @@ import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.util.TimeUtils;
 import net.jxta.logging.Logging;
+import net.jxta.membership.pse.IPSECredential;
 import net.jxta.peer.PeerID;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.service.Service;
@@ -155,7 +156,7 @@ import net.jxta.util.IOUtils;
  * @see net.jxta.credential.Credential
  * @see net.jxta.impl.membership.pse.PSEMembershipService
  */
-public final class PSECredential implements Credential, CredentialPCLSupport {
+public final class PSECredential implements Credential, CredentialPCLSupport, IPSECredential {
 
     /**
      * Logger
@@ -255,9 +256,9 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#equals(java.lang.Object)
+	 */
     @Override
     public boolean equals(Object target) {
 
@@ -295,9 +296,9 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         super.finalize();
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#hashCode()
+	 */
     @Override
     public int hashCode() {
         int result = peerID.hashCode() * source.getPeerGroup().getPeerGroupID().hashCode() * certs.hashCode();
@@ -309,56 +310,51 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         return result;
     }
 
-    /**
-     * {@inheritDoc}
-     */
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#toString()
+	 */
     @Override
     public String toString() {
         return "\"" + getSubject() + "\" " + getPeerID() + " [" + source + " / " + getPeerGroupID() + "]";
     }
 
-    /**
-     * Add a listener
-     *
-     * @param listener the listener
-     */
-    public void addPropertyChangeListener(PropertyChangeListener listener) {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#addPropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
+    @Override
+	public void addPropertyChangeListener(PropertyChangeListener listener) {
         support.addPropertyChangeListener(listener);
     }
 
-    /**
-     * Add a listener
-     *
-     * @param propertyName the property to watch
-     * @param listener     the listener
-     */
-    public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#addPropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+	 */
+    @Override
+	public void addPropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         support.addPropertyChangeListener(propertyName, listener);
     }
 
-    /**
-     * Remove a listener
-     *
-     * @param listener the listener
-     */
-    public void removePropertyChangeListener(PropertyChangeListener listener) {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#removePropertyChangeListener(java.beans.PropertyChangeListener)
+	 */
+    @Override
+	public void removePropertyChangeListener(PropertyChangeListener listener) {
         support.removePropertyChangeListener(listener);
     }
 
-    /**
-     * Remove a listener
-     *
-     * @param propertyName the property which was watched
-     * @param listener     the listener
-     */
-    public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#removePropertyChangeListener(java.lang.String, java.beans.PropertyChangeListener)
+	 */
+    @Override
+	public void removePropertyChangeListener(String propertyName, PropertyChangeListener listener) {
         support.removePropertyChangeListener(propertyName, listener);
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ID getPeerGroupID() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getPeerGroupID()
+	 */
+    @Override
+	public ID getPeerGroupID() {
         return peerGroupID;
     }
 
@@ -369,10 +365,11 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         this.peerGroupID = newID;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public ID getPeerID() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getPeerID()
+	 */
+    @Override
+	public ID getPeerID() {
         return peerID;
     }
 
@@ -383,13 +380,11 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         this.peerID = peerID;
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * A PSE Credential is valid as long as the associated certificate is
-     * valid.
-     */
-    public boolean isExpired() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#isExpired()
+	 */
+    @Override
+	public boolean isExpired() {
         try {
             ((X509Certificate) certs.getCertificates().get(0)).checkValidity();
             return false;
@@ -400,13 +395,11 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     * <p/>
-     * A PSE Credential is valid as long as the associated certificate is
-     * valid and as long as the membership service still has the credential.
-     */
-    public boolean isValid() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#isValid()
+	 */
+    @Override
+	public boolean isValid() {
         return valid && !isExpired();
     }
 
@@ -428,24 +421,27 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         }
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Object getSubject() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getSubject()
+	 */
+    @Override
+	public Object getSubject() {
         return ((X509Certificate) certs.getCertificates().get(0)).getSubjectDN();
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    public Service getSourceService() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getSourceService()
+	 */
+    @Override
+	public Service getSourceService() {
         return source;
     }
 
-    /**
-     * {@inheritDoc}
-     */
-    @SuppressWarnings({ "rawtypes", "unchecked" })
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getDocument(net.jxta.document.MimeMediaType)
+	 */
+    @Override
+	@SuppressWarnings({ "rawtypes", "unchecked" })
 	public StructuredDocument<?> getDocument(MimeMediaType encodeAs) throws Exception {
         if (!isValid()) {
             throw new javax.security.cert.CertificateException("Credential is not valid. Cannot generate document.");
@@ -539,21 +535,19 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         }
     }
 
-    /**
-     * Returns the certificate associated with this credential.
-     *
-     * @return the certificate associated with this credential.
-     */
-    public X509Certificate getCertificate() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getCertificate()
+	 */
+    @Override
+	public X509Certificate getCertificate() {
         return (X509Certificate) certs.getCertificates().get(0);
     }
 
-    /**
-     * Returns the certificate chain associated with this credential.
-     *
-     * @return the certificate chain associated with this credential.
-     */
-    public X509Certificate[] getCertificateChain() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getCertificateChain()
+	 */
+    @Override
+	public X509Certificate[] getCertificateChain() {
         List<? extends Certificate> certList = certs.getCertificates();
 
         return (X509Certificate[]) certList.toArray(new X509Certificate[certList.size()]);
@@ -618,22 +612,21 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         setValid(nowGood);
     }
 
-    /**
-     * Support for TlsTransport key requirement
-     * @param pseCredentialKeyRetriever
-     */
-    public void tlsKeyBridge(net.jxta.impl.endpoint.tls.TlsTransport.PSECredentialBridge pseCredentialKeyRetriever) throws SecurityException {
+    
+    @Override
+	public void tlsKeyBridge(net.jxta.endpoint.tls.IPSECredentialBridge pseCredentialKeyRetriever)
+			throws SecurityException {
         if (!this.getClass().getClassLoader().equals(pseCredentialKeyRetriever.getClass().getClassLoader()))
             throw new SecurityException("Illegal attempt to tlsKeyBridge - wrong classloader");
         if (!local)
             return;
         pseCredentialKeyRetriever.setPrivateKey(privateKey);
     }
-    /**
-     * Support for JxtaSocketInputStream key requirement
-     * @param pseCredentialKeyRetriever
-     */
-    public void socketKeyBridge(net.jxta.socket.JxtaSocket.SocketPSEBridge pseCredentialKeyRetriever) throws SecurityException {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#socketKeyBridge(net.jxta.socket.JxtaSocket.SocketPSEBridge)
+	 */
+    @Override
+	public void socketKeyBridge(net.jxta.socket.JxtaSocket.SocketPSEBridge pseCredentialKeyRetriever) throws SecurityException {
         if (!this.getClass().getClassLoader().equals(pseCredentialKeyRetriever.getClass().getClassLoader()))
             throw new SecurityException("Illegal attempt to socketKeyBridge - wrong classloader");
         if (!local)
@@ -662,13 +655,11 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         this.privateKey = privateKey;
     }
 
-    /**
-     * Returns the key id associated with this credential, if any. Only locally
-     * generated credentials have a key ID.
-     *
-     * @return Returns the key id associated with this credential, if any.
-     */
-    public ID getKeyID() {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getKeyID()
+	 */
+    @Override
+	public ID getKeyID() {
         return keyID;
     }
 
@@ -679,14 +670,11 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         this.keyID = keyID;
     }
 
-    /**
-     * Get a Signature object based upon the private key associated with this
-     * credential.
-     *
-     * @param algorithm the signing algorithm to use.
-     * @return Signature.
-     */
-    public Signature getSigner(String algorithm) throws NoSuchAlgorithmException {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getSigner(java.lang.String)
+	 */
+    @Override
+	public Signature getSigner(String algorithm) throws NoSuchAlgorithmException {
         if (!local) {
             throw new IllegalStateException("This credential is not a local credential and cannot be used for signing.");
         }
@@ -705,15 +693,11 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         return sign;
     }
 
-    /**
-     * /**
-     * Get a Signature verifier object based upon the certificate associated
-     * with this credential.
-     *
-     * @param algorithm the signing algorithm to use.
-     * @return Signature.
-     */
-    public Signature getSignatureVerifier(String algorithm) throws NoSuchAlgorithmException {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getSignatureVerifier(java.lang.String)
+	 */
+    @Override
+	public Signature getSignatureVerifier(String algorithm) throws NoSuchAlgorithmException {
         Signature verify = Signature.getInstance(algorithm);
 
         try {
@@ -885,11 +869,19 @@ public final class PSECredential implements Credential, CredentialPCLSupport {
         // FIXME bondolo@jxta.org 20030409 should check for duplicate elements and for peergroup element
     }
 
-    public X509Certificate[] generateServiceCertificate(ID assignedID) throws IOException, KeyStoreException, InvalidKeyException, SignatureException {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#generateServiceCertificate(net.jxta.id.ID)
+	 */
+    @Override
+	public X509Certificate[] generateServiceCertificate(ID assignedID) throws IOException, KeyStoreException, InvalidKeyException, SignatureException {
         return source.generateServiceCertificate(assignedID, this);
     }
 
-    public PSECredential getServiceCredential(ID assignedID) throws IOException, PeerGroupException, InvalidKeyException, SignatureException {
+    /* (non-Javadoc)
+	 * @see net.jxta.impl.membership.pse.IPSECredential#getServiceCredential(net.jxta.id.ID)
+	 */
+    @Override
+	public PSECredential getServiceCredential(ID assignedID) throws IOException, PeerGroupException, InvalidKeyException, SignatureException {
         return source.getServiceCredential(assignedID, this);
     }
 }

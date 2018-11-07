@@ -61,8 +61,7 @@ import net.jxta.document.XMLElement;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.ID;
 import net.jxta.impl.content.ContentServiceImpl;
-//import net.jxta.impl.membership.none.NoneMembershipService;
-import net.jxta.impl.membership.pse.PSEMembershipService;
+import net.jxta.membership.pse.IPSEMembershipService;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.platform.Module;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -95,7 +94,7 @@ public class ShadowPeerGroup extends StdPeerGroup {
         // "Core" Services
         paramAdv.addService(PeerGroup.endpointClassID, PeerGroup.refEndpointSpecID);
         paramAdv.addService(PeerGroup.resolverClassID, PeerGroup.refResolverSpecID);
-        paramAdv.addService(PeerGroup.membershipClassID, PSEMembershipService.pseMembershipSpecID);
+        paramAdv.addService(PeerGroup.membershipClassID, IPSEMembershipService.pseMembershipSpecID);
         paramAdv.addService(PeerGroup.accessClassID, PeerGroup.refAccessSpecID);
 
         // "Standard" Services

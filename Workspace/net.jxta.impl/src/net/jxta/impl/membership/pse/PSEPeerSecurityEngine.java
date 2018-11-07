@@ -56,6 +56,7 @@
 package net.jxta.impl.membership.pse;
 
 import net.jxta.impl.membership.pse.PSEUtils.IssuerInfo;
+import net.jxta.membership.pse.IPSECredential;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -89,7 +90,7 @@ public interface PSEPeerSecurityEngine {
      *  @param bis  The input stream to be signed.
      *  @return {@code true} If the signature is valid otherwise {@code false}.
      **/
-    public boolean verify(String algorithm, PSECredential credential, byte[] signature, InputStream bis) throws InvalidKeyException, SignatureException, IOException;
+    public boolean verify(String algorithm, IPSECredential credential, byte[] signature, InputStream bis) throws InvalidKeyException, SignatureException, IOException;
 
     /**
      *   Generate a new service certificate.

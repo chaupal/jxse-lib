@@ -4,7 +4,8 @@
 		<unit id="org.eclipse.sdk.feature.group" version="4.7.3.v20180330-0919"/>
 		<repository location="http://download.eclipse.org/releases/oxygen/201804111000"/>
 	</location>
-	<location path="P:\Projects\Target\jxse" type="Directory"/>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\core" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\netty" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\persistence" type="Directory"/>
 </locations>
 </target>

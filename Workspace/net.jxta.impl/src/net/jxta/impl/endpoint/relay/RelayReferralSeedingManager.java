@@ -58,7 +58,7 @@ package net.jxta.impl.endpoint.relay;
 import net.jxta.endpoint.EndpointAddress;
 import net.jxta.endpoint.EndpointService;
 import net.jxta.endpoint.MessageTransport;
-import net.jxta.impl.util.URISeedingManager;
+import net.jxta.impl.util.seeding.URISeedingManager;
 import net.jxta.logging.Logging;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.protocol.RouteAdvertisement;
