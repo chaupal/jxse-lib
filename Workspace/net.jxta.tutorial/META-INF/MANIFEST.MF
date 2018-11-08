@@ -39,3 +39,4 @@ Import-Package: net.jxta.content,
  org.spongycastle.asn1.pkcs,
  org.spongycastle.jce;version="1.47.0.2",
  org.spongycastle.x509;version="1.47.0.2"
+Require-Bundle: net.jxta.impl

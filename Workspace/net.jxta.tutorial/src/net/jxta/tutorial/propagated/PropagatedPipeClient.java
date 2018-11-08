@@ -70,7 +70,6 @@ import net.jxta.pipe.PipeService;
 import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
-import net.jxta.impl.endpoint.router.EndpointRouter;
 import net.jxta.impl.endpoint.router.RouteControl;
 import net.jxta.document.XMLDocument;
 import net.jxta.document.MimeMediaType;
@@ -110,7 +109,11 @@ public class PropagatedPipeClient implements PipeMsgListener {
         System.out.println("Received a pong from :" + nel.toString() + " " + sel.toString());
     }
 
-    /**
+    protected InputPipe getInputPipe() {
+		return inputPipe;
+	}
+
+	/**
      * main
      *
      * @param args command line args

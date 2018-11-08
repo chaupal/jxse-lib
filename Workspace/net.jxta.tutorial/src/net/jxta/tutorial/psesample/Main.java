@@ -77,6 +77,7 @@ import net.jxta.document.XMLDocument;
 import net.jxta.id.ID;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
+import net.jxta.platform.ModuleClassID;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PeerGroupAdvertisement;
@@ -372,7 +373,7 @@ public class Main {
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         FileReader invitation = new FileReader(fc.getSelectedFile());
 
-                        XMLDocument advDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8,
+                        XMLDocument<?> advDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8,
                                 invitation);
 
                         pse_pga = (PeerGroupAdvertisement) AdvertisementFactory.newAdvertisement(advDoc);
@@ -459,7 +460,7 @@ public class Main {
         // FIXME bondolo Use something else to edit the params.
         StdPeerGroupParamAdv params = new StdPeerGroupParamAdv(newGroupImpl.getParam());
 
-        Map services = params.getServices();
+        Map<ModuleClassID, Object> services = params.getServices();
 
         ModuleImplAdvertisement aModuleAdv = (ModuleImplAdvertisement) services.get(PeerGroup.membershipClassID);
 
@@ -480,7 +481,7 @@ public class Main {
         services.put(PeerGroup.membershipClassID, implAdv);
 
         // Save the group impl parameters
-        newGroupImpl.setParam((Element) params.getDocument(MimeMediaType.XMLUTF8));
+        newGroupImpl.setParam((Element<?>) params.getDocument(MimeMediaType.XMLUTF8));
 
         return newGroupImpl;
     }
@@ -539,7 +540,7 @@ public class Main {
         pseConf.setCertificateChain(invitationCertChain);
         pseConf.setEncryptedPrivateKey(invitationPrivateKey, invitationCertChain[0].getPublicKey().getAlgorithm());
 
-        XMLDocument pseDoc = (XMLDocument) pseConf.getDocument(MimeMediaType.XMLUTF8);
+        XMLDocument<?> pseDoc = (XMLDocument<?>) pseConf.getDocument(MimeMediaType.XMLUTF8);
 
         newPGAdv.putServiceParam(PeerGroup.membershipClassID, pseDoc);
 

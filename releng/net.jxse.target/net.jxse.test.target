@@ -7,5 +7,6 @@
 	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\core" type="Directory"/>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\netty" type="Directory"/>
 	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository\persistence" type="Directory"/>
+	<location path="P:\Virgo\virgo-jetty-server-3.7.2.RELEASE\repository/log" type="Directory"/>
 </locations>
 </target>

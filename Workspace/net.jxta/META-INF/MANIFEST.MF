@@ -44,7 +44,7 @@ Export-Package: net.jxta,
  net.jxta.util.cardinality,
  net.jxta.util.documentSerializable
 Import-Package: org.eclipse.osgi.container;version="1.0.0",
- org.slf4j;version="1.7.2",
+ org.slf4j;version="[1.7.2,1.8.0)",
  org.spongycastle,
  org.spongycastle.asn1;version="1.47.0.2",
  org.spongycastle.asn1.x509;version="1.47.0.2",

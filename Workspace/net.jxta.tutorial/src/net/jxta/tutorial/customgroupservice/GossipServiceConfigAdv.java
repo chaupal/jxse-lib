@@ -59,7 +59,6 @@ package net.jxta.tutorial.customgroupservice;
 import net.jxta.document.Advertisement;
 import net.jxta.document.AdvertisementFactory;
 import net.jxta.document.Attribute;
-import net.jxta.document.Document;
 import net.jxta.document.Element;
 import net.jxta.document.ExtendableAdvertisement;
 import net.jxta.document.MimeMediaType;
@@ -135,12 +134,12 @@ public final class GossipServiceConfigAdv extends ExtendableAdvertisement implem
         /**
          * {@inheritDoc}
          */
-        public Advertisement newInstance(Element root) {
+        public Advertisement newInstance(Element<?> root) {
             if (!XMLElement.class.isInstance(root)) {
                 throw new IllegalArgumentException(getClass().getName() + " only supports XLMElement");
             }
 
-            return new GossipServiceConfigAdv((XMLElement) root);
+            return new GossipServiceConfigAdv((XMLElement<?>) root);
         }
     }
     
@@ -188,7 +187,8 @@ public final class GossipServiceConfigAdv extends ExtendableAdvertisement implem
      *
      * @param doc the element
      */
-    private GossipServiceConfigAdv(XMLElement doc) {
+    @SuppressWarnings({ "unchecked", "rawtypes" })
+	private GossipServiceConfigAdv(XMLElement doc) {
         String doctype = doc.getName();
 
         String typedoctype = "";
@@ -220,10 +220,10 @@ public final class GossipServiceConfigAdv extends ExtendableAdvertisement implem
         }
 
         /* process child elements of root */
-        Enumeration<XMLElement> elements = doc.getChildren();
+        Enumeration<XMLElement<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
-            XMLElement elem = elements.nextElement();
+            XMLElement<?> elem = elements.nextElement();
 
             if (!handleElement(elem)) {
                 if (Logging.SHOW_WARNING && LOG.isLoggable(Level.WARNING)) {
@@ -237,12 +237,12 @@ public final class GossipServiceConfigAdv extends ExtendableAdvertisement implem
      * {@inheritDoc}
      */
     @Override
-    protected boolean handleElement(Element raw) {
+    protected boolean handleElement(Element<?> raw) {
         if (super.handleElement(raw)) {
             return true;
         }
 
-        XMLElement elem = (XMLElement) raw;
+        XMLElement<?> elem = (XMLElement<?>) raw;
 
         if (GOSSIP_TEXT_TAG.equals(elem.getName())) {
             String value = elem.getTextValue();
@@ -310,9 +310,10 @@ public final class GossipServiceConfigAdv extends ExtendableAdvertisement implem
     /**
      * {@inheritDoc}
      */
-    @Override
-    public StructuredDocument getDocument(MimeMediaType encodeAs) {
-        StructuredDocument adv = (StructuredDocument) super.getDocument(encodeAs);
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+    public StructuredDocument<?> getDocument(MimeMediaType encodeAs) {
+        StructuredDocument adv = (StructuredDocument<?>) super.getDocument(encodeAs);
 
         if (!(adv instanceof Attributable)) {
             throw new IllegalArgumentException("Only document types supporting atrributes are allowed");

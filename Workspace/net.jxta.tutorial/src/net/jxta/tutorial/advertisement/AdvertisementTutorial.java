@@ -91,8 +91,10 @@ import java.util.logging.Logger;
  * &lt;/jxta:System>
  * </pre>
  */
-public class AdvertisementTutorial extends Advertisement implements Comparable, Cloneable, Serializable {
-    private String hwarch;
+public class AdvertisementTutorial extends Advertisement implements Comparable<Object>, Cloneable, Serializable {
+ 	private static final long serialVersionUID = 1L;
+
+ 	private String hwarch;
     private String hwvendor;
     private ID id = ID.nullID;
     private String ip;
@@ -131,8 +133,8 @@ public class AdvertisementTutorial extends Advertisement implements Comparable, 
      *
      * @param root Root element
      */
-    public AdvertisementTutorial(Element root) {
-        TextElement doc = (TextElement) root;
+    public AdvertisementTutorial(Element<?> root) {
+        TextElement<?> doc = (TextElement<?>) root;
 
         if (!getAdvertisementType().equals(doc.getName())) {
             throw new IllegalArgumentException(
@@ -149,7 +151,7 @@ public class AdvertisementTutorial extends Advertisement implements Comparable, 
      */
 
     public AdvertisementTutorial(InputStream stream) throws IOException {
-        StructuredTextDocument doc = (StructuredTextDocument)
+        StructuredTextDocument<?> doc = (StructuredTextDocument<?>)
                 StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, stream);
         initialize(doc);
     }
@@ -241,14 +243,15 @@ public class AdvertisementTutorial extends Advertisement implements Comparable, 
      * @param asMimeType Document encoding
      * @return The document value
      */
-    @Override
+    @SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
     public Document getDocument(MimeMediaType asMimeType) {
         StructuredDocument adv = StructuredDocumentFactory.newStructuredDocument(asMimeType, getAdvertisementType());
 
         if (adv instanceof Attributable) {
             ((Attributable) adv).addAttribute("xmlns:jxta", "http://jxta.org");
         }
-        Element e;
+        Element<?> e;
 
         e = adv.createElement(idTag, getID().toString());
         adv.appendChild(e);
@@ -363,7 +366,7 @@ public class AdvertisementTutorial extends Advertisement implements Comparable, 
      * @param elem the element to be processed.
      * @return true if the element was recognized, otherwise false.
      */
-    protected boolean handleElement(TextElement elem) {
+    protected boolean handleElement(TextElement<?> elem) {
         if (elem.getName().equals(idTag)) {
             try {
                 URI id = new URI(elem.getTextValue());
@@ -417,20 +420,20 @@ public class AdvertisementTutorial extends Advertisement implements Comparable, 
      *
      * @param root document root
      */
-    protected void initialize(Element root) {
+    protected void initialize(Element<?> root) {
         if (!TextElement.class.isInstance(root)) {
             throw new IllegalArgumentException(getClass().getName() + " only supports TextElement");
         }
-        TextElement doc = (TextElement) root;
+        TextElement<?> doc = (TextElement<?>) root;
 
         if (!doc.getName().equals(getAdvertisementType())) {
             throw new IllegalArgumentException(
                     "Could not construct : " + getClass().getName() + "from doc containing a " + doc.getName());
         }
-        Enumeration elements = doc.getChildren();
+        Enumeration<? extends Element<?>> elements = doc.getChildren();
 
         while (elements.hasMoreElements()) {
-            TextElement elem = (TextElement) elements.nextElement();
+            TextElement<?> elem = (TextElement<?>) elements.nextElement();
 
             if (!handleElement(elem)) {
                 LOG.warning("Unhandleded element \'" + elem.getName() + "\' in " + doc.getName());
@@ -514,7 +517,7 @@ public class AdvertisementTutorial extends Advertisement implements Comparable, 
          * @return The instance of <CODE>Advertisement</CODE> or null if it
          *         could not be created.
          */
-        public Advertisement newInstance(net.jxta.document.Element root) {
+        public Advertisement newInstance(net.jxta.document.Element<?> root) {
             return new AdvertisementTutorial(root);
         }
     }

@@ -24,9 +24,9 @@
  	</parent>
  
   <modules>
+    <module>${releng}/net.jxse.dependency</module>
     <module>${releng}/net.jxse.target</module>
     <module>${workspace}/net.jxta</module>
-    <module>${workspace}/org.spongycastle.fragment</module>
     <module>${workspace}/net.jxta.impl</module>
     <module>${workspace}/net.jxta.platform</module>
     <module>${workspace}/net.jxta.tutorial</module>

@@ -136,7 +136,7 @@ public class JxseOSGiFrameworkTest {
             fail(ex.toString());
         }
 
-        ServiceTracker ST = JxseOSGiFramework.getServiceTracker(Object.class);
+        ServiceTracker<?,?> ST = JxseOSGiFramework.getServiceTracker(Object.class);
         assertTrue(ST!=null);
 
         try {

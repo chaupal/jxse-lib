@@ -93,7 +93,8 @@ public class RemoteMonitorQuery implements DocumentSerializable {
         return monitorFilter;
     }
 
-    private String getRequestType() {
+    @SuppressWarnings("unused")
+	private String getRequestType() {
         return requestType;
     }
 

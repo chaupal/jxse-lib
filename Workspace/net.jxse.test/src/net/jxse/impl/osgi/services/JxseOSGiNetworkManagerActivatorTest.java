@@ -68,7 +68,6 @@ import net.jxse.configuration.JxsePeerConfiguration;
 import net.jxse.configuration.JxsePeerConfiguration.ConnectionMode;
 import net.jxse.configuration.JxseTcpTransportConfiguration;
 import net.jxta.configuration.JxtaConfigurationException;
-import net.jxta.exception.ConfiguratorException;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.id.IDFactory;
 import net.jxta.peer.PeerID;
@@ -91,7 +90,7 @@ public class JxseOSGiNetworkManagerActivatorTest {
     }
 
     private JxseOSGiNetworkManagerService TheNMS;
-    private ServiceTracker ST;
+    private ServiceTracker<?,?> ST;
 
     @BeforeClass
     public static void setUpClass() throws Exception {

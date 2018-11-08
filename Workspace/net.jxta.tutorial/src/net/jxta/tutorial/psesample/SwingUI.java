@@ -110,8 +110,9 @@ import java.util.*;
  * <p/>Real applications should not present users with unavailable options.
  */
 public class SwingUI extends javax.swing.JFrame {
+	private static final long serialVersionUID = 1L;
 
-    /**
+	/**
      * The peer group which is the parent for our PSE peer group. Normally this
      * will be the Net Peer Group, but it is a bad idea to assume that it
      * always will be the Net Peer Group.
@@ -789,7 +790,7 @@ public class SwingUI extends javax.swing.JFrame {
                 ,
                 encryptedInvitationKey);
 
-        XMLDocument asXML = (XMLDocument) pse_pga.getDocument(MimeMediaType.XMLUTF8);
+        XMLDocument<?> asXML = (XMLDocument<?>) pse_pga.getDocument(MimeMediaType.XMLUTF8);
 
         try {
             JFileChooser fc = new JFileChooser();
@@ -849,12 +850,12 @@ public class SwingUI extends javax.swing.JFrame {
             // In response to a button click:
             int returnVal = fc.showOpenDialog(this);
 
-            XMLDocument csr_doc = null;
+            XMLDocument<?> csr_doc = null;
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 FileReader csr_file = new FileReader(fc.getSelectedFile());
 
-                csr_doc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, csr_file);
+                csr_doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, csr_file);
 
                 csr_file.close();
             } else {
@@ -906,7 +907,7 @@ public class SwingUI extends javax.swing.JFrame {
 
             cert_msg.setCertificates(newChain);
 
-            XMLDocument asXML = (XMLDocument) cert_msg.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> asXML = (XMLDocument<?>) cert_msg.getDocument(MimeMediaType.XMLUTF8);
 
             JFileChooser fc = new JFileChooser();
 
@@ -1002,13 +1003,13 @@ public class SwingUI extends javax.swing.JFrame {
         // In response to a button click:
         int returnVal = fc.showOpenDialog(this);
 
-        XMLDocument certs_doc = null;
+        XMLDocument<?> certs_doc = null;
 
         try {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 FileReader certs_file = new FileReader(fc.getSelectedFile());
 
-                certs_doc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, certs_file);
+                certs_doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, certs_file);
 
                 certs_file.close();
             } else {
@@ -1104,7 +1105,7 @@ public class SwingUI extends javax.swing.JFrame {
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 FileReader csr_file = new FileReader(fc.getSelectedFile());
 
-                csr_doc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, csr_file);
+                csr_doc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(MimeMediaType.XMLUTF8, csr_file);
 
                 csr_file.close();
             } else {
@@ -1156,7 +1157,7 @@ public class SwingUI extends javax.swing.JFrame {
 
             cert_msg.setCertificates(newChain);
 
-            XMLDocument asXML = (XMLDocument) cert_msg.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> asXML = (XMLDocument<?>) cert_msg.getDocument(MimeMediaType.XMLUTF8);
 
             JFileChooser fc = new JFileChooser();
 
@@ -1217,7 +1218,7 @@ public class SwingUI extends javax.swing.JFrame {
 
             csr_msg.setCSR(csr);
 
-            XMLDocument asXML = (XMLDocument) csr_msg.getDocument(MimeMediaType.XMLUTF8);
+            XMLDocument<?> asXML = (XMLDocument<?>) csr_msg.getDocument(MimeMediaType.XMLUTF8);
 
             JFileChooser fc = new JFileChooser();
 

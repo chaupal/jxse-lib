@@ -77,7 +77,6 @@ import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 import net.jxta.impl.endpoint.router.RouteControl;
-import net.jxta.impl.endpoint.router.EndpointRouter;
 
 import java.io.File;
 import java.io.IOException;
@@ -131,7 +130,12 @@ public class PropagatedPipeServer implements PipeMsgListener {
         routeAdvElement = null;
     }
 
-    /**
+    protected MessageElement getRouteAdvElement() {
+		return routeAdvElement;
+	}
+
+
+	/**
      * Gets the pipeAdvertisement attribute of the PropagatedPipeServer class
      *
      * @return The pipeAdvertisement value
@@ -236,7 +240,7 @@ public class PropagatedPipeServer implements PipeMsgListener {
         try {
             final MessageElement routeElement = msg.getMessageElement(NAMESPACE, ROUTEADV);
             if (routeElement != null && routeControl != null) {
-                XMLDocument asDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(routeElement.getMimeType(), routeElement.getStream());
+                XMLDocument<?> asDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(routeElement.getMimeType(), routeElement.getStream());
                 final RouteAdvertisement route = (RouteAdvertisement) AdvertisementFactory.newAdvertisement(asDoc);
                 routeControl.addRoute(route);
             }
@@ -274,7 +278,7 @@ public class PropagatedPipeServer implements PipeMsgListener {
             RouteAdvertisement route = server.routeControl.getMyLocalRoute();
 
             if (route != null) {
-                server.routeAdvElement = new TextDocumentMessageElement(ROUTEADV, (XMLDocument) route.getDocument(MimeMediaType.XMLUTF8), null);
+                server.routeAdvElement = new TextDocumentMessageElement(ROUTEADV, (XMLDocument<?>) route.getDocument(MimeMediaType.XMLUTF8), null);
             }
         }
 

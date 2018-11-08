@@ -68,7 +68,6 @@ import net.jxta.id.ID;
 import net.jxta.id.IDFactory;
 import net.jxta.impl.membership.pse.PSEUtils;
 import net.jxta.impl.membership.pse.PSEUtils.IssuerInfo;
-import net.jxta.impl.peergroup.StdPeerGroup;
 import net.jxta.impl.protocol.HTTPAdv;
 import net.jxta.impl.protocol.PSEConfigAdv;
 import net.jxta.impl.protocol.PeerGroupConfigAdv;
