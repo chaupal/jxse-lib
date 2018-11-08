@@ -55,7 +55,7 @@
  */
 package net.jxta.tutorial.helloworld;
 
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import java.text.MessageFormat;
 import java.io.File;
 

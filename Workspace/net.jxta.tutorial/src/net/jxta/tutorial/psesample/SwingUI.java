@@ -73,10 +73,10 @@ import net.jxta.impl.protocol.Certificate;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.protocol.ModuleImplAdvertisement;
 import net.jxta.protocol.PeerGroupAdvertisement;
-import org.bouncycastle.asn1.DERSet;
-import org.bouncycastle.jce.PKCS10CertificationRequest;
-import org.bouncycastle.jce.X509Principal;
-import org.bouncycastle.jce.X509V3CertificateGenerator;
+import org.spongycastle.asn1.DERSet;
+import org.spongycastle.jce.PKCS10CertificationRequest;
+import org.spongycastle.jce.X509Principal;
+import org.spongycastle.x509.X509V3CertificateGenerator;
 
 import javax.crypto.EncryptedPrivateKeyInfo;
 import javax.swing.*;
@@ -841,7 +841,7 @@ public class SwingUI extends javax.swing.JFrame {
 
         issuer.cert = issuerChain[0];
         issuer.subjectPkey = issuerKey;
-        org.bouncycastle.jce.PKCS10CertificationRequest csr;
+        org.spongycastle.jce.PKCS10CertificationRequest csr;
 
         try {
             JFileChooser fc = new JFileChooser();
@@ -884,7 +884,7 @@ public class SwingUI extends javax.swing.JFrame {
             X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
 
             certGen.setIssuerDN(new X509Principal(true, issuer.cert.getSubjectX500Principal().getName()));
-            certGen.setSubjectDN(csr.getCertificationRequestInfo().getSubject());
+            //certGen.setSubjectDN(csr.getCertificationRequestInfo().getSubject());
             certGen.setNotBefore(today);
             certGen.setNotAfter(until);
             certGen.setPublicKey(csr.getPublicKey());
@@ -1049,7 +1049,7 @@ public class SwingUI extends javax.swing.JFrame {
 
                     byte[] der = aCert.getEncoded();
 
-                    createid = IDFactory.newCodatID(group.getPeerGroupID(), new ByteArrayInputStream(der));
+                    createid = IDFactory.newContentID(group.getPeerGroupID(), new ByteArrayInputStream(der));
                 }
             } while (null != aCert);
 
@@ -1091,7 +1091,7 @@ public class SwingUI extends javax.swing.JFrame {
 
         issuer.cert = issuerChain[0];
         issuer.subjectPkey = issuerKey;
-        org.bouncycastle.jce.PKCS10CertificationRequest csr;
+        org.spongycastle.jce.PKCS10CertificationRequest csr;
 
         try {
             JFileChooser fc = new JFileChooser();
@@ -1099,7 +1099,7 @@ public class SwingUI extends javax.swing.JFrame {
             // In response to a button click:
             int returnVal = fc.showOpenDialog(this);
 
-            XMLDocument csr_doc = null;
+            XMLDocument<?> csr_doc = null;
 
             if (returnVal == JFileChooser.APPROVE_OPTION) {
                 FileReader csr_file = new FileReader(fc.getSelectedFile());
@@ -1134,7 +1134,7 @@ public class SwingUI extends javax.swing.JFrame {
             X509V3CertificateGenerator certGen = new X509V3CertificateGenerator();
 
             certGen.setIssuerDN(new X509Principal(true, issuer.cert.getSubjectX500Principal().getName()));
-            certGen.setSubjectDN(csr.getCertificationRequestInfo().getSubject());
+            //certGen.setSubjectDN(csr.getCertificationRequestInfo().getSubject());
             certGen.setNotBefore(today);
             certGen.setNotAfter(until);
             certGen.setPublicKey(csr.getPublicKey());
@@ -1301,10 +1301,10 @@ public class SwingUI extends javax.swing.JFrame {
     private void swingUIClosed(java.awt.event.WindowEvent evt) { // GEN-FIRST:event_swingUIClosed
         // Shutdown the pse peer group.
         group.stopApp();
-        group.unref();
+        //group.unref();
 
         // Un-reference the parent peer group.
-        parentgroup.unref();
+        //parentgroup.unref();
     }// GEN-LAST:event_swingUIClosed
 
     private void invitationPasswordFieldKeyReleased(java.awt.event.KeyEvent evt) { // GEN-FIRST:event_invitationPasswordFieldKeyReleased
@@ -1323,7 +1323,7 @@ public class SwingUI extends javax.swing.JFrame {
             invitationAuthenticator.setAuth2Identity(group.getPeerGroupID());
         } else {
             // Otherwise store it under another random key.
-            invitationAuthenticator.setAuth2Identity(IDFactory.newCodatID(group.getPeerGroupID()));
+            invitationAuthenticator.setAuth2Identity(IDFactory.newContentID(group.getPeerGroupID()));
         }
         invitationAuthenticator.setAuth3_IdentityPassword(invitationPasswordField.getPassword());
 

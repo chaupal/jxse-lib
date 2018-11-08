@@ -67,6 +67,7 @@
 package net.jxta.tutorial.service;
 
 import net.jxta.discovery.DiscoveryService;
+import net.jxta.document.Advertisement;
 import net.jxta.document.MimeMediaType;
 import net.jxta.document.StructuredTextDocument;
 import net.jxta.endpoint.Message;
@@ -77,7 +78,7 @@ import net.jxta.pipe.PipeService;
 import net.jxta.protocol.ModuleSpecAdvertisement;
 import net.jxta.protocol.PeerGroupAdvertisement;
 import net.jxta.protocol.PipeAdvertisement;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 
 import java.io.IOException;
 import java.io.StringWriter;
@@ -141,7 +142,7 @@ public class ServiceClient {
 
         // Let's try to locate the service advertisement we will loop until we find it!
         System.out.println("searching for the JXTA-EX1 Service advertisement");
-        Enumeration en;
+        Enumeration<Advertisement> en;
         while (true) {
             try {
                 // let's look first in our local cache to see if we have it! We try to discover an adverisement
@@ -178,7 +179,7 @@ public class ServiceClient {
         try {
 
             // let's print the advertisement as a plain text document
-            StructuredTextDocument doc = (StructuredTextDocument) mdsadv.getDocument(MimeMediaType.TEXT_DEFAULTENCODING);
+            StructuredTextDocument<?> doc = (StructuredTextDocument<?>) mdsadv.getDocument(MimeMediaType.TEXT_DEFAULTENCODING);
 
             StringWriter out = new StringWriter();
 

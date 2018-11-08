@@ -15,15 +15,15 @@ import net.jxta.document.MimeMediaType;
 import net.jxta.document.XMLDocument;
 import net.jxta.exception.PeerGroupException;
 import net.jxta.peer.PeerID;
-import net.jxta.peergroup.NetPeerGroupFactory;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.peergroup.PeerGroupID;
-import net.jxta.peergroup.WorldPeerGroupFactory;
-import net.jxta.platform.NetworkConfigurator;
+import net.jxta.impl.platform.NetworkConfigurator;
 import net.jxta.protocol.ModuleImplAdvertisement;
 
 import net.jxta.impl.endpoint.mcast.McastTransport;
+import net.jxta.impl.peergroup.NetPeerGroupFactory;
 import net.jxta.impl.peergroup.StdPeerGroupParamAdv;
+import net.jxta.impl.peergroup.WorldPeerGroupFactory;
 
 /**
  * This sample shows how to construct multiple infrastructure (Network) Peer
@@ -56,7 +56,7 @@ public class MultiNetGroupLaucher {
         // Instantiate the world peer group
         WorldPeerGroupFactory wpgf = new WorldPeerGroupFactory(worldGroupConfig.getPlatformConfig(), storeHome);
 
-        PeerGroup wpg = wpgf.getInterface();
+        PeerGroup wpg = wpgf.getWorldPeerGroup();
 
         System.out.println("JXTA World Peer Group : " + wpg + " started!");
 
@@ -83,7 +83,7 @@ public class MultiNetGroupLaucher {
 
             params.addProto(McastTransport.MCAST_TRANSPORT_CLASSID, McastTransport.MCAST_TRANSPORT_SPECID);
 
-            npgImplAdv.setParam((XMLDocument) params.getDocument(MimeMediaType.XMLUTF8));
+            npgImplAdv.setParam((XMLDocument<?>) params.getDocument(MimeMediaType.XMLUTF8));
         } catch (Exception failed) {
             throw new PeerGroupException("Could not construct domain ModuleImplAdvertisement", failed);
         }
@@ -102,8 +102,8 @@ public class MultiNetGroupLaucher {
 
         // Instantiate the domain net peer group
 
-        NetPeerGroupFactory npgf1 = new NetPeerGroupFactory(wpg, domainConfig.getPlatformConfig(), npgImplAdv);
-        PeerGroup domain = npgf1.getInterface();
+        NetPeerGroupFactory npgf1 = new NetPeerGroupFactory();//new NetPeerGroupFactory(wpg, domainConfig.getPlatformConfig(), npgImplAdv);
+        PeerGroup domain = npgf1.getNetPeerGroup();
         System.out.println("Peer Group : " + domain + " started!");
 
         return domain;

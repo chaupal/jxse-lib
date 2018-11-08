@@ -56,7 +56,7 @@
 package net.jxta.tutorial.socket;
 
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaSocket;
 

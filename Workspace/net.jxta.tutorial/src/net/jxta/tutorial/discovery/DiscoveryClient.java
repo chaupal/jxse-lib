@@ -60,7 +60,7 @@ import net.jxta.discovery.DiscoveryListener;
 import net.jxta.discovery.DiscoveryService;
 import net.jxta.document.Advertisement;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.DiscoveryResponseMsg;
 
 import java.io.File;
@@ -164,7 +164,7 @@ public class DiscoveryClient implements DiscoveryListener {
         System.out.println(" [  Got a Discovery Response [" + res.getResponseCount() + " elements]  from peer : " + ev.getSource() + "  ]");
 
         Advertisement adv;
-        Enumeration en = res.getAdvertisements();
+        Enumeration<Advertisement> en = res.getAdvertisements();
 
         if (en != null) {
             while (en.hasMoreElements()) {

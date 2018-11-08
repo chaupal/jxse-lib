@@ -67,7 +67,7 @@ import net.jxta.pipe.InputPipe;
 import net.jxta.pipe.PipeMsgEvent;
 import net.jxta.pipe.PipeMsgListener;
 import net.jxta.pipe.PipeService;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.util.CountingOutputStream;
 import net.jxta.util.DevNullOutputStream;
@@ -103,7 +103,7 @@ public class PipeServer implements PipeMsgListener {
     public PipeServer() {
         manager = null;
         try {
-            manager = new net.jxta.platform.NetworkManager(NetworkManager.ConfigMode.ADHOC, "PipeServer",
+            manager = new net.jxta.impl.platform.NetworkManager(NetworkManager.ConfigMode.ADHOC, "PipeServer",
                     new File(new File(".cache"), "PipeServer").toURI());
             manager.startNetwork();
         } catch (Exception e) {

@@ -375,11 +375,11 @@ public class MessageTutorial {
         pipeAdv.setPipeID(IDFactory.newPipeID(PeerGroupID.defaultNetPeerGroupID));
         pipeAdv.setType(PipeService.UnicastType);
         message.addMessageElement("MESSAGETUT",
-                new TextDocumentMessageElement("MESSAGETUT", (XMLDocument) pipeAdv.getDocument(MimeMediaType.XMLUTF8), null));
+                new TextDocumentMessageElement("MESSAGETUT", (XMLDocument<?>) pipeAdv.getDocument(MimeMediaType.XMLUTF8), null));
         MessageElement msgElement = message.getMessageElement("MESSAGETUT", "MESSAGETUT");
 
         try {
-            XMLDocument asDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(msgElement.getMimeType(),
+            XMLDocument<?> asDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(msgElement.getMimeType(),
                     msgElement.getStream());
             PipeAdvertisement newPipeAdv = (PipeAdvertisement) AdvertisementFactory.newAdvertisement(asDoc);
             System.out.println(newPipeAdv.toString());

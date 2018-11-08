@@ -67,7 +67,7 @@ import net.jxta.pipe.OutputPipe;
 import net.jxta.pipe.PipeMsgEvent;
 import net.jxta.pipe.PipeMsgListener;
 import net.jxta.pipe.PipeService;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.protocol.RouteAdvertisement;
 import net.jxta.impl.endpoint.router.EndpointRouter;
@@ -141,11 +141,11 @@ public class PropagatedPipeClient implements PipeMsgListener {
         MessageTransport endpointRouter = (netPeerGroup.getEndpointService()).getMessageTransport("jxta");
 
         if (endpointRouter != null) {
-            client.routeControl = (RouteControl) endpointRouter.transportControl(EndpointRouter.GET_ROUTE_CONTROL, null);
+            client.routeControl = null;//TODO (RouteControl) endpointRouter.transportControl(EndpointRouter.GET_ROUTE_CONTROL, null);
             RouteAdvertisement route = client.routeControl.getMyLocalRoute();
 
             if (route != null) {
-                client.routeAdvElement = new TextDocumentMessageElement(ROUTEADV, (XMLDocument) route.getDocument(MimeMediaType.XMLUTF8), null);
+                client.routeAdvElement = new TextDocumentMessageElement(ROUTEADV, (XMLDocument<?>) route.getDocument(MimeMediaType.XMLUTF8), null);
             }
         }
 

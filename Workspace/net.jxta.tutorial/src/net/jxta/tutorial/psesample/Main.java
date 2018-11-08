@@ -76,7 +76,6 @@ import net.jxta.document.StructuredDocumentFactory;
 import net.jxta.document.XMLDocument;
 import net.jxta.id.ID;
 import net.jxta.peergroup.PeerGroup;
-import net.jxta.peergroup.NetPeerGroupFactory;
 import net.jxta.peergroup.PeerGroupID;
 import net.jxta.platform.ModuleSpecID;
 import net.jxta.protocol.ModuleImplAdvertisement;
@@ -84,6 +83,7 @@ import net.jxta.protocol.PeerGroupAdvertisement;
 
 import net.jxta.impl.membership.pse.PSEMembershipService;
 import net.jxta.impl.membership.pse.PSEUtils;
+import net.jxta.impl.peergroup.NetPeerGroupFactory;
 import net.jxta.impl.peergroup.StdPeerGroupParamAdv;
 import net.jxta.impl.protocol.PSEConfigAdv;
 
@@ -299,7 +299,7 @@ public class Main {
 
         // Start JXTA, instantiate the net peer group.
         NetPeerGroupFactory npgf = new NetPeerGroupFactory();
-        final PeerGroup npg = npgf.getInterface();
+        final PeerGroup npg = npgf.getNetPeerGroup();
 
         // This will cause the JXTA Shell to start if enabled.
         if (START_NETGROUP) {

@@ -61,7 +61,7 @@ import net.jxta.id.IDFactory;
 import net.jxta.peergroup.PeerGroup;
 import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeService;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 import net.jxta.socket.JxtaMulticastSocket;
 
@@ -110,10 +110,10 @@ public class JxtaMulticastSocketServer {
      */
     public static void main(String args[]) {
         // Configures the JXTA platform
-        net.jxta.platform.NetworkManager manager = null;
+        net.jxta.impl.platform.NetworkManager manager = null;
 
         try {
-            manager = new net.jxta.platform.NetworkManager(NetworkManager.ConfigMode.ADHOC, "JxtaMulticastSocketServer",
+            manager = new net.jxta.impl.platform.NetworkManager(NetworkManager.ConfigMode.ADHOC, "JxtaMulticastSocketServer",
                     new File(new File(".cache"), "JxtaMulticastSocketServer").toURI());
             manager.startNetwork();
         } catch (Exception e) {

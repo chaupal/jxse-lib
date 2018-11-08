@@ -67,7 +67,7 @@ import net.jxta.pipe.InputPipe;
 import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeService;
 import net.jxta.platform.ModuleClassID;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.ModuleClassAdvertisement;
 import net.jxta.protocol.ModuleSpecAdvertisement;
 import net.jxta.protocol.PeerGroupAdvertisement;
@@ -222,7 +222,7 @@ public class ServiceServer {
             mdadv.setPipeAdvertisement(pipeadv);
 
             // display the advertisement as a plain text document.
-            StructuredTextDocument doc = (StructuredTextDocument) mdadv.getDocument(MimeMediaType.XMLUTF8);
+            StructuredTextDocument<?> doc = (StructuredTextDocument<?>) mdadv.getDocument(MimeMediaType.XMLUTF8);
 
             StringWriter out = new StringWriter();
 

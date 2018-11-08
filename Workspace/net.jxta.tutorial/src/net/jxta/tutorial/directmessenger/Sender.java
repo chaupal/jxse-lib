@@ -58,7 +58,7 @@ package net.jxta.tutorial.directmessenger;
 
 import net.jxta.endpoint.EndpointListener;
 import net.jxta.endpoint.EndpointService;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -158,7 +158,7 @@ public class Sender {
             RouteAdvertisement route;
             
             try {
-                XMLDocument routeDoc = (XMLDocument) StructuredDocumentFactory.newStructuredDocument(announce);
+                XMLDocument<?> routeDoc = (XMLDocument<?>) StructuredDocumentFactory.newStructuredDocument(announce);
                 
                 route = (RouteAdvertisement) AdvertisementFactory.newAdvertisement(routeDoc);
             } catch(Exception bad) {
@@ -198,7 +198,7 @@ public class Sender {
                     // attempt to create a messenger to the address.
                     Messenger directMessenger = null;
                     try {
-                        directMessenger = tcp.getMessenger(destAddress, null);
+                        directMessenger = null;//TODO tcp.getMessenger(destAddress, null);
                         
                         if(null == directMessenger) {
                             // The current address was unreachable. Try another.

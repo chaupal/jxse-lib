@@ -58,7 +58,7 @@ package net.jxta.tutorial.directmessenger;
 
 import net.jxta.endpoint.EndpointListener;
 import net.jxta.endpoint.EndpointService;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 
 import java.io.File;
 import java.io.IOException;
@@ -127,15 +127,15 @@ public class Receiver {
                         
                         MessageTransport router = endpoint.getMessageTransport("jxta");
                         
-                        RouteControl routeControl = (RouteControl) router.transportControl(EndpointRouter.GET_ROUTE_CONTROL, null);
+                        //TODO: refactor RouteControl routeControl = (RouteControl) router.transportControl(EndpointRouter.GET_ROUTE_CONTROL, null);
                         
-                        RouteAdvertisement myRoute = routeControl.getMyLocalRoute();
+                        //RouteAdvertisement myRoute = routeControl.getMyLocalRoute();
                         
                         Message announce = new Message();
                         
-                        XMLDocument routeDoc = (XMLDocument) myRoute.getDocument(MimeMediaType.XMLUTF8);
+                        //XMLDocument<?> routeDoc = (XMLDocument<?>) myRoute.getDocument(MimeMediaType.XMLUTF8);
                         
-                        announce.addMessageElement(new TextDocumentMessageElement("ChatAnnounce", routeDoc, null));
+                        //announce.addMessageElement(new TextDocumentMessageElement("ChatAnnounce", routeDoc, null));
                         
                         endpoint.propagate(announce, "chatAnnounce", null);
                     }

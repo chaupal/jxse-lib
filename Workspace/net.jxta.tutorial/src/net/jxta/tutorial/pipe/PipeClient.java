@@ -64,7 +64,7 @@ import net.jxta.pipe.OutputPipeEvent;
 import net.jxta.pipe.OutputPipeListener;
 import net.jxta.pipe.PipeID;
 import net.jxta.pipe.PipeService;
-import net.jxta.platform.NetworkManager;
+import net.jxta.impl.platform.NetworkManager;
 import net.jxta.protocol.PipeAdvertisement;
 
 import java.io.File;
@@ -110,7 +110,7 @@ public class PipeClient implements OutputPipeListener {
     public PipeClient(boolean waitForRendezvous) {
         this.waitForRendezvous = waitForRendezvous;
         try {
-            manager = new net.jxta.platform.NetworkManager(NetworkManager.ConfigMode.ADHOC, "PipeClient",
+            manager = new net.jxta.impl.platform.NetworkManager(NetworkManager.ConfigMode.ADHOC, "PipeClient",
                     new File(new File(".cache"), "PipeClient").toURI());
             manager.startNetwork();
         } catch (Exception e) {
