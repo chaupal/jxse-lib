@@ -19,6 +19,7 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>  
   		<eclipse-repo.url>http://download.eclipse.org/releases/oxygen</eclipse-repo.url>
         <eclipse-update-repo.url>http://download.eclipse.org/eclipse/updates/4.7</eclipse-update-repo.url>
+        <slf4jVersion>1.7.25</slf4jVersion>
     </properties>
 
 <!--
@@ -62,6 +63,10 @@
                 <version>${tycho.version}</version>
                 <configuration>
       				<pomDependencies>consider</pomDependencies>
+ 					<!-- TODO: Temporary hack -->
+ 					<instructions>
+      					<_noee>true</_noee>
+  					</instructions>
       				<target> 
         			  	<artifact>
             				<groupId>net.jxse</groupId>
@@ -102,10 +107,37 @@
     </build>
     <dependencies>
     	<dependency>
-    		<groupId>org.eclipse.osgi</groupId>
-    		<artifactId>org.eclipse.osgi</artifactId>
-    		<version>3.6.0.v20100517</version>
+	<groupId>org.eclipse.osgi</groupId>
+	<artifactId>org.eclipse.osgi</artifactId>
+	<version>3.6.0.v20100517</version>
     	</dependency>
+	<!-- https://mvnrepository.com/artifact/org.osgi.ee/ee.foundation 
+	<dependency>
+    	<groupId>org.osgi.ee</groupId>
+    	<artifactId>ee.minimum</artifactId>
+    	<version>4.1</version>
+	</dependency>-->
+	<dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-api</artifactId>
+    	<version>${slf4jVersion}</version>
+	</dependency>
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-nop</artifactId>
+		<version>${slf4jVersion}</version>
+	</dependency>
+	<!-- Binding for System.out -->
+	<dependency>
+		<groupId>org.slf4j</groupId>
+		<artifactId>slf4j-simple</artifactId>
+		<version>${slf4jVersion}</version>
+	</dependency>
+	<dependency>
+    	<groupId>org.slf4j</groupId>
+    	<artifactId>slf4j-api</artifactId>
+    	<version>${slf4jVersion}</version>
+	</dependency>
      <dependency>
         <groupId>org.apache.derby</groupId>
         <artifactId>derbyclient</artifactId>
