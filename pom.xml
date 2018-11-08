@@ -25,9 +25,11 @@
  
   <modules>
     <module>${releng}/net.jxse.target</module>
+    <module>${workspace}/org.spongycastle.fragment</module>
     <module>${workspace}/net.jxta</module>
     <module>${workspace}/net.jxta.impl</module>
-    <module>${workspace}/org.spongycastle.fragment</module>
+    <module>${workspace}/net.jxta.platform</module>
+    <module>${workspace}/net.jxta.tutorial</module>
     <module>${workspace}/net.jxse.feature</module>
     <module>${workspace}/net.jxse.update</module>
   </modules>
